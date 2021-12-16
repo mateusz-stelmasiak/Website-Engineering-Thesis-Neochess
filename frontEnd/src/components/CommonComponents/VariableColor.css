@@ -1,0 +1,16 @@
+.VariableColor{
+    display: inline-block;
+    margin-left: 2rem;
+}
+.VariableColor span{
+    width: 1em;
+    height: 1em;
+    border-radius: 1000em;
+    display: inline-block;
+}
+
+.VariableColor h1{
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: var(--text-color);
+}

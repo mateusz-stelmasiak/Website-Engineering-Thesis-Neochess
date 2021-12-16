@@ -1,0 +1,61 @@
+.Footer{
+    background-color: var(--primary-color);
+    color:white;
+    display: flex;
+    align-items: center;
+    padding: 5rem 10vw;
+    justify-content: space-between;
+}
+
+.Footer a{
+    all:unset;
+    color:white;
+    cursor: pointer;
+}
+
+.Footer a:hover{
+    color: #c4c4c4;
+}
+
+.moreinfoContainer{
+    font-weight: bold;
+}
+
+/* insert | between all elements in hyperlinks container excpet the last one*/
+.hyperlinksContainer a:after{
+    content: "|";
+}
+
+.hyperlinksContainer a:last-child:after{
+    content: "";
+}
+
+@media (max-width: 950px) {
+
+
+    .Footer .hyperlinksContainer{
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .Footer a{
+        display: block;
+        flex-basis: 100%;
+        text-align: right;
+        margin-bottom: 0.5rem;
+    }
+    .moreinfoContainer a{
+        text-align: center;
+    }
+    .hyperlinksContainer a:last-child:after{
+        content: "|";
+    }
+}
+
+
+@media (max-width: 600px) {
+    .Footer {
+        padding: 5rem 5vw;
+    }
+}

@@ -1,0 +1,35 @@
+.GameTimer{
+    background: var(--section-bg-color);
+    padding: 0.5rem 2rem;
+    width: 10rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+.GameTimer > div{
+    color: var(--text-color);
+    font-size: 2.5rem;
+    opacity: 0.6;
+}
+
+.GameTimer .active{
+    opacity: 1;
+    -webkit-animation: pulsate 3s ease-out;
+    -webkit-animation-iteration-count: infinite;
+}
+
+.GameTimer .low-time{
+    color: var(--fail-color);
+}
+
+
+@-webkit-keyframes pulsate {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1.0;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}

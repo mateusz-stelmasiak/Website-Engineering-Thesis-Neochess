@@ -1,0 +1,31 @@
+.SectionTitle {
+    width: 100%;
+    position: relative;
+}
+
+.SectionTitle-title {
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    padding: 1rem 0;
+    font-weight: 500;
+    width: 100%;
+
+    background-color: var(--sec-color-dark);
+    font-size: 2.2rem;
+
+    text-align: center;
+    color: var(--text-color);
+}
+
+.SectionTitle-ornament {
+    display: block;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background-color: var(--sec-color);
+    width: 100%;
+    height: 4.4rem;
+    content: "";
+    z-index: 1;
+}

@@ -1,0 +1,14 @@
+.TextWithWavyOrnament {
+    display: flex;
+    width: 100%;
+}
+
+.TextWithWavyOrnament h1 {
+    font-family: 'Montserrat-Light';
+    font-size: 1.5rem;
+}
+
+.TextWithWavyOrnament img {
+    margin-right: 0.2rem;
+    opacity: 0.8;
+}

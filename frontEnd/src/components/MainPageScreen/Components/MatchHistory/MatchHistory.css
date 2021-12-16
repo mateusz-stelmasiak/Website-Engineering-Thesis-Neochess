@@ -1,0 +1,27 @@
+.MatchHistory{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+
+}
+
+.MatchHistory .SectionTitle{
+    width: 60%;
+}
+
+.MatchHistory-colors{
+    margin-top:1rem; /*Align with middle of ornament of sectionTitle */
+    width: 35%;
+    margin-left: 5%;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    font-family: Montserrat-Light;
+}
+.MatchHistory-container{
+    width: 100%;
+}
+
+.MatchHistory-placeholder{
+    width: 100%;
+}

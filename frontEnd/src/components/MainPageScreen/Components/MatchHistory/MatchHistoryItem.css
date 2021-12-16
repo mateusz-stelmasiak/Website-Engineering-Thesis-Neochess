@@ -1,0 +1,110 @@
+:root{
+    --matchHistoryItem-height: 7rem;
+}
+
+.MatchHistoryItem{
+    width: 100%;
+    height:var(--matchHistoryItem-height);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-top:2rem;
+    flex-direction: column;
+    transition: 200ms;
+}
+.MatchHistoryItem:hover{
+    transform: scale(1.05);
+}
+
+.MatchHistoryItem-result{
+    height: 100%;
+    width: var(--matchHistoryItem-height);
+    border-radius: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: absolute; /*Takes it out of element flow*/
+    left:2em;
+}
+
+.MatchHistoryItem-result h1{
+    all:unset;
+    font-size: 3em;
+    color: var(--text-color);
+    margin-top: 0.4em;
+    width: 100%;
+    text-align: center;
+}
+
+.MatchHistoryItem-result h2{
+    all:unset;
+    font-size: 1em;
+    color: var(--text-color);
+    margin-top: -1.5em;
+    font-family: Montserrat-Light;
+    width: 100%;
+    text-align: center;
+}
+
+.MatchHistoryItem-info{
+    background-color: var(--body-color);
+    width: 75%;
+    height: 80%;
+    padding: 0.1em 3em 0.1em 15%;
+    display: flex;
+    align-items: center;
+}
+
+.MatchHistoryItem-player {
+    display: block;
+}
+
+.MatchHistoryItem-player h1 {
+    all: unset;
+    font-size: 2.4em;
+    color: var(--text-color);
+    display: block;
+}
+
+.MatchHistoryItem-player h2{
+    all: unset;
+    font-size: 1.2em;
+    color: var(--text-color);
+    display: block;
+    opacity: 0.4;
+    font-family: Montserrat-Light;
+}
+/*VS between players*/
+.MatchHistoryItem span{
+    color: var(--text-color);
+    font-size: 1.5em;
+    margin-right:1em;
+    margin-left: 1em;
+    opacity: 0.5;
+}
+
+.MatchHistoryItem-date{
+    margin-left: auto; /*floats it to the right side*/
+    color:var(--text-color);
+    opacity: 0.6;
+}
+
+/*hour*/
+.MatchHistoryItem-date h1{
+    all: unset;
+    color: var(--primary-color);
+    font-size: 2.4em;
+    display: block;
+}
+
+/*DD/MM/YYYY*/
+.MatchHistoryItem-date h2{
+    all: unset;
+    font-size: 1em;
+    display: block;
+}
+
+
+
+
+

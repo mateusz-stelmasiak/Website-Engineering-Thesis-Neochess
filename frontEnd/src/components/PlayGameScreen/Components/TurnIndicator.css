@@ -1,0 +1,20 @@
+.TurnIndicator {
+    order:1;
+    background-color: var(--chessboard--white);
+    color: black;
+    font-size: 1.5rem;
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 70%;
+    padding: 0.7rem 1.2rem;
+}
+
+
+
+.TurnIndicator h1{
+    all: unset;
+    font-size: 1.7rem;
+}

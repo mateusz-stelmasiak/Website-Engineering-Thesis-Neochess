@@ -1,0 +1,146 @@
+.PlayGameScreenContainer-enter {
+    opacity: 0;
+}
+.PlayGameScreenContainer-enter-active {
+    opacity: 1;
+    transition: opacity 500ms, scale 200ms;
+}
+
+.PlayGameScreenContainer-exit {
+    opacity: 1;
+}
+.PlayGameScreenContainer-exit-active {
+    opacity: 0;
+    transition: opacity 500ms, scale 200ms;
+}
+
+.PlayGameScreen {
+    margin-left: 2rem;
+    margin-right: 2rem;
+    margin-top:2rem;
+    display: grid;
+    grid-template-columns:
+            30rem 800px auto;
+
+    grid-template-rows: 0.4fr 1.5fr;
+    gap: 0px 1rem;
+    grid-template-areas:
+    "player-info board disclaimers"
+    "chat board game-info";
+}
+
+.chessDefenderGameScreen{
+    grid-template-columns: 30rem 1010px auto;
+}
+
+.PlayGameScreen  .GameContainer { grid-area: board; }
+.PlayGameScreen  .PlayersInfo { grid-area: player-info; }
+.PlayGameScreen  .Chat { grid-area: chat; }
+.PlayGameScreen  .Game-info {
+    grid-area: game-info;
+    display: flex;
+    flex-direction: column;
+}
+.PlayGameScreen  .disclaimers { grid-area: disclaimers; }
+
+
+.GameContainer .Game-info{
+
+}
+
+.GameContainer div{
+    width: 90%;
+    height: 90%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.p5Canvas{
+    width: 100%;
+    height: 100%;
+}
+
+.ResultInfo{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 20;
+    top: 0;
+    right: 0;
+    background-color: rgba(43,43,43,0.8);
+    overflow-x: hidden;
+    padding-top: 60px;
+    transition: 0.5s;
+
+    color: var(--text-color);
+
+    display: flex;
+    align-content: center;
+    justify-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+
+.ResultInfo p{
+    font-weight: 500;
+    font-size: 5rem;
+}
+
+.ResultInfo button{
+    all:unset;
+
+    padding: 0.7rem 3rem;
+    border-radius: 0.8rem;
+    background-color: var(--primary-color);
+    color:var(--text-color);
+    text-align: center;
+}
+.ResultInfo button:hover{
+    transition:200ms;
+    transform: scale(1.1);
+    background-color: var( --primary-color-dark) ;
+}
+
+.ResultInfo p:before{
+    content: 'YOU';
+    display: inline-block;
+}
+
+
+@media (max-width: 1400px) {
+    .PlayGameScreen{
+        margin-left: 0;
+        margin-right: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .GameContainer{
+        order:1
+    }
+    .PlayersInfo {
+        order: 2;
+        margin-top:2rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .PlayersInfo-playerContainer{
+        margin-left: 2rem;
+    }
+
+    .Game-info{
+        order:3;
+        margin-top:1rem;
+    }
+    .Chat{
+        order:4;
+        margin-top:3rem;
+        width:80%;
+    }
+
+}

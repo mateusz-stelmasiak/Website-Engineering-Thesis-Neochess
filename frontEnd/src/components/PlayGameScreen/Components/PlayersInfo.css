@@ -1,0 +1,16 @@
+.PlayersInfo-playerContainer{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.PlayersInfo-status{
+    border-radius: 100%;
+    width: 1.3rem;
+    height: 1.3rem;
+    display: inline-block;
+    background-color: white;
+    margin-right: 1rem;
+}

@@ -1,0 +1,37 @@
+.NavBar .logo {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 4rem;
+}
+
+.NavBar .logo img {
+    height: 90%;
+    width: auto;
+}
+
+.NavBar .logo-texts {
+    margin-left: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.NavBar .logo h1 {
+    font-size: 3em;
+    margin: 0 0;
+    color: var(--navbar-text);
+    font-weight: normal;
+}
+
+/*Display username */
+.NavBar .logo h3 {
+    margin: 0 0;
+    color: #191919;
+    flex-basis: 100%;
+    font-size: 1em;
+    font-weight: normal;
+}

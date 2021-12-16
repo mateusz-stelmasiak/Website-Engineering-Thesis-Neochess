@@ -1,0 +1,68 @@
+/*------------------------------------------------------------------
+[Layout]
+
+[#. SectioName /.DOMElement]
+1. Fonts and Imports
+2. Colors
+3. Overall styling (body/html)
+
+-------------------------------------------------------------------/TABLE OF CONTENTS*/
+
+/*---------------------
+[1. Fonts and Imports]
+----------------------*/
+/*--[1.1 Fonts]--*/
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('https://css.gg/games.css');
+
+@font-face {
+    font-family: 'CameronSans';
+    src: local('CameronSans'), url(assets/fonts/CameronSans/CameronSans.ttf) format('truetype');
+}
+@font-face {
+    font-family: 'Montserrat-Light';
+    src: local('Montserrat-Light'), url(assets/fonts/Montserrat/Montserrat-Light.ttf) format('truetype');
+}
+
+
+/*---------------------
+[2.Colors]
+Color definitions, to be used with by var reference
+ex. "color: var (--some-color);"
+---------------------*/
+:root{
+    --body-color:#171717;
+    --section-color: #1d1d1d;
+
+    --primary-color: #97bbe8;
+    --primary-color-dark: #5c93d7;
+    --sec-color:#b058c6;
+    --sec-color-dark: #743eac;
+    --text-color:#97bbe8;
+    --chessboard--black:#8ca2ad;
+    --chessboard--white:#dee3e6;
+    --success-color: #3ba397;
+    --fail-color : #a735a4;
+
+    --navbar-text:#dee3e6;
+}
+
+
+/*---------------------
+[3.Overall styling]
+ */
+
+html{
+    margin: 0 0;
+}
+
+body {
+    margin: 0 0;
+    width: 100vw;
+    font-family: 'Montserrat', serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--body-color);
+}
+
+

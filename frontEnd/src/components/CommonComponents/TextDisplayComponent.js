@@ -1,0 +1,1 @@
+//displays current fen below board

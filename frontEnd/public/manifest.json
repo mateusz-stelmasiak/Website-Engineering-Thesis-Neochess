@@ -1,0 +1,8 @@
+{
+  "short_name": "Chess Defender",
+  "name": "Chess based castle defence game",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

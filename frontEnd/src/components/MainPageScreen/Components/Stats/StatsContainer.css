@@ -1,0 +1,79 @@
+#STATS .content{
+    padding: 4rem 0rem 4rem 0rem;
+}
+
+.StatsContainer {
+    width: 100%;
+
+    display: grid;
+    gap: 5rem 2rem;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0.6fr 1.4fr;
+    grid-template-areas:
+    "title_area title_area"
+    "text_area chart_area";
+}
+.title_area {
+    grid-area: title_area;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.text_area {
+    grid-area: text_area;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    color:var(--text-color);
+    flex-direction: column;
+    font-size: 1rem;
+}
+.chart_are {
+    grid-area: chart_area;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.StatsContainer .SectionTitle{
+    width: 50%;
+}
+
+.ChartPlaceholder{
+    background-color: var(--primary-color-dark);
+    width: 15rem;
+    height: 15rem;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ChartPlaceholder2{
+    background-color: var(--primary-color);
+    width: 15rem;
+    height: 15rem;
+    border-radius: 100%;
+    margin-left: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prim-text{
+    color:var(--primary-color)
+}
+.dark-prim-text{
+    color:var(--primary-color-dark)
+}
+.fail-text{
+    color:var(--fail-color)
+}
+.succ-text{
+    color:var(--success-color)
+}
+.neutral-text{
+    color:var(--primary-color-dark)
+}
