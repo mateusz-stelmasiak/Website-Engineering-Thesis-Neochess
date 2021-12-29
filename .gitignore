@@ -1,2 +1,4 @@
 
 *.pyc
+
+/support/docker-files/*
