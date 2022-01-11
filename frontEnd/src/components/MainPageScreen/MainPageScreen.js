@@ -4,14 +4,12 @@ import MatchHistory from "./Components/MatchHistory/MatchHistory";
 import Section from "../CommonComponents/Section";
 import StatsContainer from "./Components/Stats/StatsContainer"
 import RejoinGameWidget from "./Components/MatchHistory/RejoinGameWidget";
-import Blink from 'react-blink-text';
-import TextFlashComponent from "../CommonComponents/TextFlashComponent";
-import NavBar from "../Navigation/NavBar";
+import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
 
 function MainPageScreen() {
 
     return (
-        <div>
+        <FooterHeaderLayout>
 
             <RejoinGameWidget/>
             <FindGameWidget/>
@@ -19,7 +17,8 @@ function MainPageScreen() {
                 <StatsContainer/>
                 <MatchHistory/>
             </Section>
-        </div>
+
+        </FooterHeaderLayout>
     );
 }
 

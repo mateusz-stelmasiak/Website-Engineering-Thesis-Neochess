@@ -7,8 +7,6 @@ import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import {setUserElo} from "../../../../redux/actions/userActions";
 
-
-
 function StatsContainer({userId,sessionToken,dispatch}) {
     const [currentElo, setCurrentElo] = useState("loading");
     const [rankDeviation, setRankDeviation] = useState("loading");

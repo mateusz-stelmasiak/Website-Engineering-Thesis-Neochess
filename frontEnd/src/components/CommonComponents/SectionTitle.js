@@ -5,10 +5,10 @@ class SectionTitle extends Component {
 
     render() {
         return (
-            <div className="SectionTitle">
-                <div className="SectionTitle-title">{this.props.children}</div>
+            <h1 className="SectionTitle">
+                <span>{this.props.children}</span>
                 <div className="SectionTitle-ornament"/>
-            </div>
+            </h1>
         );
     }
 

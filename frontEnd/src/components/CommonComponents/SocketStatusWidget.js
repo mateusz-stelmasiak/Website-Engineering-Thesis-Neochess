@@ -12,7 +12,6 @@ class SocketStatusWidget extends Component {
         super(props);
         this.state = {
             isOpponentSocket: this.props.isOpponentSocket, //dictates if it should display opponent's or player's socket status
-
         }
     }
 

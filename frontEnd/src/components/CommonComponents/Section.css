@@ -1,7 +1,3 @@
-:root {
-    --section-bg-color: #191919;
-}
-
 .Section {
     -webkit-box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);
     box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);

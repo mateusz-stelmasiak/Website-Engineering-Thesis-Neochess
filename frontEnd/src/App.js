@@ -9,7 +9,7 @@ import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverLogic/DataFetcher";
-import NavBar from "./components/Navigation/NavBar";
+import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
 
 
 export const GAME_DEBUGING_MODE=false;
@@ -50,6 +50,7 @@ function App({socket,sessionToken,userId,gameId,isInGame}) {
 
                   <Switch>
                       {<PrivateRoute path="/" exact component={MainPageScreen} /> }
+                      {<PrivateRoute path="/profile" exact component={UserProfileScreen} /> }
                       {<PrivateRoute path="/play" component={PlayGameScreen} />}
                       <Route path="/login" component={LogRegScreen} />
                       <Redirect from="*" to="/" />

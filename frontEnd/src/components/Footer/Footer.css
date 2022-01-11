@@ -1,5 +1,5 @@
-.Footer{
-    background-color: var(--primary-color);
+footer{
+    background-color: var(--section-bg-color);
     color:white;
     display: flex;
     align-items: center;
@@ -7,13 +7,13 @@
     justify-content: space-between;
 }
 
-.Footer a{
+footer a{
     all:unset;
     color:white;
     cursor: pointer;
 }
 
-.Footer a:hover{
+footer a:hover{
     color: #c4c4c4;
 }
 
