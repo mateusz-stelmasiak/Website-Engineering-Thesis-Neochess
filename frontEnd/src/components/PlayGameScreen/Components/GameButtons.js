@@ -6,10 +6,7 @@ import {store} from "../../../index";
 import {flipCurrentTurn} from "../../../redux/actions/gameActions";
 
 class GameButtons extends Component{
-    // constructor(props) {
-    //     super(props);
-    //
-    // }
+
 
     surrenderGame = () =>{
         let evntAndMsg ={

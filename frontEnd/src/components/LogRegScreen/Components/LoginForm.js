@@ -2,14 +2,15 @@ import React, {useContext, useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./LogRegForm.css";
-import "../../../serverLogic/APIConfig.js"
+import "../../../serverCommunication/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from 'react-router-dom';
-import {login, logout} from "../../../serverLogic/LogRegService"
+import {login, logout} from "../../../serverCommunication/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
 import Dots from "../../CommonComponents/Dots";
+
 
 function LoginForm({dispatch}) {
     const [username, setUserName] = useState("");

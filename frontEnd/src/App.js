@@ -8,36 +8,29 @@ import React, {useEffect, useState,} from "react";
 import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
-import {getSessionToken} from "./serverLogic/DataFetcher";
+import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
+import {Toaster} from "react-hot-toast";
+
 
 
 export const GAME_DEBUGING_MODE=false;
 
-function App({socket,sessionToken,userId,gameId,isInGame}) {
-    const history = useHistory();
-    let routeToMain = () => history.push('/');
-    const routeToGame = (gameId) => history.push('/play?id=' + gameId);
+function App({socket,sessionToken,userId}) {
     const [loading,setLoading]=useState(true);
 
-
+    //try to regenerate the session on reload
     useEffect(() => {
-        //try to regenerate the session on reload
         if(sessionToken==='none' && userId){
-            getSessionToken().then( (resp)=>{
-                if(resp===undefined || !resp.sessionToken){
+            getSessionToken().then(()=>{
                     setLoading(false);
-                    return;
                 }
-                if(isInGame==="true"){ routeToGame(gameId);}
-                else{ routeToMain();}
-                setLoading(false);
-            }
             );
         }
         else{
             setLoading(false);
         }
+
         //connect the socket on startup
         socket.connect();
     }, []);
@@ -55,6 +48,11 @@ function App({socket,sessionToken,userId,gameId,isInGame}) {
                       <Route path="/login" component={LogRegScreen} />
                       <Redirect from="*" to="/" />
                   </Switch>
+
+                  <Toaster
+                      position="top-right"
+                      reverseOrder={false}
+                  />
               </div>
           }
       </div>
@@ -64,19 +62,3 @@ function App({socket,sessionToken,userId,gameId,isInGame}) {
 }
 
 export default connect(mapAllStateToProps)(App);
-
-// function checkIfIsInGame(){
-//     let resp= getGameIsInGame(userId,sessionToken);
-//     if (resp === undefined) return
-//
-//     //if not in game REROUTE back
-//     if(!resp.inGame && !GAME_DEBUGING_MODE){
-//         dispatch(setIsInGame(false));
-//         return;
-//     }
-//     dispatch(setGameId(resp.gameId));
-//     dispatch(setPlayingAs(resp.playingAs));
-//     dispatch(setGameMode(resp.gameMode));
-//     dispatch(setIsInGame(true));
-//
-// }

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import "./StatsContainer.css"
 import SectionTitle from "../../../CommonComponents/SectionTitle";
 import Dots from "../../../CommonComponents/Dots";
-import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverLogic/DataFetcher";
+import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverCommunication/DataFetcher";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import {setUserElo} from "../../../../redux/actions/userActions";

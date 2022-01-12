@@ -5,8 +5,8 @@ import SectionTitle from "../../../CommonComponents/SectionTitle";
 import MatchHistoryItem, {MatchResult, MatchDate, MatchItemInfo, PlayerInfo} from "./MatchHistoryItem"
 import "./MatchHistoryItem";
 import VariableColor from "../../../CommonComponents/VariableColor";
-import {getMatchHistory} from "../../../../serverLogic/DataFetcher"
-import {FETCH_DEBUGGING_MODE} from "../../../../serverLogic/DataFetcher"
+import {getMatchHistory} from "../../../../serverCommunication/DataFetcher"
+import {FETCH_DEBUGGING_MODE} from "../../../../serverCommunication/DataFetcher"
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 

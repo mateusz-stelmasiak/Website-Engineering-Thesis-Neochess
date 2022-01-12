@@ -3,7 +3,7 @@ import GameContainer from "./Components/GameContainer"
 import Chat from "./Components/Chat"
 import P5Wrapper from "react-p5-wrapper"
 import sketch from "./Game/Main";
-import {getGameInfo, getGameIsInGame} from "../../serverLogic/DataFetcher";
+import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";
 import PlayersInfo from "./Components/PlayersInfo";
 import "./PlayGameScreen.css";
 import GameButtons from "./Components/GameButtons";
@@ -27,7 +27,7 @@ import {
 import {setIsInGame} from "../../redux/actions/userActions";
 import {withRouter} from "react-router-dom"
 import {GAME_DEBUGING_MODE} from "../../App";
-import {emit} from "../../redux/actions/socketActions";
+import {authorizeSocket, emit} from "../../redux/actions/socketActions";
 import {CSSTransition} from "react-transition-group";
 import GameTimersWidget from "./Components/GameTimersWidget";
 import TurnIndicator from "./Components/TurnIndicator";
@@ -104,8 +104,8 @@ class PlayGameScreen extends Component {
     }
 
     componentDidMount() {
-        //style canvas programatically TODO maybe find a more elegant way?
 
+        this.props.dispatch(authorizeSocket(this.props.userId,this.props.sessionToken));
         this.fetchGameData();
         this.socket.on("game_ended", data => {
             if (data === undefined) return;

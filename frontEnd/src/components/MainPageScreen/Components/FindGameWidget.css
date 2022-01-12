@@ -6,22 +6,18 @@
     flex-wrap: wrap;
     align-items: center;
     padding-top: 5rem;
-    flex-direction: column;
 }
 .PlayGameWidget-mainButton{
     all:unset;
     cursor: pointer;
-    width:28rem;
-    padding: 0rem 10rem;
-
     font-size:2rem;
     border-radius: 3rem;
     font-weight: 0;
     color: #1c534b;
-    background: rgb(200,199,199);
-    background: linear-gradient(90deg, rgba(200,199,199,1) 30%, rgba(254,254,254,1) 100%);
-    -webkit-box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);
-    box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);
+    /*background: rgb(200,199,199);*/
+    /*background: linear-gradient(90deg, rgba(200,199,199,1) 30%, rgba(254,254,254,1) 100%);*/
+    /*-webkit-box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);*/
+    /*box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);*/
 
     display: flex;
     flex-direction: row;

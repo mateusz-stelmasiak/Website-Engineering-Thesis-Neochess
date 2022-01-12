@@ -5,7 +5,7 @@ import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSignOutAlt,faCog} from "@fortawesome/free-solid-svg-icons";
 
-import {logout} from "../../../serverLogic/LogRegService";
+import {logout} from "../../../serverCommunication/LogRegService";
 import {useHistory} from "react-router-dom";
 
 
@@ -29,8 +29,8 @@ function ProfileWidget(props){
                     <h1>{props.username}</h1>
                     <div className="ProfileWidget-info-container">
                         <span>{props.elo}ELO </span>
-                        <span>{logoutIcon}</span>
                         <span>{configureIcon}</span>
+                        <span>{logoutIcon}</span>
                     </div>
                 </div>
             </div>

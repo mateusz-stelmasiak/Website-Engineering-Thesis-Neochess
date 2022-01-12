@@ -80,11 +80,6 @@ def authorize(data):
                 playing_as + " with FEN " + str(game.curr_FEN)))
 
         join_room(game.game_room_id, request.sid)
-        # game rejoin communicate (in case player was in queue when disconnected)
-        emit("game_found",
-             {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-              'gameMode': game.game_mode_id},
-             to=request.sid)
 
         # notify opponent that the player reconnected
         print("SENDING SOCKET STATUS UPDATE")
@@ -306,9 +301,10 @@ def find_match(game_mode_id, player):
                 emit('update_opponents_socket_status', {'status': 'connected'}, room=game_room_id)
 
                 # create game in server storage
+                game_mode = game_modes[game_mode_id]
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, white_player, black_player, 'w',
-                                           game_mode_starting_FEN[int(game_mode_id)], 0,
-                                           Timer(game_mode_times[int(game_mode_id)]))
+                                           game_mode.game_mode_starting_FEN, 0,
+                                           Timer(game_mode.game_mode_time))
             except Exception as ex:
                 print("DB ERROR" + str(ex))
 
