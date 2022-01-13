@@ -16,7 +16,7 @@ class Mailing:
     def get_qr_code(self):
         return self.qr_code if self.qr_code is not None else None
 
-    def send_email(self, receiver_mail, msg):
+    def __send_email(self, receiver_mail, msg):
         context = ssl.create_default_context()
 
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:

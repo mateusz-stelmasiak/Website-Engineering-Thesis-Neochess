@@ -234,14 +234,18 @@ def register():
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
+        mail = Mailing()
+
         if is2FaEnabled:
             # send mail with QR Code
-
-            mail = Mailing()
             mail.send_qr_code(login, email, otp_url)
 
+        mail.send_welcome_message(login, email)
+
     except Exception as ex:
-        if debug_mode: ("DB ERROR" + str(ex))
+        if debug_mode:
+            ("DB ERROR" + str(ex))
+
         return generate_response(request, {"error": "Database error"}, 503)
 
     return generate_response(request, {"registration": 'succesfull'}, 200)
