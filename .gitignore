@@ -1,4 +1,5 @@
 
 *.pyc
-
+venv/
+.idea/
 /support/docker-files/*
