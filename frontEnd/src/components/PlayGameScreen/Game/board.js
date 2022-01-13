@@ -364,19 +364,10 @@ export default class Board {
     }
 
     change_Turn() {
+
         let storeVars=store.getState().game;
         this.color_to_move = storeVars.currentTurn
-        //TODO or score==0
-        console.log(storeVars.whiteScore);
-        console.log(storeVars.blackScore);
-        console.log((storeVars.whiteScore==-1 && storeVars.blackScore==-1))
-
-        let yourScore= playingAs === storeVars.whiteScore? storeVars.whiteScore:storeVars.blackScore;
-        let oppScore =  playingAs === storeVars.whiteScore? storeVars.blackScore:storeVars.whiteScore;
-
-        let defenderCheck= (yourScore==-1 && oppScore==0);
-
-        if (gameMode != 1 || defenderCheck) {
+        if (gameMode != 1 || (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }
     }

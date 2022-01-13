@@ -47,16 +47,16 @@ class PlayGameScreen extends Component {
         }
     }
 
-    async fetchGameData(){
+    async fetchGameData() {
         await this.props.dispatch(setLoadingGameInfo(true));
         //check if opponent is in game, if not REROUTE back
         let playerId = this.props.userId;
-        if (this.props.gameroomId===undefined){
-            let resp= await getGameIsInGame(this.props.userId,this.props.sessionToken);
+        if (this.props.gameroomId === undefined) {
+            let resp = await getGameIsInGame(this.props.userId, this.props.sessionToken);
             if (resp === undefined) return
 
             //if not in game REROUTE back
-            if(!resp.inGame && !GAME_DEBUGING_MODE){
+            if (!resp.inGame && !GAME_DEBUGING_MODE) {
                 this.props.dispatch(setIsInGame(false));
                 this.props.history.push('/');
                 return;
@@ -67,20 +67,20 @@ class PlayGameScreen extends Component {
             await this.props.dispatch(setIsInGame(true));
         }
 
-        if(this.props.isInGame){
+        if (this.props.isInGame) {
             this.props.history.push('/play?id=' + this.props.gameId);
             //get game info for game setup
-            let resp= await getGameInfo(this.props.gameId,this.props.sessionToken);
+            let resp = await getGameInfo(this.props.gameId, this.props.sessionToken);
             if (resp === undefined) return
 
             console.log(resp)
             await this.props.dispatch(setGameMode(resp.gameMode));
             await this.props.dispatch(setCurrentFEN(resp.FEN));
             //
-            if (this.props.playingAs ==="w"){
+            if (this.props.playingAs === "w") {
                 await this.props.dispatch(setOpponentUsername(resp.blackPlayer.username));
                 await this.props.dispatch(setOpponentELO(resp.blackPlayer.ELO));
-            }else{
+            } else {
                 await this.props.dispatch(setOpponentUsername(resp.whitePlayer.username));
                 await this.props.dispatch(setOpponentELO(resp.whitePlayer.ELO));
             }
@@ -88,7 +88,7 @@ class PlayGameScreen extends Component {
             await this.props.dispatch(setBlackTime(resp.blackTime));
             await this.props.dispatch(setWhiteTime(resp.whiteTime))
 
-            if (resp.gameMode==="1"){
+            if (resp.gameMode === "1") {
                 await this.props.dispatch(setWhiteScore(resp.whiteScore));
                 await this.props.dispatch(setBlackScore(resp.blackScore));
             }
@@ -99,11 +99,12 @@ class PlayGameScreen extends Component {
         if (GAME_DEBUGING_MODE) await this.setDebugingGameValues();
     }
 
-    setDebugingGameValues(){
+    setDebugingGameValues() {
         this.props.dispatch(setPlayingAs('w'));
         this.props.dispatch(setCurrentFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
         this.props.dispatch(setOpponentUsername("YOURSELF"));
     }
+
     componentDidMount() {
         //style canvas programatically TODO maybe find a more elegant way?
 
@@ -116,31 +117,33 @@ class PlayGameScreen extends Component {
         });
     }
 
-    async placeDefenderPiece(FEN,spentPoints){
-        const storeState=store.getState();
+    async placeDefenderPiece(FEN, spentPoints) {
+        let storeState = store.getState();
         let playerId = storeState.user.userId;
-        let gameroomId =storeState.game.gameId;
+        let gameroomId = storeState.game.gameId;
 
         console.log("SEND OPPONENT DEFENDER");
 
-        let makeMoveEvent ={
-            event:'place_defender_piece',
-            msg:JSON.stringify({gameroomId, playerId,FEN,spentPoints})
+        let makeMoveEvent = {
+            event: 'place_defender_piece',
+            msg: JSON.stringify({gameroomId, playerId, FEN, spentPoints})
         }
 
-        store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
+        await store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(flipCurrentTurn());
+        storeState = store.getState();
         store.dispatch(setWhiteScore(storeState.game.whiteScore));
         store.dispatch(setBlackScore(storeState.game.blackScore))
     }
-    async sendMove(move,FEN) {
-        const storeState=store.getState();
-        let playerId = storeState.user.userId;
-        let gameroomId =storeState.game.gameId;
 
-        let makeMoveEvent ={
-            event:'make_move',
-            msg:JSON.stringify({move, gameroomId, playerId,FEN})
+    async sendMove(move, FEN) {
+        const storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+
+        let makeMoveEvent = {
+            event: 'make_move',
+            msg: JSON.stringify({move, gameroomId, playerId, FEN})
         }
 
         store.dispatch(emit(makeMoveEvent));
@@ -157,11 +160,16 @@ class PlayGameScreen extends Component {
                 unmountOnExit
             >
                 <div className="PlayGameScreenContainer">
-                    <div className={this.props.gameMode==='0'? "PlayGameScreen":"PlayGameScreen chessDefenderGameScreen"} id="PLAY_GAME_SCREEN">
+                    <div
+                        className={this.props.gameMode === '0' ? "PlayGameScreen" : "PlayGameScreen chessDefenderGameScreen"}
+                        id="PLAY_GAME_SCREEN">
                         {this.state.showResult &&
                         <div className="ResultInfo">
                             <p>&nbsp;{this.state.gameStatus.toUpperCase()}</p>
-                            <button disabled={!this.state.showResult} onClick={()=>{this.props.history.push('/')}}>GO BACK</button>
+                            <button disabled={!this.state.showResult} onClick={() => {
+                                this.props.history.push('/')
+                            }}>GO BACK
+                            </button>
                         </div>
                         }
 
