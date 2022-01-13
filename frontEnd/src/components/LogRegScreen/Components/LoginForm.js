@@ -15,6 +15,7 @@ function LoginForm({dispatch}) {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
+    const [twoFaCode, setTwoFaCode] = useState("")
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
     const togglePasswordVisiblity = () => {
@@ -51,6 +52,11 @@ function LoginForm({dispatch}) {
         routeToNext();
     }
 
+    function checkTwoFaCode(code) {
+        setTwoFaCode(code)
+
+
+    }
 
     return (
 
@@ -79,6 +85,15 @@ function LoginForm({dispatch}) {
                         style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
                     >{eye}</i>
                 </div>
+
+                <Form.Control
+                    className="twoFaField"
+                    required
+                    placeholder="2FA code..."
+                    type="number"
+                    value={twoFaCode}
+                    onChange={(e) => checkTwoFaCode(e.target.value)}
+                />
 
                 <div className="response">
                         {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :

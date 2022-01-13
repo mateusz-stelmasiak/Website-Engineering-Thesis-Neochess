@@ -6,6 +6,22 @@
     width: 55%;
 }
 
+.twoFaField {
+    margin-top: 25px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
 .LogRegForm form{
     margin-top:1.5rem;
     display: flex;
