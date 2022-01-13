@@ -238,7 +238,7 @@ def register():
             # send mail with QR Code
 
             mail = Mailing()
-            mail.send_welcome_email(login, email, otp_url)
+            mail.send_qr_code(login, email, otp_url)
 
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
