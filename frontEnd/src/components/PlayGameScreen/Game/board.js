@@ -3,23 +3,15 @@ import {
     pixel_positions,
     size,
     playingAs,
-    canvas_height,
-    canvas_width,
-    rows,
-    cols,
-    Checkboard,
     Checkboard_size,
     pieces_dict,
-    myFont,
     Font,
     textures,
     scalar,
     shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn,
 } from "./Main";
 import Piece from "./Piece";
-import {check_if_check, Generate_moves, Generate_opponent_moves, moves} from "./moves";
-import CSquare from "./CSquare";
-import {forEach} from "react-bootstrap/ElementChildren";
+import {Generate_moves, Generate_opponent_moves, moves} from "./moves";
 
 
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -252,7 +244,6 @@ export default class Board {
         if(currentTurn===playingAs && this.lastmove[0]!==-1){
             this.p5.push()
             this.p5.noStroke();
-            //this.p5.translate(0, 3*size/4);
             this.p5.fill(this.p5.color(108, 169, 82,255/2));
             let startHighlight = pixel_positions[this.lastmove.StartSquare];
             let endHighlight = pixel_positions[this.lastmove.EndSquare];
