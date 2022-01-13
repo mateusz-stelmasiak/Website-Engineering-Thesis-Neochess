@@ -480,14 +480,25 @@ def place_defender_piece(data):
 
     # get opposite turn
     opp_turn = 'w'
-    if curr_turn == 'w':
-        opp_turn = 'b'
+    if str(games[game_room_id].game_mode_id) == "1":
+        if curr_turn == 'b' and int(games[game_room_id].defender_state.white_score) == 0 and int(
+                games[game_room_id].defender_state.black_score) != 0:
+            opp_turn = 'b'
+        elif curr_turn == 'w':
+            opp_turn = 'b'
+    print(curr_turn)
+    print(int(games[game_room_id].defender_state.black_score))
+    print(games[game_room_id].defender_state.white_score)
+    print("opp turn to :" + opp_turn)
+
     games[game_room_id].curr_turn = opp_turn
     # update FEN with turn info
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
 
-    emit('place_defender_piece_local', {'FEN': updated_FEN, 'spentPoints': spent_points}, to=opponent_sid)
+    emit('place_defender_piece_local',
+         {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,
+          'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
 
 
 @socketio.on('make_AI_move')
@@ -539,9 +550,9 @@ def make_AI_move(data):
 
     curr_FEN = data_obj['FEN']
     try:
-        new_FEN,move = ChessLogic.get_best_move(curr_FEN)
+        new_FEN, move = ChessLogic.get_best_move(curr_FEN)
     except Exception as ex:
-        print("STOCKFISH DIED COZ "+str(ex))
+        print("STOCKFISH DIED COZ " + str(ex))
         return
 
     print(move)
@@ -613,7 +624,6 @@ def make_move(data):
         print("NOT UR TURN")
         return
 
-
     is_move_legal, move_AN_notation = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'],
                                                                move['targetSquare'])
     if not is_move_legal:
@@ -634,8 +644,7 @@ def make_move(data):
         print("NO_SUCH_GAME_EXISTS")
         return
 
-
-    new_FEN= ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN,move_AN_notation)
+    new_FEN = ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN, move_AN_notation)
     games[game_room_id].curr_FEN = new_FEN
     move_order = game_info.num_of_moves
     games[game_room_id].num_of_moves = move_order + 1

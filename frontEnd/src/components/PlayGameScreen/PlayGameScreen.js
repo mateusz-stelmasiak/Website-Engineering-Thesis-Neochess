@@ -122,6 +122,7 @@ class PlayGameScreen extends Component {
         let gameroomId =storeState.game.gameId;
 
         console.log("SEND OPPONENT DEFENDER");
+
         let makeMoveEvent ={
             event:'place_defender_piece',
             msg:JSON.stringify({gameroomId, playerId,FEN,spentPoints})
@@ -129,6 +130,8 @@ class PlayGameScreen extends Component {
 
         store.dispatch(emit(makeMoveEvent));
         store.dispatch(flipCurrentTurn());
+        store.dispatch(setWhiteScore(storeState.game.whiteScore));
+        store.dispatch(setBlackScore(storeState.game.blackScore))
     }
     async sendMove(move,FEN) {
         const storeState=store.getState();

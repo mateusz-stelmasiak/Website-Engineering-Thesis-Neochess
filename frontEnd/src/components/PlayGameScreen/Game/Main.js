@@ -8,6 +8,8 @@ import {
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
 import {add_piece} from "./gameMode2_moves";
+import {store} from "../../../index";
+
 
 export var Font;
 export var pos_to_stocknot_dict = [];
