@@ -1,10 +1,7 @@
 *.pyc
 
 /support/docker-files/*
-.idea/inspectionProfiles/profiles_settings.xml
-.idea/modules.xml
-.idea/NeoChess.iml
-.idea/vcs.xml
+.idea/
 backEnd/.idea/backEnd.iml
 backEnd/.idea/inspectionProfiles/profiles_settings.xml
 backEnd/.idea/misc.xml
