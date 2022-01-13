@@ -9,9 +9,9 @@ class ChessDB:
 
     def __init__(self):
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
-        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-                                            password="YhuuFd6Z",
-                                            database="13748919_neochess")
+        self.mydb = mysql.connector.connect(host="localhost", user="user",
+                                            password="Serek123",
+                                            database="chess-defender-database")
 
     def __del__(self):
         self.mydb.close()

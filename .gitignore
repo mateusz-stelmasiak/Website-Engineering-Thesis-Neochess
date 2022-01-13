@@ -2,3 +2,5 @@
 *.pyc
 
 /support/docker-files/*
+
+*.idea

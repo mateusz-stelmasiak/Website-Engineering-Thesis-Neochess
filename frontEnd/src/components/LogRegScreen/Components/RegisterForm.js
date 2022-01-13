@@ -9,6 +9,7 @@ import {useHistory} from "react-router-dom";
 import {login, register} from "../../../serverLogic/LogRegService"
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
+import validator from 'validator'
 
 
 function RegisterForm({dispatch}) {
@@ -16,7 +17,11 @@ function RegisterForm({dispatch}) {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [email, setEmail] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+
+    //for checking email requirements
+    const [isEmailValid, setIsEmailValid] = useState(false);
 
     //for checking username requirements
     const minUsernameLength = 4;
@@ -68,6 +73,7 @@ function RegisterForm({dispatch}) {
         if (!passwordContainsUppercase) errors.push("password without upperCase");
         if (!passwordContainsNumber) errors.push("password without a number");
         if (!arePasswordsEqual) errors.push("passwords don't match");
+        if (!isEmailValid) errors.push("email is incorrect");
 
         return errors;
     }
@@ -114,6 +120,16 @@ function RegisterForm({dispatch}) {
         username.length > maxUsernameLength ? setIsUsernameTooLong(true) : setIsUsernameTooLong(false);
 
         setIsValidUsername(!usernameContainsWhitespace && isUsernameLongEnough)
+    }
+
+    function checkEmail(email) {
+        setEmail(email);
+
+        if (validator.isEmail(email)) {
+            setIsEmailValid(true)
+        } else {
+            setIsEmailValid(false)
+        }
     }
 
     async function handleSubmit(event) {
@@ -203,12 +219,21 @@ function RegisterForm({dispatch}) {
                     style={{background: arePasswordsEqual ? successColor : failColor}}
                 />
 
+                <Form.Control
+                    className="emailField"
+                    required
+                    placeholder="e-mail address..."
+                    type="text"
+                    value={email}
+                    onChange={(e) => checkEmail(e.target.value)}
+                />
 
                 <div style={{visibility: errorMessage !== "" ? 'visible' : 'hidden'}} className="errorMessage">
                     <ul>{errorMessage}</ul>
                 </div>
 
                 <Button type="submit">REGISTER</Button>
+
             </Form>
         </div>
     );
