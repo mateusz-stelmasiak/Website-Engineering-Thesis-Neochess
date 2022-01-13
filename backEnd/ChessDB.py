@@ -32,9 +32,9 @@ class ChessDB:
                             2FA boolean not null DEFAULT false,
                             Country varchar(64), 
                             Joined DATE not null,
-                            ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
-                            ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
-                            ELOVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
+                            Elo int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
+                            EloDeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
+                            EloVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
 
         mycursor.execute('''CREATE table if not exists Participants
                             (ParticipantID integer primary key AUTO_INCREMENT, 
@@ -75,7 +75,7 @@ class ChessDB:
         mycursor = self.mydb.cursor()
 
         sql_user = ("INSERT INTO Users "
-                    "(username, password, email, is2FaEnabled, country, joined, elo, elo_dv, elo_v)"
+                    "(Username, Password, Email, 2FA, Country, Joined, Elo, EloDeviation, EloVolatility)"
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
