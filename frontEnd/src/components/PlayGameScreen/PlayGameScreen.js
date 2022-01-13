@@ -115,6 +115,14 @@ class PlayGameScreen extends Component {
             this.props.dispatch(setIsInGame(false));
             this.props.dispatch(setGameId(""));
         });
+
+        this.socket.on("game_found", data => {
+            console.log("GAME_FOUND")
+            this.props.dispatch(setPlayingAs(data.playingAs));
+            this.props.dispatch(setGameId(data.gameId));
+            this.props.dispatch(setGameMode(data.gameMode));
+            this.props.dispatch(setIsInGame(true));
+        });
     }
 
     async placeDefenderPiece(FEN, spentPoints) {
@@ -140,13 +148,15 @@ class PlayGameScreen extends Component {
         const storeState = store.getState();
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
+        store.dispatch((setWhiteScore(this.props.whiteScore)))
+        store.dispatch((setBlackScore(this.props.blackScore)))
 
         let makeMoveEvent = {
             event: 'make_move',
             msg: JSON.stringify({move, gameroomId, playerId, FEN})
         }
 
-        store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(emit(makeMoveEvent));
         store.dispatch(flipCurrentTurn());
     }
 
