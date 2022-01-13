@@ -10,7 +10,9 @@ import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
-import {Toaster} from "react-hot-toast";
+import {toast, Toaster} from "react-hot-toast";
+import RejoinGameWidget from "./components/MainPageScreen/Components/RejoinGameWidget";
+import {CameraBase} from "./components/Layouts/Camera/CameraBase";
 
 
 
@@ -19,7 +21,8 @@ export const GAME_DEBUGING_MODE=false;
 function App({socket,sessionToken,userId}) {
     const [loading,setLoading]=useState(true);
 
-    //try to regenerate the session on reload
+
+    //welcome and regenerate the session on reload
     useEffect(() => {
         if(sessionToken==='none' && userId){
             getSessionToken().then(()=>{
@@ -42,14 +45,18 @@ function App({socket,sessionToken,userId}) {
                   <ScrollToTop />
 
                   <Switch>
-                      {<PrivateRoute path="/" exact component={MainPageScreen} /> }
-                      {<PrivateRoute path="/profile" exact component={UserProfileScreen} /> }
-                      {<PrivateRoute path="/play" component={PlayGameScreen} />}
-                      <Route path="/login" component={LogRegScreen} />
+                      <CameraBase>
+                          {<PrivateRoute path="/" exact component={MainPageScreen} /> }
+                          {<PrivateRoute path="/profile" exact component={UserProfileScreen} /> }
+                          {<PrivateRoute path="/play" component={PlayGameScreen} />}
+                          <Route path="/login" component={LogRegScreen} />
+                      </CameraBase>
+
                       <Redirect from="*" to="/" />
                   </Switch>
 
                   <Toaster
+
                       position="top-right"
                       reverseOrder={false}
                   />

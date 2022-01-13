@@ -12,7 +12,7 @@ import {setGameId, setGameMode, setOpponentUsername, setPlayingAs} from "../../r
 import {connect} from "react-redux";
 import {authorizeSocket} from "../../redux/actions/socketActions";
 
-function MainPageScreen({userId, sessionToken, dispatch}) {
+function MainPageScreen({userId, sessionToken, userName, dispatch}) {
 
     async function checkIfIsInGame() {
         let resp = await getGameIsInGame(userId, sessionToken);
@@ -35,7 +35,24 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
     }
 
     useEffect(() => {
-        dispatch(authorizeSocket(userId,sessionToken));
+        dispatch(authorizeSocket(userId, sessionToken));
+
+        //welcome toast
+        let welcome = <div>
+            WITAJ PONOWNIE {userName}!
+        </div>;
+        toast.success(welcome);
+
+
+        //show cookie consent
+        // let cookies = <div>COOKIES HERE</div>
+        // toast.custom((t) => {
+        //     return (<>
+        //         {cookies}
+        //     </>);
+        //
+        // });
+
         checkIfIsInGame();
     }, []);
 
@@ -55,6 +72,7 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
 const mapStateToProps = (state) => {
     return {
         userId: state.user.userId,
+        userName: state.user.userName,
         sessionToken: state.user.sessionToken,
         isInGame: state.user.isInGame
     };

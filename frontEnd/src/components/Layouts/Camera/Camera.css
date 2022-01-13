@@ -1,0 +1,24 @@
+
+html {
+    font-size: 16px;
+}
+:root {
+    --zoom-level: 50%;
+}
+.CameraBase{
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+/*.zoom {*/
+/*    zoom: var(--zoom-level);*/
+/*}*/
+
+/*.container {*/
+/*    width: 100%;*/
+/*    margin: 1rem;*/
+/*}*/
+
+/*button {*/
+/*    padding: 0.5rem 1rem;*/
+/*    font-weight: 700;*/
+/*}*/
