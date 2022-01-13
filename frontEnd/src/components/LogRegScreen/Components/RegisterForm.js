@@ -18,6 +18,7 @@ function RegisterForm({dispatch}) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [email, setEmail] = useState("");
+    const [is2FaEnabled, setIs2FaEnabled] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
     //for checking email requirements
@@ -132,6 +133,14 @@ function RegisterForm({dispatch}) {
         }
     }
 
+    function enable2FA() {
+        if (is2FaEnabled) {
+            setIs2FaEnabled(false)
+        } else {
+            setIs2FaEnabled(true)
+        }
+    }
+
     async function handleSubmit(event) {
         event.preventDefault();
         //reset error message
@@ -146,7 +155,7 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        let resp = await register(username, password)
+        let resp = await register(username, password, email, is2FaEnabled)
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
@@ -226,6 +235,13 @@ function RegisterForm({dispatch}) {
                     type="text"
                     value={email}
                     onChange={(e) => checkEmail(e.target.value)}
+                />
+
+                <Form.Check
+                    className="twoFactorAuth"
+                    type="checkbox"
+                    label="Use 2-Factor authentication"
+                    onChange={(_) => enable2FA()}
                 />
 
                 <div style={{visibility: errorMessage !== "" ? 'visible' : 'hidden'}} className="errorMessage">

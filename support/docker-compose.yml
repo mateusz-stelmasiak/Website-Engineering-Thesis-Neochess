@@ -2,10 +2,10 @@ version: '3.7'
 services:
   db:
     image: mysql:latest
-    container_name: chess-defender
+    container_name: neo-chess
     restart: always
     environment:
-      MYSQL_DATABASE: 'chess-defender-database'
+      MYSQL_DATABASE: 'neo-chess-database'
       MYSQL_USER: 'user'
       MYSQL_PASSWORD: 'Serek123'
       MYSQL_ROOT_PASSWORD: 'SerekRootBez123'
@@ -15,6 +15,7 @@ services:
       - '3306'
     volumes:
       - ./docker-files/db:/var/lib/mysql
+      
 volumes:
   my-db:
   

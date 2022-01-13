@@ -204,7 +204,14 @@ def register():
     request_data = request.get_json()
     username = request_data['username']
     hashed_password = request_data['hashedPassword']
-    if debug_mode: print("REGISTER REQUEST " + str(request_data))
+    email = request_data['email']
+    is2FaEnabled = request_data['is2FaEnabled']
+
+    print(email)
+    print(is2FaEnabled)
+
+    if debug_mode:
+        print("REGISTER REQUEST " + str(request_data))
 
     try:
         # handle username taken
@@ -213,8 +220,8 @@ def register():
         if user is not None:
             return generate_response(request, {"error": "Username already taken"}, 403)
         # add to database
-        db.add_user(username, hashed_password, 'PL', RatingSystem.starting_ELO, RatingSystem.starting_ELO_deviation,
-                    RatingSystem.starting_ELO_volatility)
+        db.add_user(username, hashed_password, email, is2FaEnabled, 'PL', RatingSystem.starting_ELO,
+                    RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)

@@ -6,22 +6,22 @@ import {GAME_DEBUGING_MODE} from "../App";
 import {disconnectSocket, setSocketStatus} from "../redux/actions/socketActions";
 import {SocketStatus} from "./WebSocket";
 
-export async function login(username,password){
+export async function login(username, password) {
 
     try {
-        let hashedPassword=sha256(password);
+        let hashedPassword = sha256(password);
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             credentials: 'include',
-            body: JSON.stringify({ username, hashedPassword })
+            body: JSON.stringify({username, hashedPassword})
         };
 
         const response = await fetchWithTimeout(API_URL + '/login', requestOptions);
         const respObj = await handleResponse(response);
 
-        if (FETCH_DEBUGGING_MODE)  console.log(respObj);
+        if (FETCH_DEBUGGING_MODE) console.log(respObj);
         return respObj;
     } catch (error) {
         console.log(error);
@@ -30,19 +30,24 @@ export async function login(username,password){
     }
 }
 
-export async function register(username,password){
+export async function register(username, password, email, is2FaEnabled) {
     try {
-        let hashedPassword=sha256(password);
+        let hashedPassword = sha256(password);
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({username,hashedPassword})
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username,
+                hashedPassword,
+                email,
+                is2FaEnabled
+            })
         };
 
         const response = await fetchWithTimeout(API_URL + '/register', requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE)  console.log(respObj);
+        if (FETCH_DEBUGGING_MODE) console.log(respObj);
         return respObj;
     } catch (error) {
         console.log(error.name === 'AbortError');
@@ -50,20 +55,20 @@ export async function register(username,password){
     }
 }
 
-export async function logout(){
+export async function logout() {
     if (GAME_DEBUGING_MODE) return;
 
 
-    const storeState=store.getState();
-    let userId=storeState.user.userId;
-    let sessionToken=storeState.user.sessionToken;
+    const storeState = store.getState();
+    let userId = storeState.user.userId;
+    let sessionToken = storeState.user.sessionToken;
 
-    if(sessionToken=='none' || !userId){
+    if (sessionToken == 'none' || !userId) {
         localStorage.clear();
         sessionStorage.clear();
-         window.location.reload(true);
-         return;
-     }
+        window.location.reload(true);
+        return;
+    }
 
     try {
         const requestOptions = {
@@ -72,8 +77,8 @@ export async function logout(){
             headers: authHeader(sessionToken),
         };
 
-        const response = await fetchWithTimeout(API_URL + '/logout?userId='+userId, requestOptions);
-        const respBody= await response.text();
+        const response = await fetchWithTimeout(API_URL + '/logout?userId=' + userId, requestOptions);
+        const respBody = await response.text();
         const respObj = JSON.parse(respBody);
         if (FETCH_DEBUGGING_MODE) console.log(respObj);
     } catch (error) {
@@ -82,7 +87,7 @@ export async function logout(){
 
     localStorage.clear();
     sessionStorage.clear()
-    store.dispatch(setSocketStatus( SocketStatus.disconnected));
+    store.dispatch(setSocketStatus(SocketStatus.disconnected));
     store.dispatch(disconnectSocket());
     window.location.reload(true); //reload to reroute to loginpage
 }

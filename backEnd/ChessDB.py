@@ -11,7 +11,7 @@ class ChessDB:
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
         self.mydb = mysql.connector.connect(host="localhost", user="user",
                                             password="Serek123",
-                                            database="chess-defender-database")
+                                            database="neo-chess-database")
 
     def __del__(self):
         self.mydb.close()
@@ -28,6 +28,8 @@ class ChessDB:
                             (userID integer primary key AUTO_INCREMENT,
                             Username varchar(64) unique not null, 
                             Password varchar(64) not null, 
+                            Email varchar(64) not null,
+                            2FA boolean not null DEFAULT false,
                             Country varchar(64), 
                             Joined DATE not null,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
@@ -69,15 +71,15 @@ class ChessDB:
 
         return mycursor.fetchone()[0]
 
-    def add_user(self, Username, Password, Country, Elo, ELO_dv, ELO_v):
+    def add_user(self, username, password, email, is2FaEnabled, country, elo, elo_dv, elo_v):
         mycursor = self.mydb.cursor()
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Country, Joined, ELO,ELODeviation,ELOVolatility) "
-                    "VALUES (%s, %s, %s, %s, %s,%s,%s)")
+                    "(username, password, email, is2FaEnabled, country, joined, elo, elo_dv, elo_v)"
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
-        data_user = (Username, Password, Country, date, Elo, ELO_dv, ELO_v)
+        data_user = (username, password, email, is2FaEnabled, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()
