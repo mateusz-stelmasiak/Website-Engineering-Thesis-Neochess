@@ -1,3 +1,5 @@
+import logging
+
 from flask import copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import ChessLogic
@@ -9,6 +11,7 @@ from enum import Enum
 # SOCKET IO CONFIG
 app = app
 socketio = SocketIO(app, cors_allowed_origins="*", ping_interval=5)
+
 thread = None
 timer_thread = None
 
@@ -681,3 +684,4 @@ def send_chat_to_server(data):
 
 
 
+socketio.run(app, host='127.0.0.1', port=5000, debug=True,log_output='False')
