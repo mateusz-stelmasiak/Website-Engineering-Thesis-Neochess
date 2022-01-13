@@ -36,16 +36,12 @@ export default function LogRegScreen() {
     >
     </CircleWidget>
 
-
-
     return (
         <div className="LogRegScreen">
-
             <OrbitContainer
                 center={centerContainer}
                 outer={outerContainer}
             />
-
         </div>
     );
 }

@@ -40,6 +40,8 @@ class Mailing:
             </html>
             """.format(subtype='html'))
 
+        self.__send_email(receiver_mail, msg)
+
     def send_qr_code(self, username, receiver_mail, otp_secret):
         msg = EmailMessage()
         msg['Subject'] = 'Witaj na NeoChess'

@@ -19,6 +19,7 @@ function RegisterForm({dispatch}) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [email, setEmail] = useState("");
     const [is2FaEnabled, setIs2FaEnabled] = useState(false);
+    const [twoFaCode, setTwoFaCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     //for checking email requirements
@@ -162,25 +163,26 @@ function RegisterForm({dispatch}) {
             return;
         }
 
-        //registration complete, autologin user
-        resp = await login(username, password)
-        if (resp === undefined) return;
-        if (resp.error !== undefined) {
-            setErrorMessage(resp.error);
-            return;
+        if (!is2FaEnabled) {
+            //registration complete, autologin user
+            resp = await login(username, password)
+            if (resp === undefined) return;
+            if (resp.error !== undefined) {
+                setErrorMessage(resp.error);
+                return;
+            }
+
+            dispatch(setUserId(resp.userId));
+            dispatch(setUsername(username));
+            dispatch(setUserElo(resp.userElo));
+            dispatch(setSessionToken(resp.sessionToken));
+
+            routeToNext();
         }
-
-        dispatch(setUserId(resp.userId));
-        dispatch(setUsername(username));
-        dispatch(setUserElo(resp.userElo));
-        dispatch(setSessionToken(resp.sessionToken));
-
-        routeToNext();
     }
 
     return (
         <div className="LogRegForm">
-
             <Form onSubmit={handleSubmit}>
                 <Form.Control
                     required
@@ -244,12 +246,21 @@ function RegisterForm({dispatch}) {
                     onChange={(_) => enable2FA()}
                 />
 
-                <div style={{visibility: errorMessage !== "" ? 'visible' : 'hidden'}} className="errorMessage">
+                {is2FaEnabled ?
+                    <Form.Control
+                        className="twoFaField"
+                        required
+                        placeholder="2FA code..."
+                        type="number"
+                        value={twoFaCode}
+                        onChange={(e) => setTwoFaCode(e.target.value)}
+                    /> : null}
+
+                <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                     <ul>{errorMessage}</ul>
                 </div>
 
                 <Button type="submit">REGISTER</Button>
-
             </Form>
         </div>
     );

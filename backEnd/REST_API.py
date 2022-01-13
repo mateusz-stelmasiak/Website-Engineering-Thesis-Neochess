@@ -123,7 +123,7 @@ def login():
     if user_pass != request_data['hashedPassword']:
         return generate_response(request, {"error": "Incorrect password"}, 403)
 
-    user_two_fa_code = request['two_fa_code']
+    # user_two_fa_code = request['two_fa_code']
 
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
