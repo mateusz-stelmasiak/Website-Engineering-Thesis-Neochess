@@ -77,7 +77,7 @@ class ChessDB:
 
         sql_user = ("INSERT INTO Users "
                     "(Username, Password, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
         data_user = (username, password, email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)

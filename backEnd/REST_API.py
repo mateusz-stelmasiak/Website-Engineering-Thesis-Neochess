@@ -122,9 +122,6 @@ def login():
     if user_pass != request_data['hashedPassword']:
         return generate_response(request, {"error": "Incorrect password"}, 403)
 
-    if pyotp.TOTP(user_otp_secret).verify(request_data['otpCode']) == False:
-        return generate_response(request, {"error": "Incorrect OTP Code"}, 403)
-
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
     refresh_token = generate_refresh_token(user_id)
@@ -232,9 +229,13 @@ def register():
         # add to database
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
-        # send mail with QR Code
-        mail = Mailing()
-        mail.SendWelcomeEmail()
+
+        if is2FaEnabled:
+            # send mail with QR Code
+
+            mail = Mailing()
+            mail.send_welcome_email(login, email, otp_url)
+
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
