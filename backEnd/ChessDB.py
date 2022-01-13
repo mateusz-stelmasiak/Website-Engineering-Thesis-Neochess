@@ -30,9 +30,10 @@ class ChessDB:
                             Password varchar(64) not null, 
                             Email varchar(64) not null,
                             2FA boolean not null DEFAULT false,
+                            OTPSecret varchar(64) not null,
                             Country varchar(64), 
                             Joined DATE not null,
-                            Elo int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
+                            Elo FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             EloDeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             EloVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
 
@@ -71,15 +72,15 @@ class ChessDB:
 
         return mycursor.fetchone()[0]
 
-    def add_user(self, username, password, email, is2FaEnabled, country, elo, elo_dv, elo_v):
+    def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
         mycursor = self.mydb.cursor()
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Email, 2FA, Country, Joined, Elo, EloDeviation, EloVolatility)"
+                    "(Username, Password, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
-        data_user = (username, password, email, is2FaEnabled, country, date, elo, elo_dv, elo_v)
+        data_user = (username, password, email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()

@@ -7,6 +7,9 @@ import hashlib
 from flask_cors import CORS
 import RatingSystem
 from ServerState import *
+import pyotp
+import base64
+from Mailing import Mailing
 
 domain = '34.118.14.151'
 dns_domain = 'chess-defence.ddns.net'
@@ -112,11 +115,15 @@ def login():
 
     user_id = str(user[0])
     user_pass = str(user[2])
+    user_otp_secret = str(user[3])
     user_elo = str(user[5])
 
     # actual user's password doesn't match given
     if user_pass != request_data['hashedPassword']:
         return generate_response(request, {"error": "Incorrect password"}, 403)
+
+    if pyotp.TOTP(user_otp_secret).verify(request_data['otpCode']) == False:
+        return generate_response(request, {"error": "Incorrect OTP Code"}, 403)
 
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
@@ -219,9 +226,15 @@ def register():
         user = db.get_user(username)
         if user is not None:
             return generate_response(request, {"error": "Username already taken"}, 403)
+        # generate OTP data
+        otp_secret = base64.b32encode(email.encode('ascii'))
+        otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
         # add to database
-        db.add_user(username, hashed_password, email, is2FaEnabled, 'PL', RatingSystem.starting_ELO,
+        db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
+        # send mail with QR Code
+        mail = Mailing()
+        mail.SendWelcomeEmail()
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
