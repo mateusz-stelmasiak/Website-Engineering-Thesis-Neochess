@@ -163,22 +163,34 @@ function RegisterForm({dispatch}) {
             return;
         }
 
-        if (!is2FaEnabled) {
-            //registration complete, autologin user
-            resp = await login(username, password)
-            if (resp === undefined) return;
-            if (resp.error !== undefined) {
-                setErrorMessage(resp.error);
-                return;
+        //autologin after successful register
+        if (is2FaEnabled) {
+            if (twoFaCode !== "" && CheckTwoFaCode()) {
+                await ForwardAfterLogin(await login(username, password, twoFaCode));
             }
-
-            dispatch(setUserId(resp.userId));
-            dispatch(setUsername(username));
-            dispatch(setUserElo(resp.userElo));
-            dispatch(setSessionToken(resp.sessionToken));
-
-            routeToNext();
+        } else {
+            await ForwardAfterLogin(await login(username, password, ""));
         }
+    }
+
+    function CheckTwoFaCode() {
+        const test = true;
+        setErrorMessage("Two authentication code is incorrect");
+        return test;
+    }
+
+    async function ForwardAfterLogin(resp) {
+        if (resp.error !== undefined) {
+            setErrorMessage(resp.error);
+            return;
+        }
+
+        dispatch(setUserId(resp.userId));
+        dispatch(setUsername(username));
+        dispatch(setUserElo(resp.userElo));
+        dispatch(setSessionToken(resp.sessionToken));
+
+        routeToNext();
     }
 
     return (

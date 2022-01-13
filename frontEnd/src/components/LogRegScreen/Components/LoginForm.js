@@ -45,7 +45,7 @@ function LoginForm({dispatch}) {
 
         if (response['twoFa']) {
             if (twoFaCode !== "" && CheckTwoFaCode()) {
-                await ForwardAfterLogin(response);
+                await ForwardAfterLogin(await login(username, password, twoFaCode));
             }
         } else {
             await ForwardAfterLogin(response);
@@ -53,10 +53,6 @@ function LoginForm({dispatch}) {
     }
 
     async function ForwardAfterLogin(resp) {
-        if (twoFaCode !== "") {
-            resp = await login(username, password, twoFaCode)
-        }
-
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
