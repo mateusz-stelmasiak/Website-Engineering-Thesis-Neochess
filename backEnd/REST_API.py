@@ -115,6 +115,7 @@ def login():
 
     user_id = str(user[0])
     user_pass = str(user[2])
+    user_2fa = True if str(user[4]) == '1' else False
     user_otp_secret = str(user[3])
     user_elo = str(user[5])
 
@@ -122,13 +123,16 @@ def login():
     if user_pass != request_data['hashedPassword']:
         return generate_response(request, {"error": "Incorrect password"}, 403)
 
+    user_two_fa_code = request['two_fa_code']
+
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
     refresh_token = generate_refresh_token(user_id)
     Sessions[user_id] = {'refresh_token': refresh_token, 'session_token': session_token}
     print(refresh_token)
-    # create cookie with refresh token, and send back payload with sessionToken
-    resp = generate_response(request, {"userId": user_id, "userElo": user_elo, "sessionToken": session_token}, 200)
+    # create cookie with refresh token, and send back payl1oad with sessionToken
+    resp = generate_response(request, {"userId": user_id, "userElo": user_elo, "sessionToken": session_token,
+                                       "twoFa": user_2fa}, 200)
 
     # create resfresh token cookie that is only ever sent to /refresh_session path
     req_url = request.environ.get('HTTP_ORIGIN', 'default value')

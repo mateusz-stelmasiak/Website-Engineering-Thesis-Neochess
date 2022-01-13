@@ -6,7 +6,7 @@ import {GAME_DEBUGING_MODE} from "../App";
 import {disconnectSocket, setSocketStatus} from "../redux/actions/socketActions";
 import {SocketStatus} from "./WebSocket";
 
-export async function login(username, password) {
+export async function login(username, password, two_fa_code) {
 
     try {
         let hashedPassword = sha256(password);
@@ -15,7 +15,7 @@ export async function login(username, password) {
             mode: 'cors',
             headers: {'Content-Type': 'application/json'},
             credentials: 'include',
-            body: JSON.stringify({username, hashedPassword})
+            body: JSON.stringify({username, hashedPassword, two_fa_code})
         };
 
         const response = await fetchWithTimeout(API_URL + '/login', requestOptions);

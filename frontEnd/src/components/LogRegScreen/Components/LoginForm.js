@@ -15,7 +15,9 @@ function LoginForm({dispatch}) {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
-    const [twoFaCode, setTwoFaCode] = useState("")
+    const [twoFaCode, setTwoFaCode] = useState("");
+    const [isTwoFaUsed, setIsTwoFaUsed] = useState(false);
+    const [isTwoFaCorrect, setIsTwoFaCorrect] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
     const togglePasswordVisiblity = () => {
@@ -37,8 +39,23 @@ function LoginForm({dispatch}) {
         event.preventDefault();
         //reset error message
         setErrorMessage("");
-        setFeedback(<span>Logging in<Dots/></span>);
-        let resp = await login(username, password)
+
+        const response = await login(username, password, "")
+        setIsTwoFaUsed(response['twoFa'])
+
+        if (response['twoFa']) {
+            if (twoFaCode !== "" && CheckTwoFaCode()) {
+                await ForwardAfterLogin(response);
+            }
+        } else {
+            await ForwardAfterLogin(response);
+        }
+    }
+
+    async function ForwardAfterLogin(resp) {
+        if (twoFaCode !== "") {
+            resp = await login(username, password, twoFaCode)
+        }
 
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
@@ -52,18 +69,16 @@ function LoginForm({dispatch}) {
         routeToNext();
     }
 
-    function checkTwoFaCode(code) {
-        setTwoFaCode(code)
-
-
+    function CheckTwoFaCode() {
+        const test = true;
+        setIsTwoFaCorrect(test ? true : false);
+        setErrorMessage("Two authentication code is incorrect");
+        return test;
     }
 
     return (
-
         <div className="LogRegForm">
-
             <Form onSubmit={HandleSubmit}>
-
                 <Form.Control
                     required
                     placeholder="Username..."
@@ -86,21 +101,20 @@ function LoginForm({dispatch}) {
                     >{eye}</i>
                 </div>
 
-                <Form.Control
-                    className="twoFaField"
-                    required
-                    placeholder="2FA code..."
-                    type="number"
-                    value={twoFaCode}
-                    onChange={(e) => checkTwoFaCode(e.target.value)}
-                />
+                {isTwoFaUsed ?
+                    <Form.Control
+                        className="twoFaField"
+                        required
+                        placeholder="2FA code..."
+                        type="number"
+                        value={twoFaCode}
+                        onChange={(e) => setTwoFaCode(e.target.value)}
+                    /> : null}
 
                 <div className="response">
-                        {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
-                            feedBack!=="" && <span className="feedbackMessage">{feedBack}</span>  }
+                    {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
+                        feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                 </div>
-
-
                 <Button type="submit">LOGIN</Button>
             </Form>
         </div>
