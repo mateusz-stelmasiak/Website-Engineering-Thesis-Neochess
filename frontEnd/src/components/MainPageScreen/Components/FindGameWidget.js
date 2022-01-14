@@ -11,13 +11,13 @@ import {emit} from "../../../redux/actions/socketActions";
 import {
     getAvailableGameModes,
 } from "../../../serverCommunication/DataFetcher";
-import {faChessPawn,faChess} from "@fortawesome/free-solid-svg-icons";
+import {faChessPawn, faChess} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {Tooltip} from "react-bootstrap";
 import {toast} from "react-hot-toast";
 
 
-function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
+function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     //main button text
     const buttonTexts = ["choose a game mode", <>in queue<Dots/></>];
     const [selectedText, setSelectedText] = useState(0);
@@ -41,7 +41,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
     const idleStyle = {color: 'var(--primary-color-dark)'}
     const inQStyle = {color: 'var(--sec-color)'}
 
-    const inQGameModeTextStyle={color: 'var(--sec-color-dark)'}
+    const inQGameModeTextStyle = {color: 'var(--sec-color-dark)'}
 
     useEffect(() => {
         setCurrGameMode(-1);
@@ -84,7 +84,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
         console.log(currGameMode);
 
         //already in game
-        if (isInGame===true){
+        if (isInGame === true) {
             console.log("CO");
             toast.error("Already in game!");
             return;
@@ -99,7 +99,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
         }
 
         //reselecting the same mode
-        if(isInQ===true && (gameModeId === currGameMode)){
+        if (isInQ === true && (gameModeId === currGameMode)) {
             return;
         }
 
@@ -154,9 +154,11 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
                                 }}
                                 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
                             >
-                                {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}/> :
-                                    <FontAwesomeIcon icon={faChessPawn}/>}
-                                <h1>{gameMode.gameModeName}</h1>
+                                {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}
+                                                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/> :
+                                    <FontAwesomeIcon icon={faChessPawn}
+                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>}
+                                <h1  style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
                             </button>
                         );
                     })
@@ -172,7 +174,9 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
                     <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
                 </ul>
 
-                <button className="QInfo-leave" onClick={() => {findGame(-1)}}>
+                <button className="QInfo-leave" onClick={() => {
+                    findGame(-1)
+                }}>
                     LEAVE QUEUE
                 </button>
             </div>

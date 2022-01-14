@@ -23,6 +23,7 @@ function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
         }
         toast.dismiss(toastId);
         dispatch(emit(evntAndMsg));
+        toast.success("Game successfully surrendered!")
         dispatch(setIsInGame(false));
     }
 

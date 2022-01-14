@@ -90,7 +90,7 @@
 
 
 .QInfo li span{
-    color:var(--sec-color-dark);
+    color:var(--primary-color-dark);
     font-weight: normal;
 }
 
