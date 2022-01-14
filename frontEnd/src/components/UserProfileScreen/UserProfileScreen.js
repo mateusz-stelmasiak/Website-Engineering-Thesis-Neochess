@@ -2,7 +2,7 @@ import "./UserProfileScreen.css"
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
 import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
-import Section from "../CommonComponents/Section";
+import Section from "../Layouts/Section";
 import SectionTitle from "../CommonComponents/SectionTitle";
 import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
 

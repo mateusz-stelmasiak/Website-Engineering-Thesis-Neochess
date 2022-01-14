@@ -4,10 +4,11 @@
     background-color: var(--section-bg-color);
 }
 
-.Section .content {
+.Section .Section-content {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    padding: 2rem 2%;
+    padding: 2rem 5%;
+    row-gap: 4rem;
 }

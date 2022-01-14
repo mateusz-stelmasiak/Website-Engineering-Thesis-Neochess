@@ -42,8 +42,8 @@
     all:unset;
     cursor: pointer;
 
-    width: min(10rem,50vw);
-    height: min(10rem,50vw);
+    width: min(10rem,40vw);
+    height: min(10rem,40vw);
 
     display: flex;
     flex-direction: column;
@@ -102,4 +102,11 @@
 
 .QInfo button:before, .QInfo button:after{
     content: " | ";
+}
+
+/*resize play game text to fit screen*/
+@media (max-width: 420px) {
+    .FindGameWidget .FindGameWidget-mainText h1{
+        font-size: 2rem;
+    }
 }

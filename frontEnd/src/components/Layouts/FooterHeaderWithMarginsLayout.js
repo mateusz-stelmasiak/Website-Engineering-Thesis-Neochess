@@ -6,9 +6,9 @@ export default function FooterHeaderWithMarginsLayout(props){
     return(
         <div className="FooterHeaderWithMarginsLayout">
             <Header/>
-            <div className="Layout--content">
-                {props.children}
-            </div>
+                <div className="Layout--content">
+                    {props.children}
+                </div>
             <Footer/>
         </div>
     );

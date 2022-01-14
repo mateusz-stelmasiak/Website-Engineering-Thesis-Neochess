@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import FindGameWidget from "./Components/FindGameWidget";
 import MatchHistory from "./Components/MatchHistory/MatchHistory";
-import Section from "../CommonComponents/Section";
+import Section from "../Layouts/Section";
 import StatsContainer from "./Components/Stats/StatsContainer"
 import RejoinGameWidget from "./Components/RejoinGameWidget";
 import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
@@ -45,8 +45,8 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
 
             <FindGameWidget/>
             <Section section="STATS">
-                <StatsContainer/>
-                <MatchHistory/>
+                    <StatsContainer/>
+                    <MatchHistory/>
             </Section>
 
         </FooterHeaderWithMarginsLayout>

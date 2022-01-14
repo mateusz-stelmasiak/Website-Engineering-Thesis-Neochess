@@ -9,6 +9,7 @@
 }
 
 .VariableColor h1{
+    margin:0;
     display: inline-block;
     margin-left: 0.5rem;
     color: var(--text-color);

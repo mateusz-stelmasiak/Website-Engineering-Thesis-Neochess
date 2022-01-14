@@ -332,7 +332,7 @@ def get_available_game_modes():
                 "gameModeName": game_mode.game_mode_name,
                 "gameModeDesc": game_mode.game_mode_desc,
                 "gameModeTime": game_mode.game_mode_time,
-                "gameModeIcon":game_mode.game_mode_icon
+                "gameModeIcon": game_mode.game_mode_icon
             }
         )
 
@@ -412,22 +412,28 @@ def get_history():
     # set page to 0 if not given in request
     page = 0
     if 'page' in request.args:
-        page = request.args['page']
+        page = int(request.args['page'])
     # num of games on given page, default 10
     games_per_page = 10
     if 'perPage' in request.args:
-        games_per_page = request.args['perPage']
+        games_per_page = int(request.args['perPage'])
 
     try:
         db = ChessDB.ChessDB()
         start = page * games_per_page
-        end = page * games_per_page + games_per_page
+        end = (page * games_per_page) + games_per_page
         game_history = db.get_games(user_id, start, end)
+        count_games=db.count_games(user_id)
+        max_page = int( count_games[0]/ games_per_page)+1
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
 
     history = []
+
+    #return max Page number
+    history.append({'maxPage': max_page})
+
     # maps results from numbers to strings
     possible_results = {'0.0': 'loss', '0.5': 'draw', '1.0': 'win'}
     for game in game_history:
@@ -461,4 +467,5 @@ def get_history():
             return generate_response(request, {"error": "Cannot fetch from db"}, 503)
 
     if debug_mode: print(game_history)
+
     return generate_response(request, json.dumps(history), 200)
