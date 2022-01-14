@@ -301,7 +301,7 @@ def find_match(game_mode_id, player):
                 emit('update_opponents_socket_status', {'status': 'connected'}, room=game_room_id)
 
                 # create game in server storage
-                game_mode = game_modes[game_mode_id]
+                game_mode = game_modes[int(game_mode_id)]
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, white_player, black_player, 'w',
                                            game_mode.game_mode_starting_FEN, 0,
                                            Timer(game_mode.game_mode_time))
