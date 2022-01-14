@@ -44,6 +44,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     const inQGameModeTextStyle = {color: 'var(--sec-color-dark)'}
 
     useEffect(() => {
+        leaveQ(currGameMode);
         setCurrGameMode(-1);
         loadAvailableGamemodes();
 
@@ -64,7 +65,12 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             routeToNext(data.gameId);
         });
 
+        // Anything in here is fired on component unmount.
+        return () => {
+            leaveQ(currGameMode);
+        }
     }, [])
+
 
     let loadAvailableGamemodes = async () => {
         setCurrGameMode(-1);
@@ -79,13 +85,8 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
 
     const findGame = (gameModeId) => {
-        console.log(isInGame);
-        console.log(gameModeId);
-        console.log(currGameMode);
-
         //already in game
         if (isInGame === true) {
-            console.log("CO");
             toast.error("Already in game!");
             return;
         }
@@ -104,7 +105,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         }
 
 
-        //already selected game mode
+        leaveQ(currGameMode);
         setCurrGameMode(gameModeId);
         setSelectedText(1);
         timerRestart();
