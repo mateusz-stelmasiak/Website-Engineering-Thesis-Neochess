@@ -84,6 +84,12 @@ def authorize(data):
 
         join_room(game.game_room_id, request.sid)
 
+        # game rejoin communicate (in case player was in queue when disconnected)
+        emit("game_found",
+             {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
+              'gameMode': game.game_mode_id,'whiteScore':game.white_score,'blackScore':game.black_score},
+             to=request.sid)
+
         # notify opponent that the player reconnected
         print("SENDING SOCKET STATUS UPDATE")
         emit('update_opponents_socket_status', {'status': 'connected'}, room=game.game_room_id,
@@ -479,14 +485,25 @@ def place_defender_piece(data):
 
     # get opposite turn
     opp_turn = 'w'
-    if curr_turn == 'w':
-        opp_turn = 'b'
+    if str(games[game_room_id].game_mode_id) == "1":
+        if curr_turn == 'b' and int(games[game_room_id].defender_state.white_score) == 0 and int(
+                games[game_room_id].defender_state.black_score) != 0:
+            opp_turn = 'b'
+        elif curr_turn == 'w':
+            opp_turn = 'b'
+    print(curr_turn)
+    print(int(games[game_room_id].defender_state.black_score))
+    print(games[game_room_id].defender_state.white_score)
+    print("opp turn to :" + opp_turn)
+
     games[game_room_id].curr_turn = opp_turn
     # update FEN with turn info
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
 
-    emit('place_defender_piece_local', {'FEN': updated_FEN, 'spentPoints': spent_points}, to=opponent_sid)
+    emit('place_defender_piece_local',
+         {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,
+          'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
 
 
 @socketio.on('make_AI_move')

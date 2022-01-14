@@ -4,10 +4,10 @@ import {make_opponents_move} from "../components/PlayGameScreen/Game/moves";
 import {store} from "../index";
 import {setSocketStatus} from "../redux/actions/socketActions";
 import {
-    flipCurrentTurn,
+    flipCurrentTurn, setBlackScore,
     setBlackTime,
     setCurrentFEN,
-    setOpponentStatus,
+    setOpponentStatus, setWhiteScore,
     setWhiteTime
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
@@ -19,7 +19,7 @@ export class SocketStatus {
     static connecting = new SocketStatus('connecting', '#da8b43');
     static connected = new SocketStatus('connected', '#369257');
     static authorized = new SocketStatus('connected and authorized', '#369257');
-    static unknown =  new SocketStatus('unknown', '#69aca2');
+    static unknown = new SocketStatus('unknown', '#69aca2');
 
 
     constructor(name, color) {
@@ -27,13 +27,18 @@ export class SocketStatus {
         this.color = color;
     }
 
-    static getStatusFromString(status_name){
-        switch (status_name){
-            case 'disconnected': return SocketStatus.disconnected;
-            case 'connecting': return SocketStatus.connecting;
-            case 'connected': return SocketStatus.connected;
-            case 'connected and authorized': return SocketStatus.authorized
-            default: return SocketStatus.unknown;
+    static getStatusFromString(status_name) {
+        switch (status_name) {
+            case 'disconnected':
+                return SocketStatus.disconnected;
+            case 'connecting':
+                return SocketStatus.connecting;
+            case 'connected':
+                return SocketStatus.connected;
+            case 'connected and authorized':
+                return SocketStatus.authorized
+            default:
+                return SocketStatus.unknown;
         }
     }
 
@@ -96,12 +101,12 @@ export default class SocketClient {
     //authenticate client's socket
     async authorize() {
         if (!this.is_authorized) {
-            const storeState=store.getState();
-            let userId=storeState.user.userId;
-            let sessionToken= storeState.user.sessionToken;
+            const storeState = store.getState();
+            let userId = storeState.user.userId;
+            let sessionToken = storeState.user.sessionToken;
 
             //don't try to auth if user is yet to log in
-            if(sessionToken==='none'|| userId===undefined) {
+            if (sessionToken === 'none' || userId === undefined) {
                 return;
             }
 
@@ -122,37 +127,41 @@ export default class SocketClient {
             store.dispatch(flipCurrentTurn());
         });
 
-        this.on("illegal_move",data=>{
+        this.on("illegal_move", data => {
             if (data === undefined) return;
             console.log("REJECTED MOVE")
-            board.set_FEN_by_rejected_move(data.startingSquare,data.targetSquare)
+            board.set_FEN_by_rejected_move(data.startingSquare, data.targetSquare)
         })
 
-        this.on("make_AI_move_local",data=>{
+        this.on("make_AI_move_local", data => {
             if (data === undefined) return;
-            board.set_FEN_by_rejected_move(data.startingSquare,data.targetSquare)
+            board.set_FEN_by_rejected_move(data.startingSquare, data.targetSquare)
             store.dispatch(flipCurrentTurn());
         })
 
         this.on("place_defender_piece_local", data => {
             if (data === undefined) return;
             console.log("GOT OPPONENT DEFENDER");
-            board.FEN=data.FEN;
-            board.change_Turn();
+            board.FEN = data.FEN;
             board.load_FEN();
             store.dispatch(setCurrentFEN(data.FEN))
+            store.dispatch(setWhiteScore(data.whiteScore));
+            store.dispatch(setBlackScore(data.blackScore));
             store.dispatch(flipCurrentTurn());
+            board.change_Turn();
+            console.log(data);
+
         });
 
-        this.on('update_opponents_socket_status', data =>{
+        this.on('update_opponents_socket_status', data => {
             if (data === undefined) return;
 
-            console.log("GOT OPPONENTS STATUS "+data.status)
-            let opp_status= SocketStatus.getStatusFromString(data.status)
+            console.log("GOT OPPONENTS STATUS " + data.status)
+            let opp_status = SocketStatus.getStatusFromString(data.status)
             store.dispatch(setOpponentStatus(opp_status))
         });
 
-        this.on('update_timers',data =>{
+        this.on('update_timers', data => {
             if (data === undefined) return;
             //console.log("GOT TIMERS UPDATE "+data.whiteTime)
             store.dispatch(setWhiteTime(data.whiteTime))
@@ -163,7 +172,7 @@ export default class SocketClient {
     authListeners() {
         this.on('authorized', () => {
             this.is_authorized = true;
-            store.dispatch(setSocketStatus( SocketStatus.authorized));
+            store.dispatch(setSocketStatus(SocketStatus.authorized));
         });
         this.on('unauthorized', () => {
             this.is_authorized = false;
@@ -186,7 +195,7 @@ export default class SocketClient {
         this.socket = io.connect(API_URL, {path: socketPath});
         let that = this;
         let connectInterval;
-        store.dispatch(setSocketStatus( SocketStatus.connecting));
+        store.dispatch(setSocketStatus(SocketStatus.connecting));
 
         this.authListeners();
         this.gameListeners();
@@ -194,7 +203,7 @@ export default class SocketClient {
         this.socket.on('connect', () => {
             console.log("connected websocket!");
             this.is_connected = true;
-            store.dispatch(setSocketStatus( SocketStatus.connected));
+            store.dispatch(setSocketStatus(SocketStatus.connected));
             that.timeout = 500; // reset timer to 250 on open of websocket connection
             clearTimeout(connectInterval); // clear Interval on on open of websocket connection
             this.authorize();
@@ -211,7 +220,7 @@ export default class SocketClient {
 
             this.is_connected = false;
             this.is_authorized = false;
-            store.dispatch(setSocketStatus( SocketStatus.disconnected));
+            store.dispatch(setSocketStatus(SocketStatus.disconnected));
             that.timeout = that.timeout + that.timeout; //increment retry interval
             //call check function after timeout
             connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));
@@ -228,7 +237,7 @@ export default class SocketClient {
             );
             this.is_connected = false
             this.is_authorized = false;
-            store.dispatch(setSocketStatus( SocketStatus.disconnected));
+            store.dispatch(setSocketStatus(SocketStatus.disconnected));
             that.timeout = that.timeout + that.timeout; //increment retry interval
             //call check function after timeout
             connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));

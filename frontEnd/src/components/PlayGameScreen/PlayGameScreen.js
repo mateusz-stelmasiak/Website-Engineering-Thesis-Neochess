@@ -113,21 +113,34 @@ class PlayGameScreen extends Component {
             this.props.dispatch(setIsInGame(false));
             this.props.dispatch(setGameId(""));
         });
+
+        this.socket.on("game_found", data => {
+            console.log("GAME_FOUND")
+            this.props.dispatch(setPlayingAs(data.playingAs));
+            this.props.dispatch(setGameId(data.gameId));
+            this.props.dispatch(setGameMode(data.gameMode));
+            this.props.dispatch(setIsInGame(true));
+        });
     }
 
     async placeDefenderPiece(FEN, spentPoints) {
-        const storeState = store.getState();
+
+        let storeState = store.getState();
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
 
         console.log("SEND OPPONENT DEFENDER");
+		
         let makeMoveEvent = {
             event: 'place_defender_piece',
             msg: JSON.stringify({gameroomId, playerId, FEN, spentPoints})
         }
 
-        store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
+        await store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(flipCurrentTurn());
+        storeState = store.getState();
+        store.dispatch(setWhiteScore(storeState.game.whiteScore));
+        store.dispatch(setBlackScore(storeState.game.blackScore))
     }
 
     async sendMove(move, FEN) {
@@ -135,65 +148,66 @@ class PlayGameScreen extends Component {
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
 
+        store.dispatch((setWhiteScore(this.props.whiteScore)))
+        store.dispatch((setBlackScore(this.props.blackScore)))
+
         let makeMoveEvent = {
             event: 'make_move',
             msg: JSON.stringify({move, gameroomId, playerId, FEN})
         }
 
-        store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(emit(makeMoveEvent));
         store.dispatch(flipCurrentTurn());
     }
 
 
     render() {
         return (
-            <FooterHeaderLayout>
-                <CSSTransition
-                    in={!this.props.loadingGameInfo}
-                    timeout={200}
-                    classNames="PlayGameScreenContainer"
-                    unmountOnExit
-                >
-                    <div className="PlayGameScreenContainer">
-                        <div
-                            className={this.props.gameMode === '0' ? "PlayGameScreen" : "PlayGameScreen chessDefenderGameScreen"}
-                            id="PLAY_GAME_SCREEN">
-                            {this.state.showResult &&
-                            <div className="ResultInfo">
-                                <p>&nbsp;{this.state.gameStatus.toUpperCase()}</p>
-                                <button disabled={!this.state.showResult} onClick={() => {
-                                    this.props.history.push('/')
-                                }}>GO BACK
-                                </button>
-                            </div>
-                            }
+            <CSSTransition
+                in={!this.props.loadingGameInfo}
+                timeout={200}
+                classNames="PlayGameScreenContainer"
+                unmountOnExit
+            >
+                <div className="PlayGameScreenContainer">
+                    <div
+                        className={this.props.gameMode === '0' ? "PlayGameScreen" : "PlayGameScreen chessDefenderGameScreen"}
+                        id="PLAY_GAME_SCREEN">
+                        {this.state.showResult &&
+                        <div className="ResultInfo">
+                            <p>&nbsp;{this.state.gameStatus.toUpperCase()}</p>
+                            <button disabled={!this.state.showResult} onClick={() => {
+                                this.props.history.push('/')
+                            }}>GO BACK
+                            </button>
+                        </div>
+                        }
 
-                            <PlayersInfo/>
+                        <PlayersInfo/>
 
-                            <Chat/>
+                        <Chat/>
 
-                            <GameContainer>
-                                <P5Wrapper
-                                    sketch={sketch}
-                                    sendMoveToServer={this.sendMove}
-                                    placeDefenderPiece={this.placeDefenderPiece}
-                                    playingAs={this.props.playingAs}
-                                    startingFEN={this.props.currentFEN}
-                                    currentTurn={this.props.currentTurn}
-                                    gameMode={this.props.gameMode}
-                                    whiteScore={this.props.whiteScore}
-                                    blackScore={this.props.blackScore}
-                                />
-                            </GameContainer>
+                        <GameContainer>
+                            <P5Wrapper
+                                sketch={sketch}
+                                sendMoveToServer={this.sendMove}
+                                placeDefenderPiece={this.placeDefenderPiece}
+                                playingAs={this.props.playingAs}
+                                startingFEN={this.props.currentFEN}
+                                currentTurn={this.props.currentTurn}
+                                gameMode={this.props.gameMode}
+                                whiteScore={this.props.whiteScore}
+                                blackScore={this.props.blackScore}
+                            />
+                        </GameContainer>
 
-                            <div className="Game-info">
+                        <div className="Game-info">
 
-                                <GameTimersWidget>
-                                    <TurnIndicator/>
-                                </GameTimersWidget>
-                                <GameButtons/>
-                            </div>
-
+                            <GameTimersWidget>
+                                <TurnIndicator/>
+                            </GameTimersWidget>
+                            <GameButtons/>
+                        </div>
                         </div>
                     </div>
                 </CSSTransition>
