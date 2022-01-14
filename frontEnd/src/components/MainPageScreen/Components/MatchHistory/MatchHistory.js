@@ -83,19 +83,22 @@ class MatchHistory extends Component {
     render() {
         return (
             <section className="MatchHistory">
-                <SectionTitle>MATCH HISTORY</SectionTitle>
+                <div className="MatchHistory--header">
+                    <SectionTitle>MATCH HISTORY</SectionTitle>
 
-                <div className="MatchHistory-colors">
-                    <VariableColor
-                        color={MatchResult.win.color}
-                        text={MatchResult.win.name}/>
-                    <VariableColor
-                        color={MatchResult.loss.color}
-                        text={MatchResult.loss.name}/>
-                    <VariableColor
-                        color={MatchResult.draw.color}
-                        text={MatchResult.draw.name}/>
+                    <div className="MatchHistory-colors">
+                        <VariableColor
+                            color={MatchResult.win.color}
+                            text={MatchResult.win.name}/>
+                        <VariableColor
+                            color={MatchResult.loss.color}
+                            text={MatchResult.loss.name}/>
+                        <VariableColor
+                            color={MatchResult.draw.color}
+                            text={MatchResult.draw.name}/>
+                    </div>
                 </div>
+
                 {this.state.isLoading && <MatchHistoryPlaceholder/>}
                 <div className="MatchHistory-container">
                     {this.state.matchHistory}

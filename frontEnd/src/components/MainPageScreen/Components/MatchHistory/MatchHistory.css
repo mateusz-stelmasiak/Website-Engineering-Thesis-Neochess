@@ -1,21 +1,25 @@
 .MatchHistory{
-    width: 100%;
     display: flex;
     flex-wrap: wrap;
-
 }
-
-.MatchHistory .SectionTitle{
-    width: 60%;
+.MatchHistory--header{
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 2rem;
+    justify-content: space-between;
+}
+.MatchHistory--header .SectionTitle{
+    width: 65%;
 }
 
 .MatchHistory-colors{
-    margin-top:1rem; /*Align with middle of ornament of sectionTitle */
-    width: 35%;
-    margin-left: 5%;
     font-size: 1.2rem;
     display: flex;
     align-items: center;
+    flex-direction: row;
+    column-gap: 2rem;
     font-family: Montserrat-Light;
 }
 .MatchHistory-container{

@@ -76,11 +76,11 @@ function StatsContainer({userId,sessionToken,dispatch}) {
 
 
             </div>
-            <div className="chart_are">
-                <div className="ChartPlaceholder">CHART_PLACEHOLDER</div>
-                <div className="ChartPlaceholder2">CHART_PLACEHOLDER</div>
+            {/*<div className="chart_are">*/}
+            {/*    <div className="ChartPlaceholder">CHART_PLACEHOLDER</div>*/}
+            {/*    <div className="ChartPlaceholder2">CHART_PLACEHOLDER</div>*/}
 
-            </div>
+            {/*</div>*/}
 
         </section>
     );

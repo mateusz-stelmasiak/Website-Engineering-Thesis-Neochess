@@ -9,7 +9,5 @@
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    width: 90%;
-    margin: 0 auto;
-    padding: 2rem 0rem 2rem 0rem;
+    padding: 2rem 2%;
 }
