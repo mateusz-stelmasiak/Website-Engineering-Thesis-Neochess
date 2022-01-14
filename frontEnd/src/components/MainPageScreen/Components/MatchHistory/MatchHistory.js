@@ -31,9 +31,12 @@ function MatchHistory(props) {
     }
 
     let scrollToSection = (sectionID) => {
-        let section = document.getElementById(sectionID);
+        const yOffset = -100;
+        const section = document.getElementById(sectionID);
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
         if (typeof section !== 'undefined' && section !== null) {
-            section.scrollIntoView({behavior: 'fast'});
+            window.scrollTo({top: y, behavior: 'smooth'});
         }
     }
 
