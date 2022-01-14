@@ -11,6 +11,7 @@ import {setIsInGame} from "../../redux/actions/userActions";
 import {setGameId, setGameMode, setOpponentUsername, setPlayingAs} from "../../redux/actions/gameActions";
 import {connect} from "react-redux";
 import {authorizeSocket} from "../../redux/actions/socketActions";
+import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
 
 function MainPageScreen({userId, sessionToken, dispatch}) {
 
@@ -40,7 +41,7 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
     }, []);
 
     return (
-        <FooterHeaderLayout>
+        <FooterHeaderWithMarginsLayout>
 
             <FindGameWidget/>
             <Section section="STATS">
@@ -48,7 +49,7 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
                 <MatchHistory/>
             </Section>
 
-        </FooterHeaderLayout>
+        </FooterHeaderWithMarginsLayout>
     );
 }
 

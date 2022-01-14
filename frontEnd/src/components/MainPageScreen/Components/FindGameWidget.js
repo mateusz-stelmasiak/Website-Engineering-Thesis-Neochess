@@ -1,11 +1,9 @@
 import React, {useEffect, useState} from "react";
 import "./FindGameWidget.css"
-import TextWithWavyOrnament from "../../CommonComponents/TextWithWavyOrnament";
 import {formatTime} from "../../../serverCommunication/Utils"
 import useTimer from "../../CommonComponents/Timer";
 import Dots from "../../CommonComponents/Dots"
 import {useHistory} from "react-router-dom";
-import { CSSTransition } from 'react-transition-group';
 import {connect} from "react-redux";
 import {setGameId, setGameMode, setPlayingAs} from "../../../redux/actions/gameActions";
 import {setIsInGame} from "../../../redux/actions/userActions";
@@ -13,30 +11,19 @@ import {emit} from "../../../redux/actions/socketActions";
 import {
     getAvailableGameModes,
 } from "../../../serverCommunication/DataFetcher";
-import {faChessPawn, faEye} from "@fortawesome/free-solid-svg-icons";
-import {faChess} from "@fortawesome/free-solid-svg-icons";
+import {faChessPawn,faChess} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {Tooltip} from "react-bootstrap";
 
-//TODO get gamemodes from server
-export class GameMode {
-    static classic = new GameMode('Classic', 0);
-    static defender = new GameMode('Defender', 1);
 
-    constructor(name, id) {
-        this.name = name;
-        this.id = id;
-    }
-}
-export const allGameModes = [GameMode.classic, GameMode.defender];
-
-function FindGameWidget({playerId,sessionToken,socket,dispatch}) {
+function FindGameWidget({playerId, sessionToken, socket, dispatch}) {
     //main button text
-    const buttonTexts = ["FIND A GAME!", "IN QUEUE"];
+    const buttonTexts = ["choose a game mode", <>in queue<Dots/></>];
     const [selectedText, setSelectedText] = useState(0);
 
     //game mode handling
-    const [selectedGameMode,setSelectedGameMode]= useState(-1);
-    const [gameModeButtons,setGameModeButtons]=useState();
+    const [currGameMode, setCurrGameMode] = useState(-1);
+    const [gameModeButtons, setGameModeButtons] = useState();
 
     //queue info
     const [isInQ, setIsInQ] = useState(false);
@@ -50,36 +37,37 @@ function FindGameWidget({playerId,sessionToken,socket,dispatch}) {
 
 
     //styling
-    const idleStyle = { color: '#1c534b'}
-    const inQStyle = { color: '#e8ece8'}
-    const inQStyleGameMode = { color: '#e8ece8'}
-    const QInfoStyle = {color: '#69aca1'};
+    const idleStyle = {color: 'var(--primary-color-dark)'}
+    const inQStyle = {color: 'var(--sec-color)'}
 
+    const inQGameModeTextStyle={color: 'var(--sec-color-dark)'}
 
-   useEffect(()=>{
-       loadAvailableGamemodes();
+    useEffect(() => {
+        setCurrGameMode(-1);
+        loadAvailableGamemodes();
 
-       //TODO move to socket?
-       socket.on("queue_info", data => {
-           setPlayersInQ(data.playersInQueue);
-       });
+        //TODO move to socket?
+        socket.on("queue_info", data => {
+            setPlayersInQ(data.playersInQueue);
+        });
 
-       socket.on("update_scope", data => {
-           setScope(data.scope);
-       });
+        socket.on("update_scope", data => {
+            setScope(data.scope);
+        });
 
-       socket.on("game_found", data => {
-           dispatch(setPlayingAs(data.playingAs));
-           dispatch(setGameId(data.gameId));
-           dispatch(setGameMode(data.gameMode));
-           dispatch(setIsInGame(true));
-           routeToNext(data.gameId);
-       });
+        socket.on("game_found", data => {
+            dispatch(setPlayingAs(data.playingAs));
+            dispatch(setGameId(data.gameId));
+            dispatch(setGameMode(data.gameMode));
+            dispatch(setIsInGame(true));
+            routeToNext(data.gameId);
+        });
 
-   },[])
+    }, [])
 
-    let loadAvailableGamemodes = async ()=>{
-        const resp = await  getAvailableGameModes(sessionToken);
+    let loadAvailableGamemodes = async () => {
+        setCurrGameMode(-1);
+        const resp = await getAvailableGameModes(sessionToken);
         if (resp === undefined || resp.error !== undefined) {
             setGameModeButtons(["ERROR"]);
             return;
@@ -88,40 +76,41 @@ function FindGameWidget({playerId,sessionToken,socket,dispatch}) {
         const gameModeButtonsTmp = resp.map(
             (gameMode) => {
                 return (
-                    <button
-                        className="PlayGameWidget-gameModeButton"
-                        onClick={()=>{findGame(gameMode.gameModeId)}}
-                        style={selectedGameMode===gameMode.gameModeId ? inQStyleGameMode : idleStyle}
-                    >
-                        {gameMode.gameModeIcon==='chess'? <FontAwesomeIcon icon={faChess}/>:<FontAwesomeIcon icon={faChessPawn}/>}
-                        <h1>{gameMode.gameModeTime/60}min</h1>
-                        <h2>{gameMode.gameModeName}</h2>
-                        <p>{gameMode.gameModeDesc}</p>
-                    </button>
+                        <button
+                            className="FindGameWidget-gameModeButton"
+                            onClick={() => {
+                                findGame(gameMode.gameModeId)
+                            }}
+                            style={gameMode.gameModeId===currGameMode? inQGameModeTextStyle:idleStyle}
+                        >
+                            {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}/> :
+                                <FontAwesomeIcon icon={faChessPawn}/>}
+                                <h1>{gameMode.gameModeName}</h1>
+                        </button>
                 );
-        });
+            });
 
         setGameModeButtons(gameModeButtonsTmp);
     }
 
 
-
     let findGame = (gameModeId) => {
-        if((isInQ && gameModeId===selectedGameMode) || gameModeId===-1){
+        if ((isInQ && (gameModeId === currGameMode)) || gameModeId ===-1) {
             setSelectedText(0);
-            leaveQ(selectedGameMode);
-            setSelectedGameMode(-1);
+            leaveQ(currGameMode);
+            setCurrGameMode(-1);
             return;
         }
 
-        setSelectedGameMode(gameModeId);
+        //already selected game mode
+        setCurrGameMode(gameModeId);
         setSelectedText(1);
         timerRestart();
         joinQ(gameModeId);
     }
 
 
-    let joinQ = async(gameModeId) => {
+    let joinQ = async (gameModeId) => {
         let joinQEvent = {
             event: 'join_queue',
             msg: JSON.stringify({playerId, gameModeId})
@@ -145,38 +134,31 @@ function FindGameWidget({playerId,sessionToken,socket,dispatch}) {
 
 
     return (
-        <section id="PLAY" className="PlayGameWidget">
-            UNFORMATED MESS
+        <section id="PLAY" className="FindGameWidget">
 
-            <button className="PlayGameWidget-mainButton"
-                    style={isInQ ? inQStyle : idleStyle}
-                    onClick={()=>{findGame(-1)}}
-            >
-                <TextWithWavyOrnament fontSize='2.5rem'>
-                    {buttonTexts[selectedText]}
-                    {isInQ && <Dots/>}
-                </TextWithWavyOrnament>
-            </button>
+            <div className="FindGameWidget-mainText">
+                <h1>FIND A GAME</h1>
+                <h2 style={isInQ ? inQStyle : idleStyle}>{buttonTexts[selectedText]}</h2>
+            </div>
 
-
-            <div className="GameModes">
+            <div className="FindGameWidget-gameModes">
                 {gameModeButtons}
-                <i className={"fa-chess"}/>
             </div>
 
 
-            <CSSTransition
-                in={isInQ}
-                timeout={200}
-                classNames="QInfo"
-                unmountOnExit
-            >
-            <ul className="QInfo">
-                <li key="QInfo-wait-time"><span style={QInfoStyle}>Wait time:</span> {formatTime(timer)}</li>
-                <li key="QInfo-players-inQ"><span style={QInfoStyle}>Players in queue:</span> {playersInQ}</li>
-                <li key="QInfo-scope"><span style={QInfoStyle}>Scope:</span> +-{scope}</li>
-            </ul>
-        </CSSTransition>
+            {isInQ &&
+            <div className="QInfo">
+                <ul>
+                    <li key="QInfo-wait-time"><span>Wait time:</span> {formatTime(timer)}</li>
+                    <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
+                    <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
+                </ul>
+
+                <button className="QInfo-leave" onClick={() => {findGame(-1)}}>
+                    LEAVE QUEUE
+                </button>
+            </div>
+            }
 
 
         </section>
@@ -188,7 +170,7 @@ const mapStateToProps = (state) => {
     return {
         playerId: state.user.userId,
         sessionToken: state.user.sessionToken,
-        socket:state.socket.socket
+        socket: state.socket.socket
     };
 };
 

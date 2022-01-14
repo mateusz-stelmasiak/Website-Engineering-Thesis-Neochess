@@ -48,22 +48,12 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
             {!loading &&
             <div className="App">
                 <ScrollToTop/>
-                <Loading>
                     <Switch>
                         {<PrivateRoute path="/" exact component={MainPageScreen}/>}
                         {<PrivateRoute path="/play" component={PlayGameScreen}/>}
                         <Route path="/login" component={LogRegScreen}/>
                         <Redirect from="*" to="/"/>
                     </Switch>
-                </Loading>
-
-                <Switch>
-                    {<PrivateRoute path="/" exact component={MainPageScreen}/>}
-                    {<PrivateRoute path="/profile" exact component={UserProfileScreen}/>}
-                    {<PrivateRoute path="/play" component={PlayGameScreen}/>}
-                    <Route path="/login" component={LogRegScreen}/>
-                    <Redirect from="*" to="/"/>
-                </Switch>
 
                 <Toaster
                     position="top-right"
