@@ -208,10 +208,10 @@ class PlayGameScreen extends Component {
                             </GameTimersWidget>
                             <GameButtons/>
                         </div>
-                        </div>
+
                     </div>
-                </CSSTransition>
-            </FooterHeaderLayout>
+                </div>
+            </CSSTransition>
 
         );
     }

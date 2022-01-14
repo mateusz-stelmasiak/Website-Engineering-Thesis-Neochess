@@ -12,7 +12,6 @@ import {
 } from "./Main";
 import Piece from "./Piece";
 import {Generate_moves, Generate_opponent_moves, moves} from "./moves";
-import {check_if_check, Generate_moves, Generate_opponent_moves, moves} from "./moves";
 import CSquare from "./CSquare";
 import {forEach} from "react-bootstrap/ElementChildren";
 import {store} from "../../../index";
