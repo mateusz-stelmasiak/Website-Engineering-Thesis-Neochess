@@ -51,6 +51,7 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
                     <Switch>
                         {<PrivateRoute path="/" exact component={MainPageScreen}/>}
                         {<PrivateRoute path="/play" component={PlayGameScreen}/>}
+                        {<PrivateRoute path="/profile" component={UserProfileScreen}/>}
                         <Route path="/login" component={LogRegScreen}/>
                         <Redirect from="*" to="/"/>
                     </Switch>

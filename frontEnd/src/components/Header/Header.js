@@ -1,9 +1,6 @@
 import React, {Component, useEffect, useState} from 'react';
 import "./Header.css";
 import ProfileWidget from "./Components/ProfileWidget"
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faSignOutAlt} from "@fortawesome/free-solid-svg-icons";
-import {logout} from "../../serverCommunication/LogRegService";
 import {useHistory, useLocation} from "react-router-dom";
 
 //buttons on different subpages

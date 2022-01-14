@@ -4,18 +4,19 @@ import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
 import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
 import Section from "../CommonComponents/Section";
 import SectionTitle from "../CommonComponents/SectionTitle";
+import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
 
 function UserProfileScreen(props){
 
     return(
-        <FooterHeaderLayout>
+        <FooterHeaderWithMarginsLayout>
             <Section>
                 <SectionTitle>YOUR DATA</SectionTitle>
                 {props.username}
 
             </Section>
 
-        </FooterHeaderLayout>
+        </FooterHeaderWithMarginsLayout>
     );
 
 }

@@ -14,16 +14,17 @@ import {
 import {faChessPawn,faChess} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {Tooltip} from "react-bootstrap";
+import {toast} from "react-hot-toast";
 
 
-function FindGameWidget({playerId, sessionToken, socket, dispatch}) {
+function FindGameWidget({playerId, sessionToken, socket, isInGame,dispatch}) {
     //main button text
     const buttonTexts = ["choose a game mode", <>in queue<Dots/></>];
     const [selectedText, setSelectedText] = useState(0);
 
     //game mode handling
     const [currGameMode, setCurrGameMode] = useState(-1);
-    const [gameModeButtons, setGameModeButtons] = useState();
+    const [gameModeButtons, setGameModeButtons] = useState(undefined);
 
     //queue info
     const [isInQ, setIsInQ] = useState(false);
@@ -67,40 +68,41 @@ function FindGameWidget({playerId, sessionToken, socket, dispatch}) {
 
     let loadAvailableGamemodes = async () => {
         setCurrGameMode(-1);
+
         const resp = await getAvailableGameModes(sessionToken);
         if (resp === undefined || resp.error !== undefined) {
             setGameModeButtons(["ERROR"]);
             return;
         }
-
-        const gameModeButtonsTmp = resp.map(
-            (gameMode) => {
-                return (
-                        <button
-                            className="FindGameWidget-gameModeButton"
-                            onClick={() => {
-                                findGame(gameMode.gameModeId)
-                            }}
-                            style={gameMode.gameModeId===currGameMode? inQGameModeTextStyle:idleStyle}
-                        >
-                            {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}/> :
-                                <FontAwesomeIcon icon={faChessPawn}/>}
-                                <h1>{gameMode.gameModeName}</h1>
-                        </button>
-                );
-            });
-
-        setGameModeButtons(gameModeButtonsTmp);
+        setGameModeButtons(resp);
     }
 
 
-    let findGame = (gameModeId) => {
-        if ((isInQ && (gameModeId === currGameMode)) || gameModeId ===-1) {
+    const findGame = (gameModeId) => {
+        console.log(isInGame);
+        console.log(gameModeId);
+        console.log(currGameMode);
+
+        //already in game
+        if (isInGame===true){
+            console.log("CO");
+            toast.error("Already in game!");
+            return;
+        }
+
+        //selecting gamemode -1 => deselecting all gamemodes
+        if (gameModeId === -1) {
             setSelectedText(0);
             leaveQ(currGameMode);
             setCurrGameMode(-1);
             return;
         }
+
+        //reselecting the same mode
+        if(isInQ===true && (gameModeId === currGameMode)){
+            return;
+        }
+
 
         //already selected game mode
         setCurrGameMode(gameModeId);
@@ -142,7 +144,23 @@ function FindGameWidget({playerId, sessionToken, socket, dispatch}) {
             </div>
 
             <div className="FindGameWidget-gameModes">
-                {gameModeButtons}
+                {gameModeButtons && gameModeButtons.map(
+                    (gameMode) => {
+                        return (
+                            <button
+                                className="FindGameWidget-gameModeButton"
+                                onClick={() => {
+                                    findGame(gameMode.gameModeId)
+                                }}
+                                style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
+                            >
+                                {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}/> :
+                                    <FontAwesomeIcon icon={faChessPawn}/>}
+                                <h1>{gameMode.gameModeName}</h1>
+                            </button>
+                        );
+                    })
+                }
             </div>
 
 
@@ -170,7 +188,8 @@ const mapStateToProps = (state) => {
     return {
         playerId: state.user.userId,
         sessionToken: state.user.sessionToken,
-        socket: state.socket.socket
+        socket: state.socket.socket,
+        isInGame: state.user.isInGame,
     };
 };
 

@@ -1,3 +1,6 @@
 .FooterHeaderWithMarginsLayout .Layout--content{
+    display: flex;
+    flex-direction: column;
     padding: 5rem 5%;
+    row-gap: 5rem;
 }

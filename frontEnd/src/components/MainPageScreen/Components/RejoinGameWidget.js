@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 import {authorizeSocket, emit} from "../../../redux/actions/socketActions";
 import {useHistory} from "react-router-dom";
 import {toast} from "react-hot-toast";
+import {setIsInGame} from "../../../redux/actions/userActions";
 
 function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
 
@@ -22,6 +23,7 @@ function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
         }
         toast.dismiss(toastId);
         dispatch(emit(evntAndMsg));
+        dispatch(setIsInGame(false));
     }
 
     return (
