@@ -1,14 +1,17 @@
+import logging
+
 from flask import copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import ChessLogic
 from REST_API import *
 from enum import Enum
 
-debug_mode = True
+
 
 # SOCKET IO CONFIG
 app = app
 socketio = SocketIO(app, cors_allowed_origins="*", ping_interval=5)
+
 thread = None
 timer_thread = None
 
@@ -80,11 +83,6 @@ def authorize(data):
                 playing_as + " with FEN " + str(game.curr_FEN)))
 
         join_room(game.game_room_id, request.sid)
-        # game rejoin communicate (in case player was in queue when disconnected)
-        emit("game_found",
-             {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-              'gameMode': game.game_mode_id},
-             to=request.sid)
 
         # notify opponent that the player reconnected
         print("SENDING SOCKET STATUS UPDATE")
@@ -306,9 +304,10 @@ def find_match(game_mode_id, player):
                 emit('update_opponents_socket_status', {'status': 'connected'}, room=game_room_id)
 
                 # create game in server storage
+                game_mode = game_modes[int(game_mode_id)]
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, white_player, black_player, 'w',
-                                           game_mode_starting_FEN[int(game_mode_id)], 0,
-                                           Timer(game_mode_times[int(game_mode_id)]))
+                                           game_mode.game_mode_starting_FEN, 0,
+                                           Timer(game_mode.game_mode_time))
             except Exception as ex:
                 print("DB ERROR" + str(ex))
 
@@ -539,9 +538,9 @@ def make_AI_move(data):
 
     curr_FEN = data_obj['FEN']
     try:
-        new_FEN,move = ChessLogic.get_best_move(curr_FEN)
+        new_FEN, move = ChessLogic.get_best_move(curr_FEN)
     except Exception as ex:
-        print("STOCKFISH DIED COZ "+str(ex))
+        print("STOCKFISH DIED COZ " + str(ex))
         return
 
     print(move)
@@ -613,7 +612,6 @@ def make_move(data):
         print("NOT UR TURN")
         return
 
-
     is_move_legal, move_AN_notation = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'],
                                                                move['targetSquare'])
     if not is_move_legal:
@@ -634,8 +632,7 @@ def make_move(data):
         print("NO_SUCH_GAME_EXISTS")
         return
 
-
-    new_FEN= ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN,move_AN_notation)
+    new_FEN = ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN, move_AN_notation)
     games[game_room_id].curr_FEN = new_FEN
     move_order = game_info.num_of_moves
     games[game_room_id].num_of_moves = move_order + 1
@@ -686,4 +683,5 @@ def send_chat_to_server(data):
     emit('receive_message', {'text': text, 'playerName': player_name}, room=game_info.game_room_id, include_self=False)
 
 
-socketio.run(app, host='127.0.0.1', port=5000, debug=debug_mode)
+
+socketio.run(app, host='127.0.0.1', port=5000, debug=True,log_output='False')

@@ -10,10 +10,10 @@ from ServerState import *
 
 domain = '34.118.14.151'
 dns_domain = 'chess-defence.ddns.net'
-local_port=str(3000)
-local_domain = 'localhost:'+local_port
+local_port = str(3000)
+local_domain = 'localhost:' + local_port
 orgin_prefix = "http://"
-allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1','127.0.0.1:'+local_port, 'localhost']
+allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
 allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
 debug_mode = True
@@ -82,7 +82,7 @@ def get_domain_from_url(url):
         url = url.split(":")[1]
 
     dom = url[2:]
-    #replace localhost with localhost ip
+    # replace localhost with localhost ip
     if dom == "localhost":
         dom = '127.0.0.1'
 
@@ -245,13 +245,15 @@ def is_in_game():
 
     game = game_info[0]
     playing_as = game_info[1]
+    opponent_username = game_info[2]
     print(game)
 
     data = {
         "inGame": True,
         "gameId": game.game_room_id,
         "gameMode": game.game_mode_id,
-        "playingAs": playing_as
+        "playingAs": playing_as,
+        "opponentUsername": opponent_username
     }
 
     return generate_response(request, data, 200)
@@ -313,6 +315,26 @@ def get_game_info():
                 'whiteScore': game.defender_state.white_score,
                 'blackScore': game.defender_state.black_score
                 }
+
+    return generate_response(request, data, 200)
+
+
+@app.route('/get_available_game_modes', methods=['GET', 'OPTIONS'])
+def get_available_game_modes():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    data = []
+    for game_mode in game_modes:
+        data.append(
+            {
+                "gameModeId": game_mode.game_mode_id,
+                "gameModeName": game_mode.game_mode_name,
+                "gameModeDesc": game_mode.game_mode_desc,
+                "gameModeTime": game_mode.game_mode_time,
+                "gameModeIcon": game_mode.game_mode_icon
+            }
+        )
 
     return generate_response(request, data, 200)
 
@@ -390,22 +412,28 @@ def get_history():
     # set page to 0 if not given in request
     page = 0
     if 'page' in request.args:
-        page = request.args['page']
+        page = int(request.args['page'])
     # num of games on given page, default 10
     games_per_page = 10
     if 'perPage' in request.args:
-        games_per_page = request.args['perPage']
+        games_per_page = int(request.args['perPage'])
 
     try:
         db = ChessDB.ChessDB()
         start = page * games_per_page
-        end = page * games_per_page + games_per_page
+        end = (page * games_per_page) + games_per_page
         game_history = db.get_games(user_id, start, end)
+        count_games=db.count_games(user_id)
+        max_page = int( count_games[0]/ games_per_page)+1
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
 
     history = []
+
+    #return max Page number
+    history.append({'maxPage': max_page})
+
     # maps results from numbers to strings
     possible_results = {'0.0': 'loss', '0.5': 'draw', '1.0': 'win'}
     for game in game_history:
@@ -439,4 +467,5 @@ def get_history():
             return generate_response(request, {"error": "Cannot fetch from db"}, 503)
 
     if debug_mode: print(game_history)
+
     return generate_response(request, json.dumps(history), 200)

@@ -1,0 +1,49 @@
+header {
+    display: flex;
+    z-index: 9;
+    align-items: center;
+    justify-content: space-between;
+
+    background: linear-gradient(45deg, var(--sec-color) 15%, var(--sec-color-dark) 100%);
+    padding: 1.5rem max(5%,2rem);
+
+    -webkit-box-shadow: 0px 10px 15px 5px rgba(176,88,197,0.3);
+    box-shadow: 0px 10px 15px 5px rgba(176,88,197,0.3);
+}
+
+
+header .buttons-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+header button {
+    all: unset; /*deletes all default button styling*/
+    cursor: pointer;
+
+    display: block;
+    color: #dadada;
+    font-size: 1.5em;
+    margin-left: 1rem;
+    transition: 200ms;
+}
+
+header button:before, header button::after {
+    content: "|";
+}
+
+header button:hover {
+    font-weight: 300;
+    transform: scale(1.1, 1.1);
+    color: white;
+}
+
+@media (max-width: 500px) {
+    header .buttons-container{
+        display: none;
+    }
+}
+

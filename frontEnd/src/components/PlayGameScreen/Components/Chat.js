@@ -4,7 +4,7 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import ScrollToBottom from 'react-scroll-to-bottom';
-import {getCurrentTimestamp} from "../../../serverLogic/Utils";
+import {getCurrentTimestamp} from "../../../serverCommunication/Utils";
 
 export let spamInterval=2000
 export let initialSpamCooldown=1000

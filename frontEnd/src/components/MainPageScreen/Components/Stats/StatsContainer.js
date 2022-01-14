@@ -2,12 +2,10 @@ import React, {useEffect, useState} from "react";
 import "./StatsContainer.css"
 import SectionTitle from "../../../CommonComponents/SectionTitle";
 import Dots from "../../../CommonComponents/Dots";
-import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverLogic/DataFetcher";
+import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverCommunication/DataFetcher";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import {setUserElo} from "../../../../redux/actions/userActions";
-
-
 
 function StatsContainer({userId,sessionToken,dispatch}) {
     const [currentElo, setCurrentElo] = useState("loading");
@@ -78,11 +76,11 @@ function StatsContainer({userId,sessionToken,dispatch}) {
 
 
             </div>
-            <div className="chart_are">
-                <div className="ChartPlaceholder">CHART_PLACEHOLDER</div>
-                <div className="ChartPlaceholder2">CHART_PLACEHOLDER</div>
+            {/*<div className="chart_are">*/}
+            {/*    <div className="ChartPlaceholder">CHART_PLACEHOLDER</div>*/}
+            {/*    <div className="ChartPlaceholder2">CHART_PLACEHOLDER</div>*/}
 
-            </div>
+            {/*</div>*/}
 
         </section>
     );

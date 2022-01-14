@@ -1,0 +1,99 @@
+.Loading{
+    transition: 10s;
+}
+.container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    border: 3px dotted #eee;
+    text-align: center;
+    font-family: sans-serif;
+    padding:2rem;
+    z-index: 10000000;
+    font-size: 4rem;
+    color: var(--text-color);
+    transition: 10s;
+}
+
+.dot {
+    position: absolute;
+    background: var(--sec-color);
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    transform: rotate(0deg);
+    top: 25px;
+    left: 25px;
+    opacity: 0.1;
+    transition: all 0.75s cubic-bezier(.71,0,.33,1.56) 0ms;
+}
+
+.container:hover .dot {
+    transform: rotate(360deg);
+    border-radius: 0%;
+    left: 225px;
+    background: var(--primary-color);
+}
+.Loading .container span{
+    margin-left: 10rem;
+}
+
+.dot.two {
+    transition-delay: 3ms;
+}
+.dot.three {
+    transition-delay: 6ms;
+}
+.dot.four {
+    transition-delay: 9ms;
+}
+.dot.five {
+    transition-delay: 11ms;
+}
+.dot.six {
+    transition-delay: 14ms;
+}
+.dot.seven {
+    transition-delay: 17ms;
+}
+.dot.eight {
+    transition-delay: 20ms;
+}
+.dot.nine {
+    transition-delay: 23ms;
+}
+.dot.ten {
+    transition-delay: 26ms;
+}
+.dot.eleven {
+    transition-delay: 29ms;
+}
+.dot.twelve {
+    transition-delay: 32ms;
+}
+.dot.thirteen {
+    transition-delay: 35ms;
+}
+.dot.fourteen {
+    transition-delay: 38ms;
+}
+.dot.fifteen {
+    transition-delay: 41ms;
+}
+.dot.sixteen {
+    transition-delay: 44ms;
+}
+.dot.seventeen {
+    transition-delay: 47ms;
+}
+.dot.eighteen {
+    transition-delay: 50ms;
+}
+.dot.nineteen {
+    transition-delay: 53ms;
+}
+.dot.twenty {
+    transition-delay: 56ms;
+}

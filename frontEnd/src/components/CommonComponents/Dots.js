@@ -22,7 +22,9 @@ export default class Dots extends Component {
         const { dots } = this.state;
         let text = dots === 0 ? '' : '.'.repeat(dots);
         return (
-            <span className="Dots">{text}</span>
+            <>
+                {this.props.children}<span className="Dots">{text}</span>
+            </>
         );
     }
 }

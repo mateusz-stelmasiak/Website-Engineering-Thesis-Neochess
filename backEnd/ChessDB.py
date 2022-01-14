@@ -280,6 +280,7 @@ class ChessDB:
         mycursor.close()
         return result
 
+
     def count_wins(self, Username):
         mycursor = self.mydb.cursor()
 
