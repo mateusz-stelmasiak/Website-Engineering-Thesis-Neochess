@@ -29,6 +29,7 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
 
     //try to regenerate the session on reload
     useEffect(() => {
+
         //try to regenerate the session on reload
         if (sessionToken === 'none' && userId) {
             getSessionToken().then((resp) => {

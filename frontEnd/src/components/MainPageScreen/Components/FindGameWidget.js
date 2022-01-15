@@ -75,12 +75,25 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     let loadAvailableGamemodes = async () => {
         setCurrGameMode(-1);
 
-        const resp = await getAvailableGameModes(sessionToken);
+        //try to read gamemodes from cache
+        let cachedGames = sessionStorage.getItem('gameModes');
+        if (cachedGames){
+            cachedGames = JSON.parse(cachedGames);
+            console.log(cachedGames);
+            setGameModeButtons(cachedGames);
+            return;
+        }
+
+        let resp = await getAvailableGameModes(sessionToken);
         if (resp === undefined || resp.error !== undefined) {
             setGameModeButtons(["ERROR"]);
             return;
         }
+
         setGameModeButtons(resp);
+
+        //cache
+        sessionStorage.setItem('gameModes',JSON.stringify(resp));
     }
 
 
@@ -139,10 +152,12 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     return (
         <section id="PLAY" className="FindGameWidget">
 
+            <hr/>
             <div className="FindGameWidget-mainText">
                 <h1>FIND A GAME</h1>
                 <h2 style={isInQ ? inQStyle : idleStyle}>{buttonTexts[selectedText]}</h2>
             </div>
+            <hr/>
 
             <div className="FindGameWidget-gameModes">
                 {gameModeButtons && gameModeButtons.map(

@@ -28,6 +28,13 @@
     font-weight: normal;
 }
 
+.FindGameWidget hr{
+    margin-top: -0.3rem;
+    color: var(--primary-color);
+    width: min(100%,40rem);
+    height: 0.4rem;
+    background: var(--primary-color);
+}
 .FindGameWidget .FindGameWidget-gameModes{
     margin-top: 2rem;
     display: flex;

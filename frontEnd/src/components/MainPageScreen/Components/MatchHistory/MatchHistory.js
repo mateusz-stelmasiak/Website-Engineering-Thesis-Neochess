@@ -13,7 +13,7 @@ import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 function MatchHistory(props) {
     const [isLoading, setLoading] = useState(true);
     const [matchHistory, setMatchHistory] = useState([]);
-    const [maxPage, setMaxPage] = useState(10)
+    const [maxPage, setMaxPage] = useState(1)
     const [page, setPage] = useState(0);
     const [perPage, setPerPage] = useState(10);
 

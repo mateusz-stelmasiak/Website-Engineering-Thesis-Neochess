@@ -39,22 +39,21 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
     }
 
     useEffect(() => {
-
+        //cookie consent
         toast.custom((t) => (<CookiesConsent toastId={t.id}/>), {
             duration: Infinity
         });
+
         dispatch(authorizeSocket(userId,sessionToken));
         checkIfIsInGame();
-        //show cookies
-
     }, []);
 
     return (
         <FooterHeaderWithMarginsLayout>
 
             <FindGameWidget/>
-            <Section section="STATS">
-                    <StatsContainer/>
+            <Section sectionID="STATS">
+                    {/*<StatsContainer/>*/}
                     <MatchHistory/>
             </Section>
 
