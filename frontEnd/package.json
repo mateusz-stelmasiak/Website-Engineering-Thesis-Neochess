@@ -56,6 +56,7 @@
   "devDependencies": {
     "react-blink-text": "^1.0.5",
     "react-facebook-pixel": "^1.0.4",
+    "react-google-recaptcha": "^2.1.0",
     "react-redux": "^7.2.4",
     "react-super-responsive-table": "^5.2.0"
   }

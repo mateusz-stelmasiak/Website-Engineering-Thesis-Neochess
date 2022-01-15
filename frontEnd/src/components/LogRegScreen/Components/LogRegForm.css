@@ -95,7 +95,9 @@
     color:var(--section-bg-color);
 }
 
-
+.rc-anchor-container{
+    margin-top: 1rem;
+}
 
 @media all and (min-width: 480px) {
 

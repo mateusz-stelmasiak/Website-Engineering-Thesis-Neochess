@@ -30,14 +30,14 @@ export async function login(username,password){
     }
 }
 
-export async function register(username,password){
+export async function register(username,password,captcha){
     try {
         let hashedPassword=sha256(password);
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({username,hashedPassword})
+            body: JSON.stringify({username,hashedPassword,captcha})
         };
 
         const response = await fetchWithTimeout(API_URL + '/register', requestOptions);

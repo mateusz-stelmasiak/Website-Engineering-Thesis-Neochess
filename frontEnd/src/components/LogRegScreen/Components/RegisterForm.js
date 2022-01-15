@@ -8,7 +8,8 @@ import {useHistory} from "react-router-dom";
 import {login, register} from "../../../serverCommunication/LogRegService"
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
-import {authorizeSocket} from "../../../redux/actions/socketActions";
+import ReCAPTCHA from "react-google-recaptcha";
+
 
 
 function RegisterForm({dispatch}) {
@@ -130,7 +131,7 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        let resp = await register(username, password)
+        let resp = await register(username, password,captchaValue)
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
@@ -151,6 +152,14 @@ function RegisterForm({dispatch}) {
         dispatch(setSessionToken(resp.sessionToken));
         routeToNext();
     }
+
+    //captcha
+    const [captchaValue, setCaptchaValue] = useState(null);
+
+    function captchaChange(value) {
+        setCaptchaValue(value);
+    }
+
 
     return (
         <div className="LogRegForm">
@@ -201,6 +210,14 @@ function RegisterForm({dispatch}) {
                     onChange={(e) => checkPasswordConfirm(e.target.value)}
                     style={{background: arePasswordsEqual ? successColor : failColor}}
                 />
+
+                <ReCAPTCHA
+                    sitekey={process.env.REACT_APP_CAPTCHA_KEY}
+                    onChange={captchaChange}
+                    size="normal"
+                    theme='dark'
+                />
+
 
 
                 <div style={{visibility: errorMessage !== "" ? 'visible' : 'hidden'}} className="errorMessage">
