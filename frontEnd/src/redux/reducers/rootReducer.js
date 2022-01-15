@@ -3,12 +3,14 @@ import "./userReducer"
 import userInfoReducer from "./userReducer";
 import gameInfoReducer from "./gameReducer"
 import socketReducer from "./socketReducer"
+import cookieReducer from "./cookieReducer"
 
 //all reducers combined
 const rootReducer = combineReducers({
     user: userInfoReducer,
     game: gameInfoReducer,
     socket:socketReducer,
+    cookie:cookieReducer
 })
 
 

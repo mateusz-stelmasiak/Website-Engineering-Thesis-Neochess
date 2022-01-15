@@ -11,8 +11,11 @@ import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
-import {Toaster} from "react-hot-toast";
-import Loading from "./components/CommonComponents/Loading";
+import {toast, Toaster} from "react-hot-toast";
+import CookiesConsent from "./components/Cookies/CookiesConsent";
+import RejoinGameWidget from "./components/MainPageScreen/Components/RejoinGameWidget";
+import CookiesPreferences from "./components/Cookies/CookiesPreferences";
+import CookiesPage from "./components/Cookies/CookiesPage";
 
 
 export const GAME_DEBUGING_MODE = false;
@@ -41,6 +44,9 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
 
         //connect the socket on startup
         socket.connect();
+
+
+
     }, []);
 
     return (
@@ -53,9 +59,11 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
                         {<PrivateRoute path="/play" component={PlayGameScreen}/>}
                         {<PrivateRoute path="/profile" component={UserProfileScreen}/>}
                         <Route path="/login" component={LogRegScreen}/>
+                        <Route path="/cookies" component={CookiesPage}/>
                         <Redirect from="*" to="/"/>
                     </Switch>
 
+                <CookiesPreferences/>
                 <Toaster
                     position="top-right"
                     reverseOrder={false}

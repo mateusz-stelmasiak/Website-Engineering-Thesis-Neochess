@@ -1,0 +1,29 @@
+.CookiesPage {
+    color: var(--text-color);
+}
+.CookiesPage .SectionTitle{
+    display: inherit;
+    width: 60%;
+}
+.CookiesPage .SectionTitle + p{
+    margin-top: 4rem;
+}
+
+.CookiesPage h1{
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+.CookiesPage h2{
+    color: var(--primary-color);
+    font-size: 1.7rem;
+}
+
+.CookiesPage h4{
+    color: var(--primary-color);
+
+}
+
+.CookiesPage p{
+    text-align: justify;
+    text-justify: inter-word;
+}

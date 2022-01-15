@@ -19,6 +19,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "react-scroll-to-bottom": "^4.1.2",
+    "react-switch": "^6.0.0",
     "react-transition-group": "^4.4.2",
     "redux": "^4.1.0",
     "redux-devtools-extension": "^2.13.9",
@@ -54,6 +55,8 @@
   },
   "devDependencies": {
     "react-blink-text": "^1.0.5",
-    "react-redux": "^7.2.4"
+    "react-facebook-pixel": "^1.0.4",
+    "react-redux": "^7.2.4",
+    "react-super-responsive-table": "^5.2.0"
   }
 }

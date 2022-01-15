@@ -12,6 +12,7 @@ import {setGameId, setGameMode, setOpponentUsername, setPlayingAs} from "../../r
 import {connect} from "react-redux";
 import {authorizeSocket} from "../../redux/actions/socketActions";
 import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
+import CookiesConsent from "../Cookies/CookiesConsent";
 
 function MainPageScreen({userId, sessionToken, dispatch}) {
 
@@ -33,11 +34,19 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
         toast.custom((t) => (<RejoinGameWidget toastId={t.id}/>), {
             duration: Infinity
         });
+
+
     }
 
     useEffect(() => {
+
+        toast.custom((t) => (<CookiesConsent toastId={t.id}/>), {
+            duration: Infinity
+        });
         dispatch(authorizeSocket(userId,sessionToken));
         checkIfIsInGame();
+        //show cookies
+
     }, []);
 
     return (

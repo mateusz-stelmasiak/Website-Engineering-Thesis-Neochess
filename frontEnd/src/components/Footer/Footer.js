@@ -1,7 +1,9 @@
 import "./Footer.css"
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
+import {setPreferencesOpen} from "../../redux/actions/cookieActions";
 
-function Banner(){
+function Footer({dispatch}){
     return (
         <footer>
             <div className="moreinfoContainer">
@@ -10,8 +12,9 @@ function Banner(){
             <div className="hyperlinksContainer">
                 <Link to={'/about'}> About </Link>
                 <Link to={'/cookies'}> Cookies </Link>
+                <a onClick={()=>dispatch(setPreferencesOpen(true))}>Cookie Preferences</a>
             </div>
         </footer>
     );
 }
-export default Banner;
+export default  connect()(Footer);
