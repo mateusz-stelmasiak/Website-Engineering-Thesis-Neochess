@@ -301,15 +301,16 @@ function RegisterForm({dispatch}) {
                     <ul>{errorMessage}</ul>
                 </div>
 
-                {errorMessage === "" && isLoadingShown ?
-                    <div className="registerLoadingContainer">
-                        <p className="registeringProgress">
-                            REGISTERING
-                        </p>
-                        <div className="loader"/>
-                    </div> : null}
-
-                <Button type="submit">REGISTER</Button>
+                <div>
+                    {errorMessage === "" && isLoadingShown ?
+                        <div className="registerLoadingContainer">
+                            <p className="registeringProgress">
+                                REGISTERING
+                            </p>
+                            <div className="loader"/>
+                        </div> : null}
+                    <Button type="submit">REGISTER</Button>
+                </div>
             </Form>
         </div>
     );

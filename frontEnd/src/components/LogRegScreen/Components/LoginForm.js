@@ -68,8 +68,6 @@ function LoginForm({dispatch}) {
     async function CheckTwoFaCode() {
         const response = await check2FaCode(twoFaCode, username)
 
-        console.log(response)
-
         if (!response['result']) {
             setErrorMessage("Two authentication code is incorrect");
         }

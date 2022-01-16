@@ -117,14 +117,11 @@ def login():
     user_id = str(user[0])
     user_pass = str(user[2])
     user_2fa = True if str(user[4]) == '1' else False
-    user_otp_secret = str(user[3])
     user_elo = str(user[5])
 
     # actual user's password doesn't match given
     if user_pass != request_data['hashedPassword']:
         return generate_response(request, {"error": "Incorrect password"}, 403)
-
-    # user_two_fa_code = request['two_fa_code']
 
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
@@ -421,8 +418,8 @@ def get_player_stats():
         db = ChessDB.ChessDB()
         user_info = db.get_user_by_id(user_id)
         print(user_info)
-        elo = user_info[5]
-        deviation = user_info[6]
+        elo = user_info[8]
+        deviation = user_info[9]
         games_played = db.count_games(user_id)
         games_won = db.count_wins(user_id)
         games_lost = db.count_losses(user_id)
