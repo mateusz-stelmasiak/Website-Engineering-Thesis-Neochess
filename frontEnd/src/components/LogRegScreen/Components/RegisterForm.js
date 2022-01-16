@@ -186,7 +186,7 @@ function RegisterForm({dispatch}) {
         console.log(response)
 
         if (!response['result']) {
-            setErrorMessage("Two authentication code is incorrect");
+            setErrorMessage("Two authentication code is incorrect. Go to login page and try again");
         }
 
         return response['result'];
