@@ -292,6 +292,36 @@ def register():
                              }, 200)
 
 
+@app.route('/resent', methods=['GET', 'OPTIONS'])
+def resent_activation_email():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("RESENT_ACTIVATION_EMAIL REQUEST " + str(request.args))
+
+    data = request.args['data']
+
+    if "@" not in data:
+        db = ChessDB.ChessDB()
+        user = db.get_user(data)
+        data = user[3]
+
+    try:
+        token = s.dumps(data, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+
+        mail.send_welcome_message(login, data, link)
+
+        return generate_response(request, {
+            "result": "ok"
+        }, 200)
+    except Exception as ex:
+        return generate_response(request, {
+            "result": ex
+        }, 503)
+
+
 @app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
 def confirm_email(token):
     if request.method == "OPTIONS":
@@ -315,7 +345,7 @@ def confirm_email(token):
             }, 200)
         else:
             db.activate_user_account(email)
-            return redirect(f"{local_domain}/")
+            # return redirect(f"{local_domain}/")
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])

@@ -6,7 +6,7 @@ import "../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from 'react-router-dom';
-import {check2FaCode, login, logout} from "../../../serverLogic/LogRegService"
+import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serverLogic/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
 import Dots from "../../CommonComponents/Dots";
@@ -18,6 +18,7 @@ function LoginForm({dispatch}) {
     const [twoFaCode, setTwoFaCode] = useState("");
     const [isTwoFaUsed, setIsTwoFaUsed] = useState(false);
     const [isAccountActivated, setIsAccountActivated] = useState(true);
+    const [reSentResult, setReSentResult] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
     const togglePasswordVisiblity = () => {
@@ -41,17 +42,23 @@ function LoginForm({dispatch}) {
         setErrorMessage("");
 
         const response = await login(username, password, "")
-        setIsTwoFaUsed(response['twoFa'])
-        setIsAccountActivated(response['accountActivated'])
 
-        if (response['accountActivated']) {
-            if (response['twoFa']) {
-                if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                    await ForwardAfterLogin(await login(username, password, twoFaCode));
+        if (response['error'] === undefined) {
+            setIsAccountActivated(response['accountActivated'])
+
+            if (response['accountActivated']) {
+                setIsTwoFaUsed(response['twoFa'])
+
+                if (response['twoFa']) {
+                    if (twoFaCode !== "" && await CheckTwoFaCode()) {
+                        await ForwardAfterLogin(await login(username, password, twoFaCode));
+                    }
+                } else {
+                    await ForwardAfterLogin(response);
                 }
-            } else {
-                await ForwardAfterLogin(response);
             }
+        } else {
+            setErrorMessage(response['error'])
         }
     }
 
@@ -78,6 +85,16 @@ function LoginForm({dispatch}) {
         return response['result'];
     }
 
+    async function reSentEmail() {
+        const response = await reSentActivationEmail(username);
+        setReSentResult(response['result'] === "ok" ? "Activation email has been successfully resent" :
+            `Error occurred while trying to resent activation email: ${response['result']}`);
+
+        setTimeout(() => {
+            setReSentResult("")
+        }, 2500)
+    }
+
     function AssignTwoFaCode(value) {
         if (value.length <= 6) {
             setTwoFaCode(value);
@@ -86,7 +103,7 @@ function LoginForm({dispatch}) {
 
     return (
         <div className="LogRegForm">
-            <Form onSubmit={HandleSubmit}>
+            <Form>
                 <Form.Control
                     required
                     placeholder="Username..."
@@ -124,10 +141,12 @@ function LoginForm({dispatch}) {
                         feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                 </div>
                 {isAccountActivated ?
-                    <Button type="submit">LOGIN</Button> :
+                    <Button onClick={HandleSubmit} type="submit">LOGIN</Button> :
                     <div className="notActivatedAccountContainer">
                         <p>Account has not been activated</p>
                         <p>You can activate your account by clicking on link sent in email while registration</p>
+                        <Button onClick={reSentEmail} type="submit">Resent activation email</Button>
+                        {reSentResult !== "" ? <p>{reSentResult}</p> : null}
                     </div>}
             </Form>
         </div>

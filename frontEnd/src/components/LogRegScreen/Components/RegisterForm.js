@@ -7,7 +7,7 @@ import "../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {check2FaCode, login, register} from "../../../serverLogic/LogRegService"
+import {check2FaCode, login, register, reSentActivationEmail} from "../../../serverLogic/LogRegService"
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
 import validator from 'validator'
@@ -25,6 +25,8 @@ function RegisterForm({dispatch}) {
     const [qrCode, setQrCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoadingShown, setIsLoadingShown] = useState(false);
+    const [isActivateAccountInfoShown, setIsActivateAccountInfoShown] = useState(false);
+    const [reSentResult, setReSentResult] = useState("");
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -155,10 +157,18 @@ function RegisterForm({dispatch}) {
 
         //check if all data matches requirments
         let errors = validateData();
+
+        setIs2FaEnabled(false);
+
         if (errors.length !== 0) {
             setIsLoadingShown(false);
             let errorList = errors.map(error => <li key={error}>{error}</li>);
             setErrorMessage(errorList);
+
+            setTimeout(() => {
+                setErrorMessage("")
+            }, 5000)
+
             return;
         }
 
@@ -183,8 +193,6 @@ function RegisterForm({dispatch}) {
     async function CheckTwoFaCode() {
         const response = await check2FaCode(twoFaCode, username)
 
-        console.log(response)
-
         if (!response['result']) {
             setErrorMessage("Two authentication code is incorrect. Go to login page and try again");
         }
@@ -198,12 +206,15 @@ function RegisterForm({dispatch}) {
             return;
         }
 
-        dispatch(setUserId(resp.userId));
-        dispatch(setUsername(username));
-        dispatch(setUserElo(resp.userElo));
-        dispatch(setSessionToken(resp.sessionToken));
+        setIsActivateAccountInfoShown(true);
+        setIsLoadingShown(false);
 
-        routeToNext();
+        // dispatch(setUserId(resp.userId));
+        // dispatch(setUsername(username));
+        // dispatch(setUserElo(resp.userElo));
+        // dispatch(setSessionToken(resp.sessionToken));
+        //
+        // routeToNext();
     }
 
     function AssignTwoFaCode(value) {
@@ -212,9 +223,19 @@ function RegisterForm({dispatch}) {
         }
     }
 
+    async function reSentEmail() {
+        const response = await reSentActivationEmail(email);
+        setReSentResult(response['result'] === "ok" ? "Activation email has been successfully resent" :
+            `Error occurred while trying to resent activation email: ${response['result']}`);
+
+        setTimeout(() => {
+            setReSentResult("")
+        }, 2500)
+    }
+
     return (
         <div className="LogRegForm">
-            <Form onSubmit={handleSubmit}>
+            <Form>
                 <Form.Control
                     required
                     placeholder="Username..."
@@ -271,7 +292,7 @@ function RegisterForm({dispatch}) {
                 />
 
                 {isEmailValid ?
-                    <div className="twoFaContainer">
+                    <div className="infoContainer">
                         <Form.Check
                             className="twoFactorAuth"
                             type="checkbox"
@@ -309,7 +330,15 @@ function RegisterForm({dispatch}) {
                             </p>
                             <div className="loader"/>
                         </div> : null}
-                    <Button type="submit">REGISTER</Button>
+                    {isActivateAccountInfoShown ?
+                        <div className="infoContainer">
+                            <p>Please activate your account and then login</p>
+                            <p>You can do it by clicking on link sent in given email</p>
+                            <Button onClick={() => history.push("/")}>Go back</Button>
+                            <Button onClick={reSentEmail}>Resent activation email</Button>
+                            {reSentResult !== "" ? <p>{reSentResult}</p> : null}
+                        </div> :
+                        <Button onClick={handleSubmit} type="submit">REGISTER</Button>}
                 </div>
             </Form>
         </div>
