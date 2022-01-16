@@ -6,10 +6,11 @@ import "../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {login, register} from "../../../serverLogic/LogRegService"
+import {check2FaCode, login, register} from "../../../serverLogic/LogRegService"
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
 import validator from 'validator'
+import {get2FaCode} from "../../../serverLogic/DataFetcher";
 
 
 function RegisterForm({dispatch}) {
@@ -20,6 +21,7 @@ function RegisterForm({dispatch}) {
     const [email, setEmail] = useState("");
     const [is2FaEnabled, setIs2FaEnabled] = useState(false);
     const [twoFaCode, setTwoFaCode] = useState("");
+    const [qrCode, setQrCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
     //for checking email requirements
@@ -134,11 +136,12 @@ function RegisterForm({dispatch}) {
         }
     }
 
-    function enable2FA() {
+    async function enable2FA() {
         if (is2FaEnabled) {
             setIs2FaEnabled(false)
         } else {
             setIs2FaEnabled(true)
+            setQrCode((await get2FaCode(email))['qr_code']);
         }
     }
 
@@ -174,9 +177,13 @@ function RegisterForm({dispatch}) {
     }
 
     function CheckTwoFaCode() {
-        const test = true;
-        setErrorMessage("Two authentication code is incorrect");
-        return test;
+        const response = check2FaCode(twoFaCode, username)
+
+        if (!response['result']) {
+            setErrorMessage("Two authentication code is incorrect");
+        }
+
+        return response['result'];
     }
 
     async function ForwardAfterLogin(resp) {
@@ -191,6 +198,12 @@ function RegisterForm({dispatch}) {
         dispatch(setSessionToken(resp.sessionToken));
 
         routeToNext();
+    }
+
+    function AssignTwoFaCode(value) {
+        if (value.length <= 6) {
+            setTwoFaCode(value);
+        }
     }
 
     return (
@@ -251,22 +264,32 @@ function RegisterForm({dispatch}) {
                     onChange={(e) => checkEmail(e.target.value)}
                 />
 
-                <Form.Check
-                    className="twoFactorAuth"
-                    type="checkbox"
-                    label="Use 2-Factor authentication"
-                    onChange={(_) => enable2FA()}
-                />
+                {isEmailValid ?
+                    <div className="twoFaContainer">
+                        <Form.Check
+                            className="twoFactorAuth"
+                            type="checkbox"
+                            label="Use 2-Factor authentication"
+                            onChange={(_) => enable2FA()}
+                        />
 
-                {is2FaEnabled ?
-                    <Form.Control
-                        className="twoFaField"
-                        required
-                        placeholder="2FA code..."
-                        type="number"
-                        value={twoFaCode}
-                        onChange={(e) => setTwoFaCode(e.target.value)}
-                    /> : null}
+                        {is2FaEnabled ?
+                            <>
+                                <Form.Control
+                                    className="twoFaField"
+                                    required
+                                    placeholder="2FA code..."
+                                    type="number"
+                                    value={twoFaCode}
+                                    onChange={(e) => AssignTwoFaCode(e.target.value)}
+                                />
+
+                                <img
+                                    className="twoFaImg"
+                                    src={`data:image/jpeg;base64,${qrCode}`}
+                                />
+                            </> : null}
+                    </div> : null}
 
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                     <ul>{errorMessage}</ul>

@@ -13,7 +13,13 @@ class Mailing:
         self.password = '$erek!@3'
         self.qr_code = None
 
-    def get_qr_code(self):
+    def get_qr_code(self, otp_secret):
+        img = qrcode.make(otp_secret)
+        img_array = io.BytesIO()
+        img.save(img_array, format='PNG')
+
+        self.qr_code = img_array.getvalue()
+
         return self.qr_code if self.qr_code is not None else None
 
     def __send_email(self, receiver_mail, msg):
@@ -62,15 +68,9 @@ class Mailing:
             </html>
             """.format(image_cid=image_cid[1:-1]), subtype='html')
 
-        img = qrcode.make(otp_secret)
-        img_array = io.BytesIO()
-        img.save(img_array, format='PNG')
-
-        self.qr_code = img_array.getvalue()
-
-        msg.get_payload()[1].add_related(self.qr_code,
+        msg.get_payload()[1].add_related(self.get_qr_code(otp_secret),
                                          maintype='PNG',
                                          subtype='PNG',
                                          cid=image_cid)
 
-        self.send_email(receiver_mail, msg)
+        self.__send_email(receiver_mail, msg)

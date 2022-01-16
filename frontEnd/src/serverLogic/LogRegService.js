@@ -1,6 +1,6 @@
 import {sha256} from "js-sha256";
 import {API_URL} from "./APIConfig";
-import {handleResponse, fetchWithTimeout, FETCH_DEBUGGING_MODE, authHeader} from "./DataFetcher"
+import {handleResponse, fetchWithTimeout, FETCH_DEBUGGING_MODE, authHeader, getSessionToken} from "./DataFetcher"
 import {store} from "../index";
 import {GAME_DEBUGING_MODE} from "../App";
 import {disconnectSocket, setSocketStatus} from "../redux/actions/socketActions";
@@ -27,6 +27,30 @@ export async function login(username, password, two_fa_code) {
         console.log(error);
         console.log(error.name === 'AbortError');
         return {error: 'Network connection error'};
+    }
+}
+
+export async function check2FaCode(code, username) {
+    try {
+        const requestOptions = {
+            method: 'POST',
+            mode: 'cors',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                username,
+                code
+            })
+        };
+
+        const response = await fetchWithTimeout(API_URL + '/check2Fa', requestOptions);
+        const respObj = await handleResponse(response);
+
+        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+
+        return respObj;
+
+    } catch (error) {
+        console.log(error);
     }
 }
 

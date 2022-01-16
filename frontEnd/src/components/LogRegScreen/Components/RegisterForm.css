@@ -9,3 +9,12 @@ input::-webkit-inner-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+.twoFaContainer {
+    display: flow-root !important;
+}
+
+.twoFaImg {
+    height: 100px !important;
+    margin-top: 25px;
+}

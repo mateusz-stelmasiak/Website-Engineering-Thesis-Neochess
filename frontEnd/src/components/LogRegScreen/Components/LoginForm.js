@@ -6,7 +6,7 @@ import "../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from 'react-router-dom';
-import {login, logout} from "../../../serverLogic/LogRegService"
+import {check2FaCode, login, logout} from "../../../serverLogic/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
 import Dots from "../../CommonComponents/Dots";
@@ -44,7 +44,7 @@ function LoginForm({dispatch}) {
         setIsTwoFaUsed(response['twoFa'])
 
         if (response['twoFa']) {
-            if (twoFaCode !== "" && CheckTwoFaCode()) {
+            if (twoFaCode !== "" && await CheckTwoFaCode()) {
                 await ForwardAfterLogin(await login(username, password, twoFaCode));
             }
         } else {
@@ -65,11 +65,22 @@ function LoginForm({dispatch}) {
         routeToNext();
     }
 
-    function CheckTwoFaCode() {
-        const test = true;
-        setIsTwoFaCorrect(test ? true : false);
-        setErrorMessage("Two authentication code is incorrect");
-        return test;
+    async function CheckTwoFaCode() {
+        const response = await check2FaCode(twoFaCode, username)
+
+        console.log(response)
+
+        if (!response['result']) {
+            setErrorMessage("Two authentication code is incorrect");
+        }
+
+        return response['result'];
+    }
+
+    function AssignTwoFaCode(value) {
+        if (value.length <= 6) {
+            setTwoFaCode(value);
+        }
     }
 
     return (
@@ -104,7 +115,7 @@ function LoginForm({dispatch}) {
                         placeholder="2FA code..."
                         type="number"
                         value={twoFaCode}
-                        onChange={(e) => setTwoFaCode(e.target.value)}
+                        onChange={(e) => AssignTwoFaCode(e.target.value)}
                     /> : null}
 
                 <div className="response">

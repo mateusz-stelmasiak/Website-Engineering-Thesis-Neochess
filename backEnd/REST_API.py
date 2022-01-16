@@ -13,13 +13,14 @@ from Mailing import Mailing
 
 domain = '34.118.14.151'
 dns_domain = 'chess-defence.ddns.net'
-local_port=str(3000)
-local_domain = 'localhost:'+local_port
+local_port = str(3000)
+local_domain = 'localhost:' + local_port
 orgin_prefix = "http://"
-allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1','127.0.0.1:'+local_port, 'localhost']
+allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
 allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
 debug_mode = True
+mail = Mailing()
 
 # FLASK CONFIG
 app = Flask(__name__)
@@ -85,7 +86,7 @@ def get_domain_from_url(url):
         url = url.split(":")[1]
 
     dom = url[2:]
-    #replace localhost with localhost ip
+    # replace localhost with localhost ip
     if dom == "localhost":
         dom = '127.0.0.1'
 
@@ -204,6 +205,40 @@ def logout():
     return resp
 
 
+@app.route('/check2Fa', methods=['POST', 'OPTIONS'])
+def check_2_fa():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    request_data = request.get_json()
+    username = request_data['username']
+    two_fa_code = request_data['code']
+
+    if debug_mode:
+        print("REGISTER REQUEST " + str(request_data))
+
+    try:
+        db = ChessDB.ChessDB()
+        user = db.get_user(username)
+
+        otp_secret = user[5]
+        otp = pyotp.totp.TOTP(otp_secret)
+
+        verify_result = otp.verify(two_fa_code)
+
+        return generate_response(request, {
+            "result": verify_result
+        }, 200 if verify_result else 403)
+
+    except Exception as ex:
+        if debug_mode:
+            ("DB ERROR" + str(ex))
+
+        return generate_response(request, {
+            "error": "Database error"
+        }, 503)
+
+
 @app.route('/register', methods=['POST', 'OPTIONS'])
 def register():
     if request.method == "OPTIONS":
@@ -234,8 +269,6 @@ def register():
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
-        mail = Mailing()
-
         if is2FaEnabled:
             # send mail with QR Code
             mail.send_qr_code(login, email, otp_url)
@@ -248,7 +281,10 @@ def register():
 
         return generate_response(request, {"error": "Database error"}, 503)
 
-    return generate_response(request, {"registration": 'succesfull'}, 200)
+    return generate_response(request,
+                             {
+                                 "registration": 'succesfull',
+                             }, 200)
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])
@@ -342,6 +378,27 @@ def get_game_info():
                 'whiteScore': game.defender_state.white_score,
                 'blackScore': game.defender_state.black_score
                 }
+
+    return generate_response(request, data, 200)
+
+
+@app.route('/get_qr_code', methods=['GET', 'OPTIONS'])
+def get_2fa_code():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("QR CODE REQUEST " + str(request.args))
+
+    email = request.args['email']
+
+    # generate OTP data
+    otp_secret = base64.b32encode(email.encode('ascii'))
+    otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+
+    data = {
+        "qr_code": base64.b64encode(mail.get_qr_code(otp_url)).decode()
+    }
 
     return generate_response(request, data, 200)
 
