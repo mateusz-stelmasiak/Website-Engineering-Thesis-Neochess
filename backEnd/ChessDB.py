@@ -179,14 +179,31 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def get_user(self, Username):
-        mycursor = self.mydb.cursor()
+    def get_user(self, username, email=None):
+        mycursor = self.mydb.cursor(buffered=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.Username = %s")
 
-        data_find = (Username,)
+        data_find = (username,)
         mycursor.execute(sql_find, data_find)
-        result = mycursor.fetchone()
+        user_data = mycursor.fetchone()
+
+        if email is None:
+            return user_data
+
+        result = {
+            "username": True if user_data is not None else False
+        }
+
+        if not result['username']:
+            sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
+
+            data_find = (email,)
+            mycursor.execute(sql_find, data_find)
+            result = {
+                "email": True if mycursor.fetchone() is not None else False
+            }
+
         mycursor.close()
         return result
 

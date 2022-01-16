@@ -212,7 +212,7 @@ def check_2_fa():
     two_fa_code = request_data['code']
 
     if debug_mode:
-        print("REGISTER REQUEST " + str(request_data))
+        print("CHECK_2FA_CODE REQUEST " + str(request_data))
 
     try:
         db = ChessDB.ChessDB()
@@ -256,9 +256,12 @@ def register():
     try:
         # handle username taken
         db = ChessDB.ChessDB()
-        user = db.get_user(username)
-        if user is not None:
+        user = db.get_user(username, email)
+        if "username" in user and user['username']:
             return generate_response(request, {"error": "Username already taken"}, 403)
+        if "email" in user and user['email']:
+            return generate_response(request, {"error": "Email already taken"}, 403)
+
         # generate OTP data
         otp_secret = base64.b32encode(email.encode('ascii'))
         otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
