@@ -121,7 +121,8 @@ def login():
     user_id = str(user[0])
     user_pass = str(user[2])
     user_2fa = True if str(user[4]) == '1' else False
-    user_elo = str(user[5])
+    user_elo = str(user[9])
+    user_account_activated = True if str(user[6]) == "1" else False
 
     # actual user's password doesn't match given
     if user_pass != request_data['hashedPassword']:
@@ -134,7 +135,7 @@ def login():
     print(refresh_token)
     # create cookie with refresh token, and send back payl1oad with sessionToken
     resp = generate_response(request, {"userId": user_id, "userElo": user_elo, "sessionToken": session_token,
-                                       "twoFa": user_2fa}, 200)
+                                       "twoFa": user_2fa, "accountActivated": user_account_activated}, 200)
 
     # create resfresh token cookie that is only ever sent to /refresh_session path
     req_url = request.environ.get('HTTP_ORIGIN', 'default value')
@@ -266,6 +267,7 @@ def register():
         # generate OTP data
         otp_secret = base64.b32encode(email.encode('ascii'))
         otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+
         # add to database
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
@@ -274,7 +276,6 @@ def register():
         link = url_for('confirm_email', token=token, _external=True)
 
         if is2FaEnabled:
-            # send mail with QR Code
             mail.send_qr_code(login, email, otp_url)
 
         mail.send_welcome_message(login, email, link)

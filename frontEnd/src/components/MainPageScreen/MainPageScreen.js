@@ -12,7 +12,6 @@ function MainPageScreen() {
 
     return (
         <div>
-
             <RejoinGameWidget/>
             <FindGameWidget/>
             <Section section="STATS">
