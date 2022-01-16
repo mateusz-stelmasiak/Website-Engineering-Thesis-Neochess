@@ -1,6 +1,8 @@
 import json
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, url_for
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+
 import ChessDB
 import random
 import hashlib
@@ -21,10 +23,12 @@ allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' +
 allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
 debug_mode = True
 mail = Mailing()
+s = URLSafeTimedSerializer('Thisisasecret!')
 
 # FLASK CONFIG
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'
+app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -247,9 +251,6 @@ def register():
     email = request_data['email']
     is2FaEnabled = request_data['is2FaEnabled']
 
-    print(email)
-    print(is2FaEnabled)
-
     if debug_mode:
         print("REGISTER REQUEST " + str(request_data))
 
@@ -269,11 +270,14 @@ def register():
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
+        token = s.dumps(email, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+
         if is2FaEnabled:
             # send mail with QR Code
             mail.send_qr_code(login, email, otp_url)
 
-        mail.send_welcome_message(login, email)
+        mail.send_welcome_message(login, email, link)
 
     except Exception as ex:
         if debug_mode:
@@ -285,6 +289,34 @@ def register():
                              {
                                  "registration": 'succesfull',
                              }, 200)
+
+
+@app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
+def confirm_email(token):
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=3600)
+    except SignatureExpired as ex:
+        print(ex)
+        return generate_response(request, {
+            "activation_result": "The confirmation link is invalid or has expired."
+        }, 400)
+
+    db = ChessDB.ChessDB()
+    user = db.get_user_by_email(email)
+
+    if user is not None:
+        if user[6]:  # if account has already been activated
+            return generate_response(request, {
+                "activation_result": "Account already confirmed. Please login."
+            }, 200)
+        else:
+            db.activate_user_account(email)
+            return generate_response(request, {
+                "activation_result": "You have confirmed your account. Thanks!"
+            }, 200)
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])
