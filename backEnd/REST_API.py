@@ -340,9 +340,7 @@ def confirm_email(token):
 
     if user is not None:
         if user[6]:  # if account has already been activated
-            return generate_response(request, {
-                "activation_result": "Account already confirmed. Please login."
-            }, 200)
+            return redirect(f"{local_domain}/")
         else:
             db.activate_user_account(email)
             return redirect(f"{local_domain}/")
