@@ -18,3 +18,12 @@ input[type=number] {
     height: 100px !important;
     margin-top: 25px;
 }
+
+.registeringProgress {
+    margin-right: 10px !important;
+    margin-top: 25px !important;
+}
+
+.registerLoadingContainer {
+    margin-top: 5px !important;
+}

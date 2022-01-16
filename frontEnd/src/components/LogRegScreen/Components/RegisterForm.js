@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./RegisterForm.css";
+import "./LoadingComponent.css";
 import "../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +24,7 @@ function RegisterForm({dispatch}) {
     const [twoFaCode, setTwoFaCode] = useState("");
     const [qrCode, setQrCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [isLoadingShown, setIsLoadingShown] = useState(false);
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -146,6 +148,7 @@ function RegisterForm({dispatch}) {
     }
 
     async function handleSubmit(event) {
+        setIsLoadingShown(true)
         event.preventDefault();
         //reset error message
         setErrorMessage("");
@@ -153,6 +156,7 @@ function RegisterForm({dispatch}) {
         //check if all data matches requirments
         let errors = validateData();
         if (errors.length !== 0) {
+            setIsLoadingShown(false);
             let errorList = errors.map(error => <li key={error}>{error}</li>);
             setErrorMessage(errorList);
             return;
@@ -168,7 +172,7 @@ function RegisterForm({dispatch}) {
 
         //autologin after successful register
         if (is2FaEnabled) {
-            if (twoFaCode !== "" && CheckTwoFaCode()) {
+            if (twoFaCode !== "" && await CheckTwoFaCode()) {
                 await ForwardAfterLogin(await login(username, password, twoFaCode));
             }
         } else {
@@ -176,8 +180,10 @@ function RegisterForm({dispatch}) {
         }
     }
 
-    function CheckTwoFaCode() {
-        const response = check2FaCode(twoFaCode, username)
+    async function CheckTwoFaCode() {
+        const response = await check2FaCode(twoFaCode, username)
+
+        console.log(response)
 
         if (!response['result']) {
             setErrorMessage("Two authentication code is incorrect");
@@ -294,6 +300,14 @@ function RegisterForm({dispatch}) {
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                     <ul>{errorMessage}</ul>
                 </div>
+
+                {errorMessage === "" && isLoadingShown ?
+                    <div className="registerLoadingContainer">
+                        <p className="registeringProgress">
+                            REGISTERING
+                        </p>
+                        <div className="loader"/>
+                    </div> : null}
 
                 <Button type="submit">REGISTER</Button>
             </Form>
