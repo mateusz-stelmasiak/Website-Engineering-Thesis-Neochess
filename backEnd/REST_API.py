@@ -345,7 +345,7 @@ def confirm_email(token):
             }, 200)
         else:
             db.activate_user_account(email)
-            # return redirect(f"{local_domain}/")
+            return redirect(f"{local_domain}/")
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])
