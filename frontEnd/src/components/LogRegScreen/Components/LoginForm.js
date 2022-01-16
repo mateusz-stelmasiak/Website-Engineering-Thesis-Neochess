@@ -17,7 +17,7 @@ function LoginForm({dispatch}) {
     const [passwordShown, setPasswordShown] = useState(false);
     const [twoFaCode, setTwoFaCode] = useState("");
     const [isTwoFaUsed, setIsTwoFaUsed] = useState(false);
-    const [isTwoFaCorrect, setIsTwoFaCorrect] = useState(false);
+    const [isAccountActivated, setIsAccountActivated] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
     const togglePasswordVisiblity = () => {
@@ -42,13 +42,16 @@ function LoginForm({dispatch}) {
 
         const response = await login(username, password, "")
         setIsTwoFaUsed(response['twoFa'])
+        setIsAccountActivated(response['accountActivated'])
 
-        if (response['twoFa']) {
-            if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                await ForwardAfterLogin(await login(username, password, twoFaCode));
+        if (response['accountActivated']) {
+            if (response['twoFa']) {
+                if (twoFaCode !== "" && await CheckTwoFaCode()) {
+                    await ForwardAfterLogin(await login(username, password, twoFaCode));
+                }
+            } else {
+                await ForwardAfterLogin(response);
             }
-        } else {
-            await ForwardAfterLogin(response);
         }
     }
 
@@ -120,7 +123,12 @@ function LoginForm({dispatch}) {
                     {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
                         feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                 </div>
-                <Button type="submit">LOGIN</Button>
+                {isAccountActivated ?
+                    <Button type="submit">LOGIN</Button> :
+                    <div className="notActivatedAccountContainer">
+                        <p>Account has not been activated</p>
+                        <p>You can activate your account by clicking on link sent in email while registration</p>
+                    </div>}
             </Form>
         </div>
     );

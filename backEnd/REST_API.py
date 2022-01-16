@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, request, jsonify, make_response, url_for
+from flask import Flask, request, jsonify, make_response, url_for, redirect
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 
 import ChessDB
@@ -315,9 +315,7 @@ def confirm_email(token):
             }, 200)
         else:
             db.activate_user_account(email)
-            return generate_response(request, {
-                "activation_result": "You have confirmed your account. Thanks!"
-            }, 200)
+            return redirect(f"{local_domain}/")
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])
