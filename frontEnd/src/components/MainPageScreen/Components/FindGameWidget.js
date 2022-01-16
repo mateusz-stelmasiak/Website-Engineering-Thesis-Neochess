@@ -39,7 +39,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
     //styling
     const idleStyle = {color: 'var(--primary-color-dark)'}
-    const inQStyle = {color: 'var(--sec-color)'}
+    const inQStyle = {color: 'var(--sec-color)',filter: 'drop-shadow(0 0 10rem var(--sec-color))'}
 
     const inQGameModeTextStyle = {color: 'var(--sec-color-dark)'}
 
@@ -81,7 +81,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             cachedGames = JSON.parse(cachedGames);
             console.log(cachedGames);
             setGameModeButtons(cachedGames);
-            return;
         }
 
         let resp = await getAvailableGameModes(sessionToken);
@@ -114,6 +113,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         //reselecting the same mode
         if (isInQ === true && (gameModeId === currGameMode)) {
+
             return;
         }
 

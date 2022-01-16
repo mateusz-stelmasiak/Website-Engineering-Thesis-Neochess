@@ -6,7 +6,7 @@ import {useHistory, useLocation} from "react-router-dom";
 //buttons on different subpages
 let pathMenuItems =
     {
-        "/": ["STATS", "PLAY"],
+        "/": ["STATS","HISTORY", "PLAY"],
     };
 
 export default function Header(props) {

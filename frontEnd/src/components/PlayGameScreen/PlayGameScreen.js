@@ -31,7 +31,7 @@ import {authorizeSocket, emit} from "../../redux/actions/socketActions";
 import {CSSTransition} from "react-transition-group";
 import GameTimersWidget from "./Components/GameTimersWidget";
 import TurnIndicator from "./Components/TurnIndicator";
-import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
+import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
 
 class PlayGameScreen extends Component {
 

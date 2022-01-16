@@ -2,10 +2,10 @@ import CookieTable from "./CookieTable";
 import {Cookie} from "./CookiesConsent";
 import {connect} from "react-redux";
 import {setPreferencesOpen} from "../../redux/actions/cookieActions";
-import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
-import Section from "../Layouts/Section";
+import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
+import Section from "../Layout/Section/Section";
 import "./CookiesPage.css"
-import SectionTitle from "../CommonComponents/SectionTitle";
+import SectionTitle from "../Layout/Section/SectionTitle";
 
 export let cookies =
     {

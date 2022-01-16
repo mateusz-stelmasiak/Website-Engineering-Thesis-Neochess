@@ -1,10 +1,10 @@
 import "./UserProfileScreen.css"
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
-import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
-import Section from "../Layouts/Section";
-import SectionTitle from "../CommonComponents/SectionTitle";
-import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
+import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
+import Section from "../Layout/Section/Section";
+import SectionTitle from "../Layout/Section/SectionTitle";
+import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
 
 function UserProfileScreen(props){
 
