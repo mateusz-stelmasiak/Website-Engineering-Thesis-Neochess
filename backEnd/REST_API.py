@@ -398,14 +398,14 @@ def reset_password():
             reset_url = reset_password_service.get_url_for_password_reset()
 
             mail.send_reset_password_token(user[1], email, reset_url)
-
-            return generate_response(request, {
-                "response": "OK"
-            }, 200)
         except Exception as ex:
             return generate_response(request, {
                 "response": f"Password reset error: {ex}"
             }, 503)
+
+    return generate_response(request, {
+        "response": "OK"
+    }, 200)
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])

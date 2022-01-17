@@ -19,7 +19,7 @@ class ResetPasswordService:
 
     def get_url_for_password_reset(self):
         return url_for(
-            'app_routes.reset_verified',
+            'reset_password',
             user=self.username,
             token=self.__get_reset_token(),
             _external=True

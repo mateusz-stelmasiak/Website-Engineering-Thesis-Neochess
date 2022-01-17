@@ -72,6 +72,24 @@ export async function check2FaCode(code, username) {
     }
 }
 
+export async function sendResetPasswordRequest(email) {
+    try {
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            timeout: 600000
+        }
+
+        const response = await fetchWithTimeout(API_URL + '/resetPasswordRequest?email=' + email, requestOptions);
+        const responseObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return responseObj;
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export async function register(username, password, email, is2FaEnabled) {
     try {
         let hashedPassword = sha256(password);
@@ -99,7 +117,6 @@ export async function register(username, password, email, is2FaEnabled) {
 
 export async function logout() {
     if (GAME_DEBUGING_MODE) return;
-
 
     const storeState = store.getState();
     let userId = storeState.user.userId;

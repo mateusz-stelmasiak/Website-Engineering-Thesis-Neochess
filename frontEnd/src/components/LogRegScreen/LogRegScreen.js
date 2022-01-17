@@ -4,19 +4,25 @@ import "./LogRegScreen.css"
 import OrbitContainer from "../OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
 import RegisterForm from "./Components/RegisterForm";
+import ForgotPasswordForm from "./Components/ForgotPassword/ForgotPasswordForm";
+import SetNewPasswordForm from "./Components/SetNewPassword/SetNewPasswordForm";
 
 
 export default function LogRegScreen() {
     let navItems = [
         <>LOGIN</>,
         <>REGISTER</>,
-        <>WATCH</>
+        <>WATCH</>,
+        <>RESET</>,
+        <>SET</>
     ];
 
     let centerViews = [
         <LoginForm/>,
         <RegisterForm/>,
-        <h2>NOT YET IMPLEMENTED</h2>
+        <h2>NOT YET IMPLEMENTED</h2>,
+        <ForgotPasswordForm/>,
+        <SetNewPasswordForm/>
     ]
 
     let centerContainer =  <CircleWidget

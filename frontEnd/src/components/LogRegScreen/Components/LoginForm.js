@@ -144,6 +144,7 @@ function LoginForm({dispatch}) {
                     {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
                         feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                 </div>
+
                 {isAccountActivated ?
                     <div className="loginContainer">
                         <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
