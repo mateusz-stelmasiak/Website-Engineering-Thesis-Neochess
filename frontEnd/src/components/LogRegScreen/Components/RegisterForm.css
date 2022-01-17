@@ -11,7 +11,7 @@ input[type=number] {
 }
 
 .infoContainer {
-    /*margin-top: 25px !important;*/
+    margin-top: 25px !important;
     display: flow-root !important;
 }
 
