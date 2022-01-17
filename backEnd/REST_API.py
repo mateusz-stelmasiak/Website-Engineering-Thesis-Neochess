@@ -8,6 +8,7 @@ import random
 import hashlib
 from flask_cors import CORS
 import RatingSystem
+from ResetPasswordService import ResetPasswordService
 from ServerState import *
 import pyotp
 import base64
@@ -23,7 +24,7 @@ allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' +
 allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
 debug_mode = True
 mail = Mailing()
-s = URLSafeTimedSerializer('Thisisasecret!')
+activate_account_serializer = URLSafeTimedSerializer('Thisisasecret!')
 
 # FLASK CONFIG
 app = Flask(__name__)
@@ -272,7 +273,7 @@ def register():
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
-        token = s.dumps(email, salt='email-confirm')
+        token = activate_account_serializer.dumps(email, salt='email-confirm')
         link = url_for('confirm_email', token=token, _external=True)
 
         if is2FaEnabled:
@@ -308,7 +309,7 @@ def resent_activation_email():
         data = user[3]
 
     try:
-        token = s.dumps(data, salt='email-confirm')
+        token = activate_account_serializer.dumps(data, salt='email-confirm')
         link = url_for('confirm_email', token=token, _external=True)
 
         mail.send_welcome_message(login, data, link)
@@ -328,7 +329,7 @@ def confirm_email(token):
         return generate_response(request, {}, 200)
 
     try:
-        email = s.loads(token, salt='email-confirm', max_age=3600)
+        email = activate_account_serializer.loads(token, salt='email-confirm', max_age=3600)
     except SignatureExpired as ex:
         print(ex)
         return generate_response(request, {
@@ -344,6 +345,67 @@ def confirm_email(token):
         else:
             db.activate_user_account(email)
             return redirect(f"{local_domain}/")
+
+
+@app.route('/setNewPassword/<token>', methods=['POST', "OPTIONS"])
+def set_new_password(token):
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    request_data = request.get_json()
+    password = request_data['password']
+
+    if debug_mode:
+        print("SET_NEW_PASSWORD REQUEST " + str(request.args))
+
+    reset_password_service = ResetPasswordService(app.config['Secret_KEY'])
+    username = reset_password_service.verify_reset_token(token)
+
+    try:
+        db = ChessDB.ChessDB()
+        db.update_password(password, username)
+
+        return generate_response(request, {
+            "response": "OK"
+        }, 200)
+    except Exception as ex:
+        return generate_response(request, {
+            "response": f"Database error: {ex}"
+        }, 503)
+
+
+@app.route('/resetPasswordRequest', methods=['GET', 'OPTIONS'])
+def reset_password():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("PASSWORD_RESET REQUEST " + str(request.args))
+
+    email = request.args['email']
+
+    try:
+        db = ChessDB.ChessDB()
+        user = db.get_user_by_email(email)
+    except Exception as ex:
+        return generate_response(request, {
+            "response": f"Database error: {ex}"
+        }, 503)
+
+    if user is not None:
+        try:
+            reset_password_service = ResetPasswordService(app.config['SECRET_KEY'], user[1])
+            reset_url = reset_password_service.get_url_for_password_reset()
+
+            mail.send_reset_password_token(user[1], email, reset_url)
+
+            return generate_response(request, {
+                "response": "OK"
+            }, 200)
+        except Exception as ex:
+            return generate_response(request, {
+                "response": f"Password reset error: {ex}"
+            }, 503)
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])

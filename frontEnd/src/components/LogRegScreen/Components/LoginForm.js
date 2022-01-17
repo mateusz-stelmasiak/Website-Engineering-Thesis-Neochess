@@ -101,6 +101,10 @@ function LoginForm({dispatch}) {
         }
     }
 
+    function onForgotPasswordClicked() {
+        console.log("FORGOT")
+    }
+
     return (
         <div className="LogRegForm">
             <Form>
@@ -141,7 +145,13 @@ function LoginForm({dispatch}) {
                         feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                 </div>
                 {isAccountActivated ?
-                    <Button onClick={HandleSubmit} type="submit">LOGIN</Button> :
+                    <div className="loginContainer">
+                        <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
+                        <a
+                            className="forgotPassword"
+                            onClick={onForgotPasswordClicked}
+                        >Forgot password?</a>
+                    </div> :
                     <div className="notActivatedAccountContainer">
                         <p>Account has not been activated</p>
                         <p>You can activate your account by clicking on link sent in email while registration</p>

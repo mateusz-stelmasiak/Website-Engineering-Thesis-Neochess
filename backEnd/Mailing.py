@@ -34,7 +34,9 @@ class Mailing:
         msg['Subject'] = 'Witaj na NeoChess'
         msg['From'] = 'NeoChess <' + self.address + '>'
         msg['To'] = f"{username} <{receiver_mail}>"
-        msg.set_content("TODO")
+        msg.set_content(
+            f"Podany adres email został użyty podczas zakładania nowego konta dla użytkownika: {username}"
+        )
         msg.add_alternative("""\
             <html>
                 <body>
@@ -49,13 +51,35 @@ class Mailing:
 
         self.__send_email(receiver_mail, msg)
 
+    def send_reset_password_token(self, username, receiver_mail, url):
+        msg = EmailMessage()
+        msg['Subject'] = 'Resetowanie hasła do konta'
+        msg['From'] = 'NeoChess <' + self.address + '>'
+        msg['To'] = f"{username} <{receiver_mail}>"
+        msg.set_content(
+            f"Podany adres email został podany podczas resetowania hasła do konta o nazwie użytkownika: {username}"
+        )
+        msg.add_alternative("""\
+            <html>
+                <body>
+                    <p>
+                        <h1>Zarejestrowałeś się na NeoChess.</h1><br>
+                        W celu ustawienia nowego hasła do konta, kliknij w poniższy link
+                        <p><a href="{{ confirmation_url }}">{{ """ + url + """ }}</a></p>
+                    </p>
+                </body>
+            </html>
+            """.format(subtype='html'))
+
     def send_qr_code(self, username, receiver_mail, otp_secret):
         msg = EmailMessage()
         msg['Subject'] = 'Witaj na NeoChess'
         msg['From'] = 'NeoChess <' + self.address + '>'
         msg['To'] = f"{username} <{receiver_mail}>"
         msg.set_content(
-            'Zarejestrowałeś się na NeoChess. Zeskanuj poniższy kod QR w aplikacji Google Authenticator, aby generować kody autoryzujące logowanie.')
+            'Zarejestrowałeś się na NeoChess. Zeskanuj poniższy kod QR w aplikacji Google Authenticator, '
+            'aby generować kody autoryzujące logowanie.'
+        )
         image_cid = make_msgid(domain='chess-defence.ddns.net')
         msg.add_alternative("""\
             <html>
