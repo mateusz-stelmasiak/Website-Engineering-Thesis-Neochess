@@ -1,6 +1,8 @@
 import json
 
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response, url_for, redirect
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+
 import ChessDB
 import random
 import hashlib
@@ -21,10 +23,12 @@ allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' +
 allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
 debug_mode = True
 mail = Mailing()
+s = URLSafeTimedSerializer('Thisisasecret!')
 
 # FLASK CONFIG
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secretkey'
+app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
 
@@ -117,7 +121,8 @@ def login():
     user_id = str(user[0])
     user_pass = str(user[2])
     user_2fa = True if str(user[4]) == '1' else False
-    user_elo = str(user[5])
+    user_elo = str(user[9])
+    user_account_activated = True if str(user[6]) == "1" else False
 
     # actual user's password doesn't match given
     if user_pass != request_data['hashedPassword']:
@@ -130,7 +135,7 @@ def login():
     print(refresh_token)
     # create cookie with refresh token, and send back payl1oad with sessionToken
     resp = generate_response(request, {"userId": user_id, "userElo": user_elo, "sessionToken": session_token,
-                                       "twoFa": user_2fa}, 200)
+                                       "twoFa": user_2fa, "accountActivated": user_account_activated}, 200)
 
     # create resfresh token cookie that is only ever sent to /refresh_session path
     req_url = request.environ.get('HTTP_ORIGIN', 'default value')
@@ -247,9 +252,6 @@ def register():
     email = request_data['email']
     is2FaEnabled = request_data['is2FaEnabled']
 
-    print(email)
-    print(is2FaEnabled)
-
     if debug_mode:
         print("REGISTER REQUEST " + str(request_data))
 
@@ -265,15 +267,18 @@ def register():
         # generate OTP data
         otp_secret = base64.b32encode(email.encode('ascii'))
         otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+
         # add to database
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
+        token = s.dumps(email, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+
         if is2FaEnabled:
-            # send mail with QR Code
             mail.send_qr_code(login, email, otp_url)
 
-        mail.send_welcome_message(login, email)
+        mail.send_welcome_message(login, email, link)
 
     except Exception as ex:
         if debug_mode:
@@ -285,6 +290,60 @@ def register():
                              {
                                  "registration": 'succesfull',
                              }, 200)
+
+
+@app.route('/resent', methods=['GET', 'OPTIONS'])
+def resent_activation_email():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("RESENT_ACTIVATION_EMAIL REQUEST " + str(request.args))
+
+    data = request.args['data']
+
+    if "@" not in data:
+        db = ChessDB.ChessDB()
+        user = db.get_user(data)
+        data = user[3]
+
+    try:
+        token = s.dumps(data, salt='email-confirm')
+        link = url_for('confirm_email', token=token, _external=True)
+
+        mail.send_welcome_message(login, data, link)
+
+        return generate_response(request, {
+            "result": "ok"
+        }, 200)
+    except Exception as ex:
+        return generate_response(request, {
+            "result": ex
+        }, 503)
+
+
+@app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
+def confirm_email(token):
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=3600)
+    except SignatureExpired as ex:
+        print(ex)
+        return generate_response(request, {
+            "activation_result": "The confirmation link is invalid or has expired."
+        }, 400)
+
+    db = ChessDB.ChessDB()
+    user = db.get_user_by_email(email)
+
+    if user is not None:
+        if user[6]:  # if account has already been activated
+            return redirect(f"{local_domain}/")
+        else:
+            db.activate_user_account(email)
+            return redirect(f"{local_domain}/")
 
 
 @app.route('/is_in_game', methods=['GET', 'OPTIONS'])

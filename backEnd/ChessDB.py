@@ -3,10 +3,10 @@ import mysql.connector
 import RatingSystem
 
 #to account for time difference due to timezones (in hh:mm:ss)
-server_time_difference='02:00:00'
+server_time_difference = '02:00:00'
+
 
 class ChessDB:
-
     def __init__(self):
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
         self.mydb = mysql.connector.connect(host="localhost", user="user",
@@ -31,6 +31,7 @@ class ChessDB:
                             Email varchar(64) not null,
                             2FA boolean not null DEFAULT false,
                             OTPSecret varchar(64) not null,
+                            AccountConfirmed boolean not null DEFAULT false,
                             Country varchar(64), 
                             Joined DATE not null,
                             Elo FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
@@ -82,6 +83,16 @@ class ChessDB:
         date = self.get_curr_date()
         data_user = (username, password, email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
+        self.mydb.commit()
+        mycursor.close()
+
+    def activate_user_account(self, email):
+        mycursor = self.mydb.cursor(buffered=True)
+
+        sql_update = ("""UPDATE Users SET AccountConfirmed = true WHERE Email = %s""")
+
+        data_update = (email,)
+        mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
 
@@ -178,6 +189,18 @@ class ChessDB:
 
         self.mydb.commit()
         mycursor.close()
+
+    def get_user_by_email(self, email):
+        mycursor = self.mydb.cursor(buffered=True)
+
+        sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
+
+        data_find = (email,)
+        mycursor.execute(sql_find, data_find)
+        user_data = mycursor.fetchone()
+
+        mycursor.close()
+        return user_data
 
     def get_user(self, username, email=None):
         mycursor = self.mydb.cursor(buffered=True)

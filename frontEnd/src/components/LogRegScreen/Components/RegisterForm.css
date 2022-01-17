@@ -10,7 +10,8 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.twoFaContainer {
+.infoContainer {
+    margin-top: 25px !important;
     display: flow-root !important;
 }
 

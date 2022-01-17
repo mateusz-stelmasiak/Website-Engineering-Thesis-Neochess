@@ -29,7 +29,7 @@ class Mailing:
             server.login(self.address, self.password)
             server.sendmail(self.address, receiver_mail, msg.as_string())
 
-    def send_welcome_message(self, username, receiver_mail):
+    def send_welcome_message(self, username, receiver_mail, confirmation_url):
         msg = EmailMessage()
         msg['Subject'] = 'Witaj na NeoChess'
         msg['From'] = 'NeoChess <' + self.address + '>'
@@ -40,7 +40,8 @@ class Mailing:
                 <body>
                     <p>
                         <h1>Zarejestrowałeś się na NeoChess.</h1><br>
-                        Zeskanuj poniższy kod w aplikacji Google Authenticator, aby generować kody autoryzujące logowanie.
+                        W celu potwierdzenia konta udaj się w poniższy link
+                        <p><a href="{{ confirmation_url }}">{{ """ + confirmation_url + """ }}</a></p>
                     </p>
                 </body>
             </html>

@@ -30,6 +30,24 @@ export async function login(username, password, two_fa_code) {
     }
 }
 
+export async function reSentActivationEmail(data) {
+    try {
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            timeout: 600000
+        }
+
+        const response = await fetchWithTimeout(API_URL + '/resent?data=' + data, requestOptions);
+        const responseObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return responseObj;
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export async function check2FaCode(code, username) {
     try {
         const requestOptions = {

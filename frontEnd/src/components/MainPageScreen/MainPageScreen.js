@@ -9,10 +9,8 @@ import TextFlashComponent from "../CommonComponents/TextFlashComponent";
 import NavBar from "../Navigation/NavBar";
 
 function MainPageScreen() {
-
     return (
         <div>
-
             <RejoinGameWidget/>
             <FindGameWidget/>
             <Section section="STATS">
