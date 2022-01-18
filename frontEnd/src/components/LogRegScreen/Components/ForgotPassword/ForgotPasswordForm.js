@@ -4,10 +4,13 @@ import validator from "validator";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import "./ForgotPasswordForm.css";
-import {sendResetPasswordRequest} from "../../../../serverLogic/LogRegService";
+import {sendResetPassword, sendResetPasswordRequest} from "../../../../serverLogic/LogRegService";
+import {useHistory} from "react-router-dom";
 
 
 function ForgotPasswordForm({dispatch}) {
+    const [isLoadingShown, setIsLoadingShown] = useState(false);
+
     const [email, setEmail] = useState("");
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [confirmedEmail, setConfirmedEmail] = useState("");
@@ -15,6 +18,10 @@ function ForgotPasswordForm({dispatch}) {
     const [passwordRequestResult, setPasswordRequestResult] = useState("")
 
     const [errorMessage, setErrorMessage] = useState("");
+
+    //routing after successfully setting new password
+    const history = useHistory();
+    const routeToNext = () => history.push('/');
 
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
@@ -39,33 +46,42 @@ function ForgotPasswordForm({dispatch}) {
     }
 
     async function SendResetPassword() {
+        setIsLoadingShown(true)
+
         //check if all data matches requirments
         let errors = ValidateData();
 
         if (errors.length !== 0) {
+            setIsLoadingShown(false);
+
             let errorList = errors.map(error => <li key={error}>{error}</li>);
             setErrorMessage(errorList);
 
             setTimeout(() => {
-                setErrorMessage("")
+                setErrorMessage("");
             }, 5000)
 
             return;
         }
 
-        let response = await sendResetPasswordRequest(email)
+        let response = await sendResetPassword(email)
         if (response === undefined) return;
         if (response.error !== undefined) {
             setErrorMessage(response.error);
             return;
         }
 
-        setPasswordRequestResult(response['result'] === "ok" ? "Reset password email has been successfully sent" :
+        setIsLoadingShown(false);
+
+        console.log(response);
+
+        setPasswordRequestResult(response['response'] === "OK" ? "Reset password email has been successfully sent" :
             `Error occurred while trying to send password reset message: ${response['result']}`);
 
         setTimeout(() => {
-            setPasswordRequestResult("")
-        }, 2500)
+            setPasswordRequestResult("");
+            routeToNext();
+        }, 5000);
     }
 
     function CheckEmailConfirm(confEmail) {
@@ -106,6 +122,13 @@ function ForgotPasswordForm({dispatch}) {
                 </div>
 
                 <Button onClick={SendResetPassword}>Send reset password email</Button>
+                {errorMessage === "" && isLoadingShown ?
+                    <div className="registerLoadingContainer">
+                        <p className="registeringProgress">
+                            SENDING EMAIL
+                        </p>
+                        <div className="loader"/>
+                    </div> : null}
                 {passwordRequestResult !== "" ? <p>{passwordRequestResult}</p> : null}
             </Form>
         </div>

@@ -72,7 +72,7 @@ export async function check2FaCode(code, username) {
     }
 }
 
-export async function sendResetPasswordRequest(email) {
+export async function sendResetPassword(email) {
     try {
         const requestOptions = {
             method: 'GET',
@@ -80,11 +80,33 @@ export async function sendResetPasswordRequest(email) {
             timeout: 600000
         }
 
-        const response = await fetchWithTimeout(API_URL + '/resetPasswordRequest?email=' + email, requestOptions);
+        const response = await fetchWithTimeout(API_URL + '/forgotPassword?email=' + email, requestOptions);
         const responseObj = await handleResponse(response);
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return responseObj;
 
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export async function setNewPassword(token, newPassword) {
+    try {
+        const hashedPassword = sha256(newPassword);
+        const requestOptions = {
+            method: 'POST',
+            mode: 'cors',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                hashedPassword
+            })
+        }
+
+        const response = await fetchWithTimeout(API_URL + '/setNewPassword/' + token, requestOptions);
+        const respObj = await handleResponse(response);
+
+        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+        return respObj;
     } catch (error) {
         console.log(error)
     }

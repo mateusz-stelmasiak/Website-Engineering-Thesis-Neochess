@@ -5,6 +5,8 @@ import {connect} from "react-redux";
 import "./SetNewPassword.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
+import {setNewPassword} from "../../../../serverLogic/LogRegService";
+import {useHistory} from "react-router-dom";
 
 
 function SetNewPasswordForm({dispatch}) {
@@ -34,6 +36,10 @@ function SetNewPasswordForm({dispatch}) {
 
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
+
+    //routing after successfully setting new password
+    const history = useHistory();
+    const routeToNext = () => history.push('/');
 
     function hasNumber(string) {
         return /\d/.test(string);
@@ -76,8 +82,37 @@ function SetNewPasswordForm({dispatch}) {
         return errors;
     }
 
-    function SetNewPassword() {
+    async function SetNewPassword(event) {
+        event.preventDefault();
+        //reset error message
+        setErrorMessage("");
 
+        //check if all data matches requirments
+        let errors = ValidateData();
+
+        if (errors.length !== 0) {
+            let errorList = errors.map(error => <li key={error}>{error}</li>);
+            setErrorMessage(errorList);
+
+            setTimeout(() => {
+                setErrorMessage("")
+            }, 5000)
+
+            return;
+        }
+
+        const response = await setNewPassword("", password); //GET TOKEN SOMEHOW
+
+        if (response['error'] === undefined) {
+            setNewPasswordRequestResult(response['result'])
+
+            setTimeout(() => {
+                setNewPasswordRequestResult("");
+                routeToNext();
+            }, 5000);
+        } else {
+            setErrorMessage(response['error'])
+        }
     }
 
     return (

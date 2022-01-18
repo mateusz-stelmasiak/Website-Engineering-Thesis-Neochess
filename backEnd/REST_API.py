@@ -18,13 +18,12 @@ domain = '34.118.14.151'
 dns_domain = 'chess-defence.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
-orgin_prefix = "http://"
+origin_prefix = "http://"
 allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
-allowed_origins = [orgin_prefix + dom for dom in allowed_domains]
+allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
 mail = Mailing()
-activate_account_serializer = URLSafeTimedSerializer('Thisisasecret!')
 
 # FLASK CONFIG
 app = Flask(__name__)
@@ -32,6 +31,8 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 # TODO Uncomment below when ssl is installed (secure cookies)
@@ -184,7 +185,9 @@ def logout():
         if debug_mode: print('No player id in logout')
         return generate_response(request, {"error": "Missing playerId"}, 400)
 
-    if debug_mode: print("LOGOUT REQUEST " + str(request.args))
+    if debug_mode:
+        print("LOGOUT REQUEST " + str(request.args))
+
     user_id = request.args['userId']
 
     session_token = request.headers['Authorization']
@@ -273,7 +276,7 @@ def register():
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
-        token = activate_account_serializer.dumps(email, salt='email-confirm')
+        token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
         link = url_for('confirm_email', token=token, _external=True)
 
         if is2FaEnabled:
@@ -309,7 +312,7 @@ def resent_activation_email():
         data = user[3]
 
     try:
-        token = activate_account_serializer.dumps(data, salt='email-confirm')
+        token = account_serializer.dumps(data, salt=app.config['SECRET_KEY'])
         link = url_for('confirm_email', token=token, _external=True)
 
         mail.send_welcome_message(login, data, link)
@@ -329,7 +332,7 @@ def confirm_email(token):
         return generate_response(request, {}, 200)
 
     try:
-        email = activate_account_serializer.loads(token, salt='email-confirm', max_age=3600)
+        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
     except SignatureExpired as ex:
         print(ex)
         return generate_response(request, {
@@ -347,8 +350,8 @@ def confirm_email(token):
             return redirect(f"{local_domain}/")
 
 
-@app.route('/setNewPassword/<token>', methods=['POST', "OPTIONS"])
-def set_new_password(token):
+@app.route('/reset/<token>', methods=['POST', "OPTIONS"])
+def reset_password(token):
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
@@ -374,8 +377,8 @@ def set_new_password(token):
         }, 503)
 
 
-@app.route('/resetPasswordRequest', methods=['GET', 'OPTIONS'])
-def reset_password():
+@app.route('/forgotPassword', methods=['GET', 'OPTIONS'])
+def forgot_password():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
@@ -394,8 +397,9 @@ def reset_password():
 
     if user is not None:
         try:
-            reset_password_service = ResetPasswordService(app.config['SECRET_KEY'], user[1])
-            reset_url = reset_password_service.get_url_for_password_reset()
+            token = account_serializer.dumps(email, salt='recover-key')
+            # reset_url = url_for(f"{local_domain}/", token=token, _external=True)
+            reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
 
             mail.send_reset_password_token(user[1], email, reset_url)
         except Exception as ex:
