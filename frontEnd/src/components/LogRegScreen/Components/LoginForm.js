@@ -10,6 +10,7 @@ import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serve
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
 import Dots from "../../CommonComponents/Dots";
+import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
 
 function LoginForm({dispatch}) {
     const [username, setUserName] = useState("");
@@ -21,9 +22,12 @@ function LoginForm({dispatch}) {
     const [reSentResult, setReSentResult] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
+    const [forgotPassword, setForgotPassword] = useState(false);
+
     const togglePasswordVisiblity = () => {
         setPasswordShown(!passwordShown);
     };
+
     const eye = <FontAwesomeIcon icon={faEye}/>;
 
     //routing after succesfull login
@@ -101,67 +105,65 @@ function LoginForm({dispatch}) {
         }
     }
 
-    function onForgotPasswordClicked() {
-        console.log("FORGOT")
-    }
-
-    return (
-        <div className="LogRegForm">
-            <Form>
-                <Form.Control
-                    required
-                    placeholder="Username..."
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUserName(e.target.value)}
-                />
-
-                <div className="pass-wrapper">
+    return <>
+        {!forgotPassword ?
+            <div className="LogRegForm">
+                <Form>
                     <Form.Control
                         required
-                        placeholder="Password..."
-                        type={passwordShown ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder="Username..."
+                        type="text"
+                        value={username}
+                        onChange={(e) => setUserName(e.target.value)}
                     />
-                    <i
-                        onClick={togglePasswordVisiblity}
-                        style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
-                    >{eye}</i>
-                </div>
 
-                {isTwoFaUsed ?
-                    <Form.Control
-                        className="twoFaField"
-                        required
-                        placeholder="2FA code..."
-                        type="number"
-                        value={twoFaCode}
-                        onChange={(e) => AssignTwoFaCode(e.target.value)}
-                    /> : null}
+                    <div className="pass-wrapper">
+                        <Form.Control
+                            required
+                            placeholder="Password..."
+                            type={passwordShown ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <i
+                            onClick={togglePasswordVisiblity}
+                            style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
+                        >{eye}</i>
+                    </div>
 
-                <div className="response">
-                    {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
-                        feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
-                </div>
+                    {isTwoFaUsed ?
+                        <Form.Control
+                            className="twoFaField"
+                            required
+                            placeholder="2FA code..."
+                            type="number"
+                            value={twoFaCode}
+                            onChange={(e) => AssignTwoFaCode(e.target.value)}
+                        /> : null}
 
-                {isAccountActivated ?
-                    <div className="loginContainer">
-                        <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
-                        <a
-                            className="forgotPassword"
-                            onClick={onForgotPasswordClicked}
-                        >Forgot password?</a>
-                    </div> :
-                    <div className="notActivatedAccountContainer">
-                        <p>Account has not been activated</p>
-                        <p>You can activate your account by clicking on link sent in email while registration</p>
-                        <Button onClick={reSentEmail}>Resent activation email</Button>
-                        {reSentResult !== "" ? <p>{reSentResult}</p> : null}
-                    </div>}
-            </Form>
-        </div>
-    );
+                    <div className="response">
+                        {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
+                            feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
+                    </div>
+
+                    {isAccountActivated ?
+                        <div className="loginContainer">
+                            <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
+                            <a
+                                className="forgotPassword"
+                                onClick={() => setForgotPassword(true)}
+                            >Forgot password?</a>
+                        </div> :
+                        <div className="notActivatedAccountContainer">
+                            <p>Account has not been activated</p>
+                            <p>You can activate your account by clicking on link sent in email while registration</p>
+                            <Button onClick={reSentEmail}>Resent activation email</Button>
+                            {reSentResult !== "" ? <p>{reSentResult}</p> : null}
+                        </div>}
+                </Form>
+            </div> : <ForgotPasswordForm/>
+        }
+    </>;
 }
 
 // Connect Redux to React

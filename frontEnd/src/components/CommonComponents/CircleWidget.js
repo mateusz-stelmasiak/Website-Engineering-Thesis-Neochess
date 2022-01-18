@@ -71,7 +71,6 @@ export default function CircleWidget(props) {
                             {navButton}
                         </a>
                     );
-
                 }
             )
             setNavigationObj(tmp);
@@ -79,7 +78,6 @@ export default function CircleWidget(props) {
             changeView(0);
         }
     }, [])
-
 
     return (
         <div className="CircleWidget" style={{transform: 'translateY(' + props.translate + ')'}}>
@@ -92,25 +90,26 @@ export default function CircleWidget(props) {
                         <div className="contentContainer">
 
                             {currentView === -1 &&
-                            <>
-                                <h1>{props.title} </h1>
-                                <div className="navContainer">
-                                    {navigationObj}
-                                </div>
-                            </>
+                                <>
+                                    <h1>{props.title} </h1>
+                                    <div className="navContainer">
+                                        {navigationObj}
+                                    </div>
+                                </>
                             }
                             {props.views &&
-                            <>
-                                {currentView !== -1 && goBackArrow}
-                                <>{props.views[currentView]}</>
-                            </>
+                                <>
+                                    {currentView !== -1 && goBackArrow}
+                                    <>
+                                        {props.views[currentView]}
+                                    </>
+                                </>
                             }
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     );
 }
 

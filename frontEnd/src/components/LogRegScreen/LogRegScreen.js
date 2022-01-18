@@ -12,15 +12,13 @@ export default function LogRegScreen() {
     let navItems = [
         <>LOGIN</>,
         <>REGISTER</>,
-        <>WATCH</>,
-        <>RESET</>,
+        <>WATCH</>
     ];
 
     let centerViews = [
         <LoginForm/>,
         <RegisterForm/>,
-        <h2>NOT YET IMPLEMENTED</h2>,
-        <ForgotPasswordForm/>,
+        <h2>NOT YET IMPLEMENTED</h2>
     ]
 
     let centerContainer =  <CircleWidget
