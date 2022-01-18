@@ -32,6 +32,7 @@ export default function LogRegScreen() {
         secColor={"var(--sec-color)"}
         size={'large'}
         views = {centerViews}
+        renderWithContent = {false}
     >
     </CircleWidget>;
 

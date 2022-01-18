@@ -9,7 +9,6 @@ export default function CircleWidget(props) {
         setCurrentView(index)
     }
 
-
     //BAND COLOR CONTROl
     let borderGlowStyle = {
         'boxShadow': 'inset 0 0 13px 6px ' + props.basecolor
@@ -58,26 +57,27 @@ export default function CircleWidget(props) {
         }
     }
 
-
     let goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
-
 
     //assing on click change view on widget load
     useEffect(() => {
-        if (!props.navigation) return;
-        console.log("VIEWS")
-        console.log(props.views)
-        let tmp = props.navigation.map((navButton, index) => {
-                return (
-                    <a onClick={() => changeView(index)}>
-                        {navButton}
-                    </a>
-                );
+        if (!props.renderWithContent) {
+            if (!props.navigation) return;
+            console.log("VIEWS")
+            console.log(props.views)
+            let tmp = props.navigation.map((navButton, index) => {
+                    return (
+                        <a onClick={() => changeView(index)}>
+                            {navButton}
+                        </a>
+                    );
 
-            }
-        )
-        setNavigationObj(tmp);
-
+                }
+            )
+            setNavigationObj(tmp);
+        } else {
+            changeView(0);
+        }
     }, [])
 
 
