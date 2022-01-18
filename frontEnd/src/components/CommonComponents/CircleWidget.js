@@ -2,15 +2,15 @@ import React, {useEffect, useState} from "react";
 import "./CircleWidget.css"
 
 export default function CircleWidget(props) {
-    let [currentView, setCurrentView] = useState(-1);
-    let [navigationObj, setNavigationObj] = useState([]);
+    const [currentView, setCurrentView] = useState(-1);
+    const [navigationObj, setNavigationObj] = useState([]);
 
-    let changeView = (index) => {
+    const changeView = (index) => {
         setCurrentView(index)
     }
 
     //BAND COLOR CONTROl
-    let borderGlowStyle = {
+    const borderGlowStyle = {
         'boxShadow': 'inset 0 0 13px 6px ' + props.basecolor
     }
 
@@ -25,7 +25,7 @@ export default function CircleWidget(props) {
     //     root.style.setProperty('--ring-speed', '0.7s');
     // }
 
-    let sizeStyle = {
+    const sizeStyle = {
         small: {
             width: 'min(10rem,40vw)',
             height: 'min(10rem,40vw)',
@@ -46,7 +46,7 @@ export default function CircleWidget(props) {
         }
     }
 
-    let colorStyle = {
+    const colorStyle = {
         unfocused: {
             backgroundColor: props.basecolor,
             color: props.basecolor,
@@ -57,7 +57,7 @@ export default function CircleWidget(props) {
         }
     }
 
-    let goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
+    const goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
 
     //assing on click change view on widget load
     useEffect(() => {

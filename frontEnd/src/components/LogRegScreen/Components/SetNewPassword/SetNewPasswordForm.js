@@ -113,7 +113,8 @@ function SetNewPasswordForm({dispatch}) {
         const response = await setNewPassword(token, password);
 
         if (response['error'] === undefined) {
-            setNewPasswordRequestResult(response['result'])
+            setNewPasswordRequestResult(response['response'] === 'OK' ? "Password has been successfully changed" :
+                `Error occurred while creating password: ${response['response']}`)
 
             setTimeout(() => {
                 setNewPasswordRequestResult("");

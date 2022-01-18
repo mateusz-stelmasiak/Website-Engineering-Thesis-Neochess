@@ -14,7 +14,6 @@ export default function LogRegScreen() {
         <>REGISTER</>,
         <>WATCH</>,
         <>RESET</>,
-        <>SET</>
     ];
 
     let centerViews = [
@@ -22,7 +21,6 @@ export default function LogRegScreen() {
         <RegisterForm/>,
         <h2>NOT YET IMPLEMENTED</h2>,
         <ForgotPasswordForm/>,
-        <SetNewPasswordForm/>
     ]
 
     let centerContainer =  <CircleWidget
