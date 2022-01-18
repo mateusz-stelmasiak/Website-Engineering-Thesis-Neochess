@@ -10,6 +10,14 @@
     margin-top: 25px !important;
 }
 
+.loginContainer {
+    display: grid !important;
+}
+
+.forgotPassword {
+    margin-top: 10px !important;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

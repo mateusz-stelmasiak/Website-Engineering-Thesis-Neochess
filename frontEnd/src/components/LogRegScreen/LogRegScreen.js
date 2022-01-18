@@ -4,6 +4,8 @@ import "./LogRegScreen.css"
 import OrbitContainer from "../OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
 import RegisterForm from "./Components/RegisterForm";
+import ForgotPasswordForm from "./Components/ForgotPassword/ForgotPasswordForm";
+import SetNewPasswordForm from "./Components/SetNewPassword/SetNewPasswordForm";
 
 
 export default function LogRegScreen() {
@@ -26,6 +28,7 @@ export default function LogRegScreen() {
         secColor={"var(--sec-color)"}
         size={'large'}
         views = {centerViews}
+        renderWithContent = {false}
     >
     </CircleWidget>;
 

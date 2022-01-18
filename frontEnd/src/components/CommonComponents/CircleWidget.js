@@ -2,16 +2,15 @@ import React, {useEffect, useState} from "react";
 import "./CircleWidget.css"
 
 export default function CircleWidget(props) {
-    let [currentView, setCurrentView] = useState(-1);
-    let [navigationObj, setNavigationObj] = useState([]);
+    const [currentView, setCurrentView] = useState(-1);
+    const [navigationObj, setNavigationObj] = useState([]);
 
-    let changeView = (index) => {
+    const changeView = (index) => {
         setCurrentView(index)
     }
 
-
     //BAND COLOR CONTROl
-    let borderGlowStyle = {
+    const borderGlowStyle = {
         'boxShadow': 'inset 0 0 13px 6px ' + props.basecolor
     }
 
@@ -26,7 +25,7 @@ export default function CircleWidget(props) {
     //     root.style.setProperty('--ring-speed', '0.7s');
     // }
 
-    let sizeStyle = {
+    const sizeStyle = {
         small: {
             width: 'min(10rem,40vw)',
             height: 'min(10rem,40vw)',
@@ -47,7 +46,7 @@ export default function CircleWidget(props) {
         }
     }
 
-    let colorStyle = {
+    const colorStyle = {
         unfocused: {
             backgroundColor: props.basecolor,
             color: props.basecolor,
@@ -58,28 +57,27 @@ export default function CircleWidget(props) {
         }
     }
 
-
-    let goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
-
+    const goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
 
     //assing on click change view on widget load
     useEffect(() => {
-        if (!props.navigation) return;
-        console.log("VIEWS")
-        console.log(props.views)
-        let tmp = props.navigation.map((navButton, index) => {
-                return (
-                    <a onClick={() => changeView(index)}>
-                        {navButton}
-                    </a>
-                );
-
-            }
-        )
-        setNavigationObj(tmp);
-
+        if (!props.renderWithContent) {
+            if (!props.navigation) return;
+            console.log("VIEWS")
+            console.log(props.views)
+            let tmp = props.navigation.map((navButton, index) => {
+                    return (
+                        <a onClick={() => changeView(index)}>
+                            {navButton}
+                        </a>
+                    );
+                }
+            )
+            setNavigationObj(tmp);
+        } else {
+            changeView(0);
+        }
     }, [])
-
 
     return (
         <div className="CircleWidget" style={{transform: 'translateY(' + props.translate + ')'}}>
@@ -92,25 +90,26 @@ export default function CircleWidget(props) {
                         <div className="contentContainer">
 
                             {currentView === -1 &&
-                            <>
-                                <h1>{props.title} </h1>
-                                <div className="navContainer">
-                                    {navigationObj}
-                                </div>
-                            </>
+                                <>
+                                    <h1>{props.title} </h1>
+                                    <div className="navContainer">
+                                        {navigationObj}
+                                    </div>
+                                </>
                             }
                             {props.views &&
-                            <>
-                                {currentView !== -1 && goBackArrow}
-                                <>{props.views[currentView]}</>
-                            </>
+                                <>
+                                    {currentView !== -1 && goBackArrow}
+                                    <>
+                                        {props.views[currentView]}
+                                    </>
+                                </>
                             }
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
     );
 }
 
