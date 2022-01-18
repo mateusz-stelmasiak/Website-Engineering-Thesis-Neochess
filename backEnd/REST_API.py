@@ -350,23 +350,23 @@ def confirm_email(token):
             return redirect(f"{local_domain}/")
 
 
-@app.route('/reset/<token>', methods=['POST', "OPTIONS"])
-def reset_password(token):
+@app.route('/reset', methods=['POST'])
+def reset():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
     request_data = request.get_json()
-    password = request_data['password']
+    token = request_data['token']
+    password = request_data['hashedPassword']
 
     if debug_mode:
         print("SET_NEW_PASSWORD REQUEST " + str(request.args))
 
-    reset_password_service = ResetPasswordService(app.config['Secret_KEY'])
-    username = reset_password_service.verify_reset_token(token)
-
     try:
+        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
+
         db = ChessDB.ChessDB()
-        db.update_password(password, username)
+        db.update_password(password, email)
 
         return generate_response(request, {
             "response": "OK"
@@ -397,8 +397,7 @@ def forgot_password():
 
     if user is not None:
         try:
-            token = account_serializer.dumps(email, salt='recover-key')
-            # reset_url = url_for(f"{local_domain}/", token=token, _external=True)
+            token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
             reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
 
             mail.send_reset_password_token(user[1], email, reset_url)

@@ -154,12 +154,12 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def update_password(self, new_password, Username):
+    def update_password(self, new_password, email):
         mycursor = self.mydb.cursor()
 
         sql_update = ("""UPDATE Users SET Password = %s WHERE UserID = %s""")
 
-        data_update = (new_password, self.get_user(Username)[0])
+        data_update = (new_password, self.get_user_by_email(email)[0])
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()

@@ -82,9 +82,10 @@ export async function sendResetPassword(email) {
 
         const response = await fetchWithTimeout(API_URL + '/forgotPassword?email=' + email, requestOptions);
         const responseObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
-        return responseObj;
 
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+
+        return responseObj;
     } catch (error) {
         console.log(error)
     }
@@ -93,19 +94,22 @@ export async function sendResetPassword(email) {
 export async function setNewPassword(token, newPassword) {
     try {
         const hashedPassword = sha256(newPassword);
+
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
+                token,
                 hashedPassword
             })
         }
 
-        const response = await fetchWithTimeout(API_URL + '/setNewPassword/' + token, requestOptions);
+        const response = await fetchWithTimeout(API_URL + '/reset', requestOptions);
         const respObj = await handleResponse(response);
 
         if (FETCH_DEBUGGING_MODE) console.log(respObj);
+
         return respObj;
     } catch (error) {
         console.log(error)

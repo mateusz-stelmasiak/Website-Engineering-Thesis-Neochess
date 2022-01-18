@@ -1,15 +1,18 @@
 import Form from "react-bootstrap/Form";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import "./SetNewPassword.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {setNewPassword} from "../../../../serverLogic/LogRegService";
-import {useHistory} from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 
 
 function SetNewPasswordForm({dispatch}) {
+    let { search } = useLocation();
+    const token = (new URLSearchParams(search)).get('token')
+
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -40,6 +43,12 @@ function SetNewPasswordForm({dispatch}) {
     //routing after successfully setting new password
     const history = useHistory();
     const routeToNext = () => history.push('/');
+
+    useEffect(() => {
+        if (token === null) {
+            routeToNext();
+        }
+    }, [])
 
     function hasNumber(string) {
         return /\d/.test(string);
@@ -101,7 +110,7 @@ function SetNewPasswordForm({dispatch}) {
             return;
         }
 
-        const response = await setNewPassword("", password); //GET TOKEN SOMEHOW
+        const response = await setNewPassword(token, password);
 
         if (response['error'] === undefined) {
             setNewPasswordRequestResult(response['result'])
