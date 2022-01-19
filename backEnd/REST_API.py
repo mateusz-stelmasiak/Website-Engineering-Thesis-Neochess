@@ -305,7 +305,7 @@ def register():
                              }, 200)
 
 
-@app.route('update', methods=['PUT', 'OPTIONS'])
+@app.route('/update', methods=['PUT', 'OPTIONS'])
 def update_user():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
