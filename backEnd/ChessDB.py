@@ -2,7 +2,7 @@ from datetime import date
 import mysql.connector
 import RatingSystem
 
-#to account for time difference due to timezones (in hh:mm:ss)
+# to account for time difference due to timezones (in hh:mm:ss)
 server_time_difference = '02:00:00'
 
 
@@ -36,7 +36,8 @@ class ChessDB:
                             Joined DATE not null,
                             Elo FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             EloDeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
-                            EloVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
+                            EloVolatility FLOAT not null DEFAULT ''' + str(
+            RatingSystem.starting_ELO_volatility) + ''' );''')
 
         mycursor.execute('''CREATE table if not exists Participants
                             (ParticipantID integer primary key AUTO_INCREMENT, 
@@ -61,7 +62,7 @@ class ChessDB:
 
     def get_curr_date_time(self):
         mycursor = self.mydb.cursor()
-        date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '"+server_time_difference+"') AS Today"
+        date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '" + server_time_difference + "') AS Today"
         mycursor.execute(date)
 
         return mycursor.fetchone()[0]
@@ -152,6 +153,33 @@ class ChessDB:
         data_update = (new_ELO, new_ELO_dv, new_ELO_v, user_id)
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
+        mycursor.close()
+
+    def update_user(self, user_id, new_user_data_json):
+        mycursor = self.mydb.cursor()
+        is_account_activated = True
+
+        current_user = self.get_user_by_id(user_id)
+
+        username = new_user_data_json['username']
+        password = new_user_data_json['password']
+        email = new_user_data_json['email']
+        is_2_fa_enabled = new_user_data_json['is2FaEnabled']
+
+        if current_user[3] != email:
+            is_account_activated = False
+
+        sql_update_query = ("""UPDATE Users SET Username = %s,
+                                Password = %s,
+                                Email = %s,
+                                2FA = %s,
+                                AccountConfirmed = %s""")
+
+        data_update = (username, password, email, is_2_fa_enabled, is_account_activated)
+        mycursor.execute(sql_update_query, data_update)
+
+        self.mydb.commit()
+
         mycursor.close()
 
     def update_password(self, new_password, email):

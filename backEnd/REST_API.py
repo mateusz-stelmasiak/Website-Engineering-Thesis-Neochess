@@ -182,7 +182,9 @@ def logout():
         return generate_response(request, {}, 200)
 
     if request.args is None:
-        if debug_mode: print('No player id in logout')
+        if debug_mode:
+            print('No player id in logout')
+
         return generate_response(request, {"error": "Missing playerId"}, 400)
 
     if debug_mode:
@@ -191,6 +193,7 @@ def logout():
     user_id = request.args['userId']
 
     session_token = request.headers['Authorization']
+
     if not authorize_user(user_id, session_token):
         return generate_response(request, {"error": "Authorisation failed."}, 401)
 
@@ -263,10 +266,16 @@ def register():
         # handle username taken
         db = ChessDB.ChessDB()
         user = db.get_user(username, email)
+
         if "username" in user and user['username']:
-            return generate_response(request, {"error": "Username already taken"}, 403)
+            return generate_response(request, {
+                "error": "Username already taken"
+            }, 403)
+
         if "email" in user and user['email']:
-            return generate_response(request, {"error": "Email already taken"}, 403)
+            return generate_response(request, {
+                "error": "Email already taken"
+            }, 403)
 
         # generate OTP data
         otp_secret = base64.b32encode(email.encode('ascii'))
@@ -294,6 +303,57 @@ def register():
                              {
                                  "registration": 'succesfull',
                              }, 200)
+
+
+@app.route('update', methods=['PUT', 'OPTIONS'])
+def update_user():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("UPDATE_USER REQUEST " + str(request.args))
+
+    user_id = request.args['userId']
+
+    # handle user not having a session at all or invalid authorization
+    session_token = request.headers['Authorization']
+
+    if not authorize_user(user_id, session_token):
+        if debug_mode:
+            print('Authorization failed')
+
+        return generate_response(request, {
+            "error": "Authorisation failed."
+        }, 401)
+
+    request_data = request.get_json()
+    username = request_data['username']
+    email = request_data['email']
+
+    try:
+        db = ChessDB.ChessDB()
+        user = db.get_user(username, email)
+
+        if "username" in user and user['username']:
+            return generate_response(request, {
+                "error": "Username already taken"
+            }, 403)
+
+        if "email" in user and user['email']:
+            return generate_response(request, {
+                "error": "Email already taken"
+            }, 403)
+
+        db.update_user(user_id, request_data)
+
+        return generate_response(request, {
+            "response": "OK"
+        }, 200)
+
+    except Exception as ex:
+        return generate_response(request, {
+            "response": f"Database error: {ex}"
+        }, 503)
 
 
 @app.route('/resent', methods=['GET', 'OPTIONS'])
@@ -416,20 +476,29 @@ def is_in_game():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("IS_IN_GAME REQUEST " + str(request.args))
+    if debug_mode:
+        print("IS_IN_GAME REQUEST " + str(request.args))
+
     user_id = request.args['userId']
 
     # handle user not having a session at all or invalid authorization
     session_token = request.headers['Authorization']
+
     if not authorize_user(user_id, session_token):
-        if debug_mode: print('Authorization failed')
-        return generate_response(request, {"error": "Authorisation failed."}, 401)
+        if debug_mode:
+            print('Authorization failed')
+
+        return generate_response(request, {
+            "error": "Authorisation failed."
+        }, 401)
 
     # generate info
     data = {"inGame": False}
     game_info = get_is_player_in_game(user_id)
     if not game_info:
-        if debug_mode: print('Player not in game!')
+        if debug_mode:
+            print('Player not in game!')
+
         return generate_response(request, data, 200)
 
     game = game_info[0]
@@ -451,10 +520,14 @@ def get_game_info():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("GAME_INFO REQUEST " + str(request.args))
+    if debug_mode:
+        print("GAME_INFO REQUEST " + str(request.args))
+
     if 'gameRoomId' not in request.args:
         print("MISSING ARGUMENT")
-        return generate_response(request, {"error": 'missing gameRoomId arg'}, 400)
+        return generate_response(request, {
+            "error": 'missing gameRoomId arg'
+        }, 400)
 
     game_room_id = request.args['gameRoomId']
 
@@ -532,7 +605,9 @@ def get_player_stats():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("PLAYER_STATS REQUEST " + str(request.args))
+    if debug_mode:
+        print("PLAYER_STATS REQUEST " + str(request.args))
+
     user_id = request.args['userId']
 
     # handle user not having a session at all or invalid authorization
@@ -551,6 +626,7 @@ def get_player_stats():
         games_won = db.count_wins(user_id)
         games_lost = db.count_losses(user_id)
         draws = db.count_draws(user_id)
+
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
@@ -588,13 +664,18 @@ def get_history():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("PLAYER_HISTORY REQUEST " + str(request.args))
+    if debug_mode:
+        print("PLAYER_HISTORY REQUEST " + str(request.args))
+
     user_id = request.args['userId']
 
     # handle user not having a session at all or invalid authorization
     session_token = request.headers['Authorization']
+
     if not authorize_user(user_id, session_token):
-        if debug_mode: print('Authorization failed')
+        if debug_mode:
+            print('Authorization failed')
+
         return generate_response(request, {"error": "Authorisation failed."}, 401)
 
     # set page to 0 if not given in request
@@ -611,6 +692,7 @@ def get_history():
         start = page * games_per_page
         end = page * games_per_page + games_per_page
         game_history = db.get_games(user_id, start, end)
+
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
@@ -648,5 +730,7 @@ def get_history():
             if debug_mode: ("DB ERROR" + str(ex))
             return generate_response(request, {"error": "Cannot fetch from db"}, 503)
 
-    if debug_mode: print(game_history)
+    if debug_mode:
+        print(game_history)
+
     return generate_response(request, json.dumps(history), 200)
