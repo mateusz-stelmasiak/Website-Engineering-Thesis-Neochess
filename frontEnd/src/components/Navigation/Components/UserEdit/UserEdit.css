@@ -1,0 +1,10 @@
+:root{
+    --textfield-bg-color: #0b0b0b;
+}
+
+.UserEditForm {
+    width: 55%;
+    display: flow-root !important;
+
+    background-color: white;
+}

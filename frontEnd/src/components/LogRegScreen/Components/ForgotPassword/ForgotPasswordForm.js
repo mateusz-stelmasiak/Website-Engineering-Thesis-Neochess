@@ -4,7 +4,7 @@ import validator from "validator";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import "./ForgotPasswordForm.css";
-import {sendResetPassword, sendResetPasswordRequest} from "../../../../serverLogic/LogRegService";
+import {sendResetPassword} from "../../../../serverLogic/LogRegService";
 import {useHistory} from "react-router-dom";
 
 
@@ -72,9 +72,6 @@ function ForgotPasswordForm({dispatch}) {
         }
 
         setIsLoadingShown(false);
-
-        console.log(response);
-
         setPasswordRequestResult(response['response'] === "OK" ? "Reset password email has been successfully sent"
             : `Error occurred while trying to send password reset message: ${response['result']}`);
 

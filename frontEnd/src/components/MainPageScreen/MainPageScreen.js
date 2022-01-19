@@ -7,12 +7,14 @@ import RejoinGameWidget from "./Components/MatchHistory/RejoinGameWidget";
 import Blink from 'react-blink-text';
 import TextFlashComponent from "../CommonComponents/TextFlashComponent";
 import NavBar from "../Navigation/NavBar/NavBar";
+import UserEditForm from "../Navigation/Components/UserEdit/UserEdit";
 
 function MainPageScreen() {
     return (
         <div>
             <RejoinGameWidget/>
             <FindGameWidget/>
+            <UserEditForm/>
             <Section section="STATS">
                 <StatsContainer/>
                 <MatchHistory/>
