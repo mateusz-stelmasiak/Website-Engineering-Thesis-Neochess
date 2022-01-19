@@ -57,9 +57,10 @@ function FindGameWidget({userId, socket, dispatch}) {
     //gamemodes handling
     const [selectedGameMode, setSelectedGameMode] = useState(-1);
     const gameModeButtons = allGameModes.map(
-        (mode) => {
+        (mode, index) => {
             return (
                 <button
+                    key={index}
                     className="PlayGameWidget-gameModeButton"
                     onClick={() => {
                         findGame(mode.id)
