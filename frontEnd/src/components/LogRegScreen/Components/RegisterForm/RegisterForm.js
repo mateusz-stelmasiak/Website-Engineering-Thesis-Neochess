@@ -2,16 +2,16 @@ import React, {useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./RegisterForm.css";
-import "./LoadingComponent.css";
-import "../../../serverLogic/APIConfig.js"
+import "../LoadingComponent.css";
+import "../../../../serverLogic/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {check2FaCode, login, register, reSentActivationEmail} from "../../../serverLogic/LogRegService"
-import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
+import {check2FaCode, login, register, reSentActivationEmail} from "../../../../serverLogic/LogRegService"
+import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../../redux/actions/userActions"
 import {connect} from 'react-redux'
 import validator from 'validator'
-import {get2FaCode} from "../../../serverLogic/DataFetcher";
+import {get2FaCode} from "../../../../serverLogic/DataFetcher";
 
 
 function RegisterForm({dispatch}) {

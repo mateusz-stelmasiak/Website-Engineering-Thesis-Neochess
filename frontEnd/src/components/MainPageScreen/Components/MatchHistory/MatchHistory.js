@@ -1,10 +1,10 @@
 import {Component} from "react";
 import "./MatchHistory.css"
-import "../../../CommonComponents/SectionTitle";
-import SectionTitle from "../../../CommonComponents/SectionTitle";
+import "../../../CommonComponents/SectionTitle/SectionTitle";
+import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
 import MatchHistoryItem, {MatchResult, MatchDate, MatchItemInfo, PlayerInfo} from "./MatchHistoryItem"
 import "./MatchHistoryItem";
-import VariableColor from "../../../CommonComponents/VariableColor";
+import VariableColor from "../../../CommonComponents/VariableColor/VariableColor";
 import {getMatchHistory} from "../../../../serverLogic/DataFetcher"
 import {FETCH_DEBUGGING_MODE} from "../../../../serverLogic/DataFetcher"
 import {connect} from "react-redux";

@@ -1,9 +1,9 @@
 import React from "react";
-import CircleWidget from "../CommonComponents/CircleWidget";
+import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
 import "./LogRegScreen.css"
 import OrbitContainer from "../OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm";
+import RegisterForm from "./Components/RegisterForm/RegisterForm";
 import ForgotPasswordForm from "./Components/ForgotPassword/ForgotPasswordForm";
 import SetNewPasswordForm from "./Components/SetNewPassword/SetNewPasswordForm";
 

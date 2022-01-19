@@ -1,5 +1,5 @@
 import "./TextWithWavyOrnament.css"
-import ornament from "../../assets/wavy-ornament.png";
+import ornament from "../../../assets/wavy-ornament.png";
 import React, {Component} from "react";
 
 

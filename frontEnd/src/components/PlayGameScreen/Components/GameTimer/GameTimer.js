@@ -1,7 +1,7 @@
 import "./GameTimer.css"
 import React, {Component, useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {classNames, formatTime, formatTimeMinutes} from "../../../serverLogic/Utils";
+import {classNames, formatTime, formatTimeMinutes} from "../../../../serverLogic/Utils";
 
 
 //time below which the timer becomes red
