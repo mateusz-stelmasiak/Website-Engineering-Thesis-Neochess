@@ -87,6 +87,16 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
+    def remove_user(self, user_id):
+        mycursor = self.mydb.cursor(buffered=True)
+
+        sql_delete = ("""DELETE FROM Users WHERE userID = %s""")
+
+        data_delete = (user_id,)
+        mycursor.execute(sql_delete, data_delete)
+        self.mydb.commit()
+        mycursor.close()
+
     def activate_user_account(self, email):
         mycursor = self.mydb.cursor(buffered=True)
 

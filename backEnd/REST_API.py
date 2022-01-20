@@ -305,6 +305,40 @@ def register():
                              }, 200)
 
 
+@app.route('/delete', methods=['DELETE', 'OPTIONS'])
+def delete_user():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode:
+        print("DELETE_USER REQUEST " + str(request.args))
+
+    user_id = request.headers['userId']
+
+    # handle user not having a session at all or invalid authorization
+    session_token = request.headers['Authorization']
+
+    if not authorize_user(user_id, session_token):
+        if debug_mode:
+            print('Authorization failed')
+
+        return generate_response(request, {
+            "error": "Authorisation failed."
+        }, 401)
+
+    try:
+        db = ChessDB.ChessDB()
+        db.remove_user(user_id)
+
+        return generate_response(request, {
+            "response": "OK"
+        }, 200)
+    except Exception as ex:
+        return generate_response(request, {
+            "response": f"Database error: {ex}"
+        }, 503)
+
+
 @app.route('/update', methods=['PUT', 'OPTIONS'])
 def update_user():
     if request.method == "OPTIONS":
