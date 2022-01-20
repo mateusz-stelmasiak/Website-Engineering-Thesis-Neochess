@@ -19,6 +19,9 @@ import {
     updateUser
 } from "../../../../serverLogic/LogRegService";
 import {sha256} from "js-sha256";
+import {disconnectSocket, setSocketStatus} from "../../../../redux/actions/socketActions";
+import {SocketStatus} from "../../../../serverLogic/WebSocket";
+import {store} from "../../../../index";
 
 function UserEditForm(props) {
     //fields in form
@@ -161,6 +164,12 @@ function UserEditForm(props) {
         const response = await deleteUserAccount()
 
         setTimeout(() => {
+            localStorage.clear();
+            sessionStorage.clear()
+            store.dispatch(setSocketStatus(SocketStatus.disconnected));
+            store.dispatch(disconnectSocket());
+            window.location.reload(true); //reload to reroute to loginpage
+
             history.push('/')
         }, 4000);
     }
