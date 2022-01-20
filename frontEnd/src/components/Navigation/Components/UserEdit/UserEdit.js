@@ -5,23 +5,15 @@ import React, {useEffect, useState} from "react";
 import validator from "validator";
 import Button from "react-bootstrap/Button";
 import "../../../CommonComponents/CircleWidget/CircleWidget.css";
-import RegisterForm from "../../../LogRegScreen/Components/RegisterForm/RegisterForm";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
-import {useHistory} from "react-router-dom";
 import {get2FaCode} from "../../../../serverLogic/DataFetcher";
 import {
-    check2FaCode, deleteUserAccount, getUserData,
-    login,
+    check2FaCode,
     logout,
-    register,
-    reSentActivationEmail,
     updateUser
 } from "../../../../serverLogic/LogRegService";
-import {sha256} from "js-sha256";
-import {disconnectSocket, setSocketStatus} from "../../../../redux/actions/socketActions";
-import {SocketStatus} from "../../../../serverLogic/WebSocket";
-import {store} from "../../../../index";
+import DeleteAccount from "./DeleteAccount/DeleteAccount";
 
 function UserEditForm(props) {
     //fields in form
@@ -65,8 +57,6 @@ function UserEditForm(props) {
     const togglePasswordVisiblity = () => {
         setPasswordShown(!passwordShown);
     };
-
-    const history = useHistory();
 
     const eye = <FontAwesomeIcon icon={faEye}/>;
 
@@ -159,21 +149,6 @@ function UserEditForm(props) {
         }
     }
 
-    async function onDeleteClicked(event) {
-        event.preventDefault()
-        const response = await deleteUserAccount()
-
-        setTimeout(() => {
-            localStorage.clear();
-            sessionStorage.clear()
-            store.dispatch(setSocketStatus(SocketStatus.disconnected));
-            store.dispatch(disconnectSocket());
-            window.location.reload(true); //reload to reroute to loginpage
-
-            history.push('/')
-        }, 4000);
-    }
-
     async function handleSubmit(event) {
         setIsLoadingShown(true)
         event.preventDefault();
@@ -232,6 +207,7 @@ function UserEditForm(props) {
                     value={username}
                     onChange={(e) => checkUsername(e.target.value)}
                 />
+
                 <p>Must be at least
                     <span
                         style={{color: isUsernameLongEnough ? successColor : failColor}}> {minUsernameLength} characters </span>
@@ -254,6 +230,7 @@ function UserEditForm(props) {
                         {eye}
                     </i>
                 </div>
+
                 <p>Must be at least
                     <span
                         style={{color: isPasswordLongEnough ? successColor : failColor}}> {minPassLength} characters </span> long,
@@ -279,46 +256,48 @@ function UserEditForm(props) {
                     value={email}
                     onChange={(e) => checkEmail(e.target.value)}
                 />
+                <div style={{marginTop: "25px", display: "flex"}}>
+                    <div>
+                        <Form.Check
+                            type="checkbox"
+                            label="Use 2-Factor authentication"
+                            onChange={(_) => enable2FA()}
+                            checked={is2FaEnabled}
+                        />
+                        {is2FaEnabled ?
+                            <>
+                                <Form.Control
+                                    className="twoFaForm"
+                                    required
+                                    placeholder="2FA code..."
+                                    type="number"
+                                    value={twoFaCode}
+                                    onChange={(e) => AssignTwoFaCode(e.target.value)}
+                                />
 
-                <div className="infoContainer">
-                    <Form.Check
-                        type="checkbox"
-                        label="Use 2-Factor authentication"
-                        onChange={(_) => enable2FA()}
-                        checked={is2FaEnabled}
-                    />
-                    {is2FaEnabled ?
-                        <>
-                            <Form.Control
-                                className="twoFaForm"
-                                required
-                                placeholder="2FA code..."
-                                type="number"
-                                value={twoFaCode}
-                                onChange={(e) => AssignTwoFaCode(e.target.value)}
-                            />
-
-                            <img
-                                className="twoFaImg"
-                                src={`data:image/jpeg;base64,${qrCode}`}
-                            />
-                        </> : null}
-
-                    <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
-                        <ul>{errorMessage}</ul>
+                                <img
+                                    className="twoFaImg"
+                                    src={`data:image/jpeg;base64,${qrCode}`}
+                                />
+                            </> : null}
+                        <Button
+                            onClick={handleSubmit} type="submit"
+                            style={{marginLeft: "20px"}}
+                        >Submit</Button>
                     </div>
-                    <div className="UserEditButtons">
-                        <Button onClick={handleSubmit} type="submit">Submit</Button>
-                        <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
-                    </div>
-                    {errorMessage === "" && isLoadingShown ?
-                        <div className="registerLoadingContainer">
-                            <p className="registeringProgress">
-                                UPDATING USER
-                            </p>
-                            <div className="loader"/>
-                        </div> : null}
+                    <DeleteAccount/>
                 </div>
+
+                <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
+                    <ul>{errorMessage}</ul>
+                </div>
+                {errorMessage === "" && isLoadingShown ?
+                    <div className="registerLoadingContainer">
+                        <p className="registeringProgress">
+                            UPDATING USER
+                        </p>
+                        <div className="loader"/>
+                    </div> : null}
             </Form>
         </div>
     </>

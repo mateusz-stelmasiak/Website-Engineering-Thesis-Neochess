@@ -366,14 +366,20 @@ def delete_user():
             "error": "Authorisation failed."
         }, 401)
 
+    request_data = request.get_json()
+
     try:
         db = ChessDB.ChessDB()
+
+        if db.get_user_by_id(user_id)['Password'] != request_data['hashedPassword']:
+            return generate_response(request, {
+                "response": "Incorrect password"
+            }, 403)
+
         db.remove_user(user_id)
-
         del Sessions[str(user_id)]
-
         resp = generate_response(request, {
-            "result": 'OK'
+            "response": 'OK'
         }, 200)
 
         req_url = request.environ.get('HTTP_ORIGIN', 'default value')

@@ -35,7 +35,16 @@ input[type=number] {
 }
 
 .UserEditForm {
-    width: 30%;
+    width: 40%;
+}
+
+.AccountDelete {
+    margin-top: 25px;
+}
+
+.AccountDeletePasswordContainer {
+    width: 50%;
+    margin-left: 20px;
 }
 
 .twoFaForm {
@@ -150,6 +159,7 @@ input[type=number] {
 .errorMessage {
     flex: 1 1 100%;
     margin-top: 1rem;
+    color: var(--sec-color);
 }
 
 .errorMessage:before{

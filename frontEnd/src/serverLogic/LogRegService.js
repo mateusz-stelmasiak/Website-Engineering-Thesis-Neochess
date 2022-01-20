@@ -89,11 +89,13 @@ export async function getUserData() {
     }
 }
 
-export async function deleteUserAccount() {
+export async function deleteUserAccount(password) {
     try {
         const storeState = store.getState();
-        let userId = storeState.user.userId;
-        let sessionToken = storeState.user.sessionToken;
+        const userId = storeState.user.userId;
+        const sessionToken = storeState.user.sessionToken;
+
+        const hashedPassword = sha256(password);
 
         if (sessionToken == 'none' || !userId) {
             localStorage.clear();
@@ -105,8 +107,14 @@ export async function deleteUserAccount() {
         const requestOptions = {
             method: 'DELETE',
             mode: 'cors',
-            headers: authHeader(sessionToken),
-            timeout: 600000
+            headers: {
+                ...{
+                    'Content-Type': 'application/json',
+                }, ...authHeader(sessionToken)
+            },
+            body: JSON.stringify({
+                hashedPassword
+            })
         }
 
         const response = await fetchWithTimeout(API_URL + '/delete?id=' + userId, requestOptions);
