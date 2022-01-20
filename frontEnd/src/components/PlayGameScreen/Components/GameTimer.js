@@ -1,17 +1,16 @@
 import "./GameTimer.css"
-import React, {Component, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {classNames, formatTime, formatTimeMinutes} from "../../../serverCommunication/Utils";
-
+import {classNames, formatTimeMinutes} from "../../../serverCommunication/Utils";
 
 //time below which the timer becomes red
-const LOW_TIME_BOUNDRY = 10;
+const LOW_TIME_BOUNDARY = 10;
 
 function GameTimer({currentTurn, playerColor, blackTime, whiteTime, style}) {
     const [timer, setTimer] = useState(600);
     let classes = {
         'active': playerColor === currentTurn,
-        'low-time': timer <= LOW_TIME_BOUNDRY,
+        'low-time': timer <= LOW_TIME_BOUNDARY,
     };
 
     //on intialization
@@ -19,7 +18,7 @@ function GameTimer({currentTurn, playerColor, blackTime, whiteTime, style}) {
         playerColor === 'w' ? setTimer(Math.floor(whiteTime)) : setTimer(Math.floor(blackTime))
         classes = {
             'active': playerColor === currentTurn,
-            'low-time': timer <= LOW_TIME_BOUNDRY,
+            'low-time': timer <= LOW_TIME_BOUNDARY,
         };
     }, [blackTime, whiteTime]);
 
@@ -27,7 +26,7 @@ function GameTimer({currentTurn, playerColor, blackTime, whiteTime, style}) {
     useEffect(() => {
         classes = {
             'active': playerColor === currentTurn,
-            'low-time': timer <= LOW_TIME_BOUNDRY,
+            'low-time': timer <= LOW_TIME_BOUNDARY,
         };
     }, [currentTurn]);
 

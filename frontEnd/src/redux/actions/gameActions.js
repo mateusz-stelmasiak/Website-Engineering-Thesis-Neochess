@@ -13,6 +13,7 @@ export const SET_BLACK_TIME = 'SET_BLACK_TIME'
 export const SET_WHITE_SCORE='SET_WHITE_SCORE'
 export const SET_BLACK_SCORE='SET_BLACK_SCORE'
 export const SET_LOADING_GAME_INFO='SET_LOADING_GAME_INFO'
+export const SET_DRAW_PROPOSED_COLOR ='SET_DRAW_PROPOSED_COLOR'
 
 //SETTERS
 export const setGameId = (gameId) => ({
@@ -76,6 +77,11 @@ export const setBlackScore  = (bScore) =>({
     type: SET_BLACK_SCORE,
     payload: bScore,
 })
+export const setDrawProposedColor  = (color) =>({
+    type: SET_DRAW_PROPOSED_COLOR,
+    payload: color,
+})
+
 
 
 

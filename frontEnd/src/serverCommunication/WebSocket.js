@@ -6,11 +6,12 @@ import {setSocketStatus} from "../redux/actions/socketActions";
 import {
     flipCurrentTurn,
     setBlackTime,
-    setCurrentFEN,
+    setCurrentFEN, setDrawProposedColor,
     setOpponentStatus,
     setWhiteTime
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
+import {toast} from "react-hot-toast";
 
 const socketPath = '';
 
@@ -158,6 +159,15 @@ export default class SocketClient {
             store.dispatch(setWhiteTime(data.whiteTime))
             store.dispatch(setBlackTime(data.blackTime))
         });
+
+        this.on("draw_response", data => {
+            if (data === undefined) return;
+            if (data.accepted == false) {
+                toast.error("Draw proposal declined");
+            }
+            store.dispatch(setDrawProposedColor(null));
+        })
+
     }
 
     authListeners() {

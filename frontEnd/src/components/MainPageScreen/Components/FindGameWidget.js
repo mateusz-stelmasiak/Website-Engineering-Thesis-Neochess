@@ -39,7 +39,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
     //styling
     const idleStyle = {color: 'var(--primary-color-dark)'}
-    const inQStyle = {color: 'var(--sec-color)',filter: 'drop-shadow(0 0 10rem var(--sec-color))'}
+    const inQStyle = {color: 'var(--sec-color)', filter: 'drop-shadow(0 0 10rem var(--sec-color))'}
 
     const inQGameModeTextStyle = {color: 'var(--sec-color-dark)'}
 
@@ -48,7 +48,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         setCurrGameMode(-1);
         loadAvailableGamemodes();
 
-        //TODO move to socket?
         socket.on("queue_info", data => {
             setPlayersInQ(data.playersInQueue);
         });

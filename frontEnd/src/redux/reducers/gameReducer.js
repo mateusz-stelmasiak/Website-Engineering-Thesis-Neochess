@@ -17,7 +17,8 @@ export const gameInitialState = {
     blackTime:'420',
     loadingGameInfo:true,
     whiteScore:'0',
-    blackScore:'0'
+    blackScore:'0',
+    drawProposedColor:null
 };
 
 export default function gameInfoReducer(state = gameInitialState, action) {
@@ -59,6 +60,8 @@ export default function gameInfoReducer(state = gameInitialState, action) {
             return {...state, whiteScore:action.payload}
         case actions.SET_LOADING_GAME_INFO:
             return {...state, loadingGameInfo:action.payload}
+        case actions.SET_DRAW_PROPOSED_COLOR:
+            return {...state, drawProposedColor:action.payload}
         default:
             return state
     }

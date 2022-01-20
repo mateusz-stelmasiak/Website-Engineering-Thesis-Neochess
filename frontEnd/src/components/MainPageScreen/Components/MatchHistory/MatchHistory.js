@@ -28,6 +28,8 @@ function MatchHistory(props) {
     }, [])
 
     let flipPage = async (direction) => {
+
+
         let newPage=(page + direction) % maxPage;
         if(newPage <0) newPage=maxPage-1;
 
@@ -51,6 +53,8 @@ function MatchHistory(props) {
         moves < 10 ? moves = "0" + moves : moves = moves;
         return moves
     }
+
+
     let tryCache = ()=>{
         //try to read gameHistory from cache
         let cachedMatches = sessionStorage.getItem('matchHistory');
@@ -85,6 +89,7 @@ function MatchHistory(props) {
     }
 
     let fetchPlayerData = async (page,perPage) => {
+        setMatchHistory([]);
         setLoading(true);
         const resp = await getMatchHistory(props.userId, props.sessionToken, page, perPage);
         setLoading(false);
@@ -103,7 +108,6 @@ function MatchHistory(props) {
         }
 
         sessionStorage.setItem('matchHistory',JSON.stringify(resp));
-
 
         //set max page
         let maxPage= respArr.shift().maxPage;

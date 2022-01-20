@@ -1,141 +1,135 @@
 import "./Chat.css"
 import Form from "react-bootstrap/Form";
-import React, {Component} from "react";
+import React, {Component, useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import ScrollToBottom from 'react-scroll-to-bottom';
 import {getCurrentTimestamp} from "../../../serverCommunication/Utils";
+import {emit} from "../../../redux/actions/socketActions";
+import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import ChatMessages from "./ChatMessages";
+import DrawProposal from "./DrawProposal";
+import {playingAs} from "../Game/Main";
 
-export let spamInterval=2000
-export let initialSpamCooldown=1000
+export let spamInterval = 2000
+export let initialSpamCooldown = 1000
 
-class Chat extends Component{
-    constructor(props) {
-        super(props);
-        this.socket = this.props.socket;
-        this.playerName=this.props.username;
-        this.playerId = this.props.userId;
-        this.gameId= this.props.gameId;
+export function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
+    let [messages, setMessages] = useState([]);
+    let [typedMsg, setTypedMsg] = useState("");
+    let [error, setError] = useState("");
+    let [lastMsgTimeStamp, setLastMsgTimeStamp] = useState(undefined);
+    let [spamCooldown, setSpamCooldown] = useState(initialSpamCooldown);
+    let [showDrawProposal,setShowDrawProposal]=useState(false);
 
-        let selfMessageStyle={
-            color:'var(--sec-color)'
-        }
-        let opponentMessageStyle={
-            color:'var(--primary-color)'
-        }
-        this.messageStyles= [selfMessageStyle,opponentMessageStyle]
+    let sendIcon =<FontAwesomeIcon icon={faPaperPlane}/>
 
-        this.state={
-            messages:[],
-            typedMsg:"",
-            error:"",
-            lastMsgTimeStamp:undefined,
-            spamCooldown:initialSpamCooldown
-        }
-        this.handleSubmit = this.handleSubmit.bind(this);
+    let addMessageToLog = (msg) => {
+        let messageLog=messages;
+        setMessages([]); // do not delete, otherwise component won't update
+        messageLog.push(msg);
+        setMessages(messageLog);
     }
 
-    componentDidMount() {
-        this.socket.on('receive_message',(data)=>{
-            if (this.socket === undefined || !this.socket.is_connected || data===undefined)  return;
+    useEffect(() => {
+        //if was disconnected during draw proposal/ reloads page
+        if(drawProposedColor!==null && drawProposedColor!=="null" && drawProposedColor!==playingAs){
+            setShowDrawProposal(true);
+        }
 
-            console.log(data)
-            let msg= {
-                name:data.playerName,
-                text:data.text,
-                sender:1
+        socket.on('receive_message', (data) => {
+            if (socket === undefined || !socket.is_connected || data === undefined) return;
+
+            let msg = {
+                name: data.playerName,
+                text: data.text,
+                sender: 1
             };
-            this.addMessageToLog(msg);
+            addMessageToLog(msg);
         })
-    }
+
+        socket.on('draw_proposed',(data)=>{
+            if (socket === undefined || !socket.is_connected || data === undefined) return;
+            setShowDrawProposal(true);
+        })
+    }, [])
 
 
-    addMessageToLog(msg){
-        let updatedMsgs= this.state.messages;
-        updatedMsgs.push(msg);
-        //add msg and clear field
-        this.setState({messages:updatedMsgs});
-    }
 
-    // isSpamming(){
-    //     //it's the first message
-    //     if(!this.state.lastMsgTimeStamp) return false;
-    //
-    //     let timeSinceLastMsg=getCurrentTimestamp()-this.state.lastMsgTimeStamp;
-    //     if(timeSinceLastMsg){
-    //
-    //     ){
-    //
-    //
-    //         return false;
-    //     }
-    //
-    //     return true;
-    // }
 
-    handleSubmit(event){
+
+    let handleSubmit = (event) => {
         event.preventDefault();
-        this.setState({error:""});
-        let playerName=this.playerName;
-        let text=this.state.typedMsg;
+        setError("");
 
-        //handle too long messages
-        if (text.length>250){
-            this.setState({error:"Message too long!"});
+        let msg = typedMsg;
+
+        //prevent sending empty msgs
+        if(msg.length===0){
             return;
         }
-        // if(this.isSpamming) return;
 
-        this.setState({lastMsgTimeStamp:getCurrentTimestamp()});
-        let gameId=this.gameId
-        let playerId=this.playerId;
-        let msg= {
-            name:playerName,
-            text:text,
-            sender:0
+        //handle too long messages
+        if (msg.length > 150) {
+            setError("Message too long!");
+            return;
+        }
+
+        // if(this.isSpamming) return;
+        setLastMsgTimeStamp(getCurrentTimestamp());
+
+        let msgJSON = {
+            name: username,
+            text: typedMsg,
+            sender: 0
         };
-        this.addMessageToLog(msg)
-        //clear msg field
-        this.setState({lastMsgTimeStamp:""});
+        addMessageToLog(msgJSON);
 
         //send to server
-        this.socket.emit('send_chat_to_server',JSON.stringify({playerName,text,gameId,playerId}));
+        let sendChatvent = {
+            event: 'send_chat_to_server',
+            msg: JSON.stringify({username, msg, gameId, userId})
+        }
+
+        dispatch(emit(sendChatvent));
+        //clear typed msg
+        setTypedMsg("");
     }
 
-    render() {
-
-        let messageList= this.state.messages.map((msg)=>{
-            return (
-                <p  className="Chat-messageItem">
-                    <span style={this.messageStyles[msg.sender]} className="Chat-messageItem-name">{msg.name}:&nbsp;</span>
-                    <span>{msg.text}</span>
-                </p>
-            );
-        });
-
-
-        return (
-            <section className="Chat">
-                <ScrollToBottom className="Chat-messages" mode="bottom">
-                        {messageList}
-                </ScrollToBottom>
-
-                <Form onSubmit={this.handleSubmit}>
-                    <div  className="Chat-input">
-                        <Form.Control
-                            required
-                            placeholder="Your message...."
-                            type="text"
-                            value={this.state.typedMsg}
-                            onChange={(e) => this.setState({typedMsg:e.target.value})}
-                        />
-                    </div>
-                </Form>
-                {this.state.error!=="" && <div className="errorMessage">{this.state.error}</div>}
-            </section>
-        );
+    let updateTypedMsg = (msg)=>{
+        if(msg.length>150) return
+        setTypedMsg(msg)
     }
 
+
+    return (
+        <section className="Chat">
+            <ScrollToBottom className="Chat-messages" mode="bottom">
+                <ChatMessages
+                    messages={messages}
+                />
+                <DrawProposal show={showDrawProposal} setShow={setShowDrawProposal}/>
+            </ScrollToBottom>
+
+            <Form onSubmit={handleSubmit}>
+                <div className="Chat-input">
+                    <Form.Control
+                        required
+                        placeholder="Your message...."
+                        type="text"
+                        value={typedMsg}
+                        onChange={(e) => updateTypedMsg(e.target.value)}
+                    />
+
+                    <button onClick={handleSubmit}>{sendIcon}</button>
+                </div>
+            </Form>
+
+            {error !== "" && <div className="errorMessage">{error}</div>}
+        </section>
+    );
 }
+
 
 export default connect(mapAllStateToProps)(Chat);

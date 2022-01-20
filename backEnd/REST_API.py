@@ -205,6 +205,7 @@ def register():
     username = request_data['username']
     hashed_password = request_data['hashedPassword']
     if debug_mode: print("REGISTER REQUEST " + str(request_data))
+    #TODO hash password server side + salt?
 
     try:
         # handle username taken
@@ -291,7 +292,8 @@ def get_game_info():
                 "playingAs": 'b'
             },
             'blackTime': game.timer.black_time,
-            'whiteTime': game.timer.white_time
+            'whiteTime': game.timer.white_time,
+            'drawProposedColor':game.draw_proposed
             }
 
     if str(game.game_mode_id) == '1':
@@ -313,7 +315,8 @@ def get_game_info():
                 'blackTime': game.timer.black_time,
                 'whiteTime': game.timer.white_time,
                 'whiteScore': game.defender_state.white_score,
-                'blackScore': game.defender_state.black_score
+                'blackScore': game.defender_state.black_score,
+                'drawProposedColor': game.draw_proposed
                 }
 
     return generate_response(request, data, 200)

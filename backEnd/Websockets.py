@@ -645,8 +645,9 @@ def make_move(data):
     try:
         game_id = game_info.game_id
         db = ChessDB.ChessDB()
-        print("ADDING MOVE TO BD " + move_AN_notation)
-        db.add_move(game_id, str(curr_turn).upper(), move_order, move_AN_notation)
+        print("ADDING MOVE TO BD " + str(move_AN_notation))
+        move_string= str(move_AN_notation)
+        db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
     except Exception as ex:
         print("DB ERROR" + str(ex))
 
@@ -656,16 +657,104 @@ def make_move(data):
     if is_checkmate:
         finish_game(game_info, curr_turn)
 
+#propose a draw
+@socketio.on("propose_draw")
+def propose_draw(data):
+    data_obj = json.loads(data)
+
+    game_id = data_obj['gameroomId']
+    player_id = data_obj['playerId']
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    # check if player is in the selected game
+    game_info_pack = get_is_player_in_game(player_id)
+    if not game_info_pack or str(game_info_pack[0].game_room_id) != str(game_id):
+        print("Wrong game")
+        return
+
+    game_obj=game_info_pack[0]
+    playing_as=game_info_pack[1]
+
+
+    opp_color = 'w'
+    if playing_as == 'w':
+        opp_color = 'b'
+
+    #if you already proposed a draw, don't propose again
+    if games[game_obj.game_room_id].draw_proposed == playing_as:
+        return
+
+    # if a draw was already proposed by the opponent, just accept it
+    if games[game_obj.game_room_id].draw_proposed == opp_color:
+        finish_game(game_obj,'none')
+        emit('draw_response', {'accepted': True}, room=game_obj.game_room_id, include_self=True)
+        return
+
+
+    #set draw proposed by player color in game info
+    games[game_obj.game_room_id].draw_proposed = playing_as
+
+    # send to everyone in the room except sender
+    emit('draw_proposed', {}, room=game_obj.game_room_id, include_self=False)
+
+#accept a draw
+@socketio.on("answer_draw")
+def answer_draw(data):
+    data_obj = json.loads(data)
+    print(data_obj)
+
+    game_id = data_obj['gameroomId']
+    player_id = data_obj['playerId']
+    accepted = data_obj['accepted']
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    # check if player is in the selected game
+    game_info_pack = get_is_player_in_game(player_id)
+    if not game_info_pack or str(game_info_pack[0].game_room_id) != str(game_id):
+        print("Wrong game")
+        return
+
+    game_obj = game_info_pack[0]
+    playing_as = game_info_pack[1]
+
+    opp_color= 'w'
+    if playing_as=='w':
+        opp_color='b'
+
+    #check if it was opponent proposed a draw
+    if games[game_obj.game_room_id].draw_proposed != opp_color:
+        return
+
+    #if it was declined, clear gameobject draw proposal
+    if not accepted:
+        games[game_obj.game_room_id].draw_proposed = None
+
+    if accepted:
+        finish_game(game_obj, 'none')
+
+    # send to everyone in the room
+    emit('draw_response', {'accepted':accepted}, room=game_obj.game_room_id, include_self=False)
+
 
 # in game chat
 @socketio.on("send_chat_to_server")
 def send_chat_to_server(data):
     data_obj = json.loads(data)
 
-    player_name = data_obj['playerName']
-    text = data_obj['text']
+    player_name = data_obj['username']
+    text = data_obj['msg']
     game_id = data_obj['gameId']
-    player_id = data_obj['playerId']
+    player_id = data_obj['userId']
 
     # authorize player
     if not check_auth(request.sid, player_id):

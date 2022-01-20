@@ -117,15 +117,14 @@ class ChessDB:
         mycursor.close()
         return game_id
 
-    def add_move(self, game_id, Color, move_order, Move):
+    def add_move(self, game_id, color, move_order, move):
         mycursor = self.mydb.cursor()
 
         sql_move = ("INSERT INTO Moves"
                     "(GameID, ParticipantID, move_order, Move)"
                     "VALUES (%s, %s, %s, %s)")
 
-        move_string = str(Move['startingSquare']) + str(Move['targetSquare']) + " " + Move['mtype']
-        data_move = (game_id, self.get_participant(Color, game_id)[0], move_order, move_string)
+        data_move = (game_id, self.get_participant(color, game_id)[0], move_order, move)
         mycursor.execute(sql_move, data_move)
         self.mydb.commit()
         mycursor.close()
