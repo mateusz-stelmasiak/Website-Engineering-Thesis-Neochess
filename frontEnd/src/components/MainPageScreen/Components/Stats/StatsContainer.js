@@ -16,7 +16,7 @@ function StatsContainer({userId, sessionToken, dispatch}) {
     const [gamesWon, setGamesWon] = useState("");
     const [gamesLost, setGamesLost] = useState("");
     const [draws, setDraws] = useState("");
-    const [updateDate, setUpdateDate] = useState("00:00:00");
+    const [updateDate, setUpdateDate] = useState("--:--:--");
     const [isLoading, setIsLoading] = useState(true);
 
     //icons
@@ -32,7 +32,7 @@ function StatsContainer({userId, sessionToken, dispatch}) {
 
 
     async function fetchPlayerData() {
-        setUpdateDate("00:00:00");
+        setUpdateDate("--:--:--");
         setIsLoading(true);
 
         //reset all values
@@ -129,8 +129,6 @@ function StatsContainer({userId, sessionToken, dispatch}) {
                 <b>Last updated:</b>&nbsp;{updateDate}&nbsp;
                 <button onClick={fetchPlayerData}>{refreshIcon}</button>
             </div>
-
-
 
 
         </section>
