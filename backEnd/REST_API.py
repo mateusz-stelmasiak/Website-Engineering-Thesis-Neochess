@@ -240,12 +240,17 @@ def logout():
     #     del authorized_sockets[user_id]
 
     # set cookie to a dummy one
-    resp = generate_response(request, {"logout": 'succesfull'}, 200)
+    resp = generate_response(request, {
+        "logout": 'succesfull'
+    }, 200)
+
     req_url = request.environ.get('HTTP_ORIGIN', 'default value')
     curr_domain = get_domain_from_url(req_url)
+
     if curr_domain in allowed_domains:
         resp.set_cookie('refreshToken', 'none', domain=curr_domain, samesite='None',
                         secure='false')  # path="/refresh_session"
+
     return resp
 
 
@@ -365,9 +370,21 @@ def delete_user():
         db = ChessDB.ChessDB()
         db.remove_user(user_id)
 
-        return generate_response(request, {
-            "response": "OK"
+        del Sessions[str(user_id)]
+
+        resp = generate_response(request, {
+            "result": 'OK'
         }, 200)
+
+        req_url = request.environ.get('HTTP_ORIGIN', 'default value')
+        curr_domain = get_domain_from_url(req_url)
+
+        if curr_domain in allowed_domains:
+            resp.set_cookie('refreshToken', 'none', domain=curr_domain, samesite='None',
+                            secure='false')  # path="/refresh_session"
+
+        return resp
+
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"

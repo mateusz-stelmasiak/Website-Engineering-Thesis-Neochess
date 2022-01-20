@@ -282,17 +282,15 @@ function UserEditForm(props) {
 
                 <div className="infoContainer">
                     <Form.Check
-                        className="twoFactorAuth"
                         type="checkbox"
                         label="Use 2-Factor authentication"
                         onChange={(_) => enable2FA()}
                         checked={is2FaEnabled}
                     />
-
                     {is2FaEnabled ?
                         <>
                             <Form.Control
-                                className="twoFaField"
+                                className="twoFaForm"
                                 required
                                 placeholder="2FA code..."
                                 type="number"
@@ -309,18 +307,17 @@ function UserEditForm(props) {
                     <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                         <ul>{errorMessage}</ul>
                     </div>
-
-                    <div>
-                        {errorMessage === "" && isLoadingShown ?
-                            <div className="registerLoadingContainer">
-                                <p className="registeringProgress">
-                                    REGISTERING
-                                </p>
-                                <div className="loader"/>
-                            </div> : null}
+                    <div className="UserEditButtons">
                         <Button onClick={handleSubmit} type="submit">Submit</Button>
+                        <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
                     </div>
-                    <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
+                    {errorMessage === "" && isLoadingShown ?
+                        <div className="registerLoadingContainer">
+                            <p className="registeringProgress">
+                                UPDATING USER
+                            </p>
+                            <div className="loader"/>
+                        </div> : null}
                 </div>
             </Form>
         </div>

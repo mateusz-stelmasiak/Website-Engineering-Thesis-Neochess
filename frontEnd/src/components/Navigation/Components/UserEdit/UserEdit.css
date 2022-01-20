@@ -22,11 +22,12 @@ input[type=number] {
 
 .registeringProgress {
     margin-right: 10px !important;
-    margin-top: 25px !important;
+    margin-top: 18px !important;
 }
 
 .registerLoadingContainer {
-    margin-top: 5px !important;
+    display: flex;
+    margin-left: 65px;
 }
 
 :root{
@@ -34,11 +35,17 @@ input[type=number] {
 }
 
 .UserEditForm {
-    width: 55%;
+    width: 30%;
 }
 
-.twoFaField {
+.twoFaForm {
     margin-top: 25px !important;
+    display: flow-root !important;
+}
+
+.UserEditButtons {
+    display: grid !important;
+    text-align: center !important;
 }
 
 .loginContainer {
@@ -59,6 +66,12 @@ input::-webkit-inner-spin-button {
 /* Firefox */
 input[type=number] {
     -moz-appearance: textfield;
+}
+
+.twoFaImg {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 .notActivatedAccountContainer {
@@ -132,10 +145,6 @@ input[type=number] {
 
 .emailField {
     margin-top:25px !important;
-}
-
-.twoFactorAuth {
-    margin-top: 25px !important;
 }
 
 .errorMessage {
