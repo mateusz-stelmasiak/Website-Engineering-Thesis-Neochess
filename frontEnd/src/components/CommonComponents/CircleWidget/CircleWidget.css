@@ -123,8 +123,8 @@
     from {text-shadow: 2px 2px 15px}
     50% {text-shadow: 2px 2px 20px}
     to {text-shadow: 2px 2px 15px }
-
 }
+
 /* Animate the color ring glow */
 @keyframes glow {
     from {box-shadow: inset 0 0 15px 1px}
