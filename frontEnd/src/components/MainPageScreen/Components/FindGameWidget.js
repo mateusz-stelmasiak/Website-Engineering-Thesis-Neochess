@@ -61,6 +61,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             dispatch(setGameId(data.gameId));
             dispatch(setGameMode(data.gameMode));
             dispatch(setIsInGame(true));
+            leaveQ(currGameMode);
             routeToNext(data.gameId);
         });
 

@@ -21,4 +21,5 @@
     height: 0.3rem;
     background-color: var(--primary-color);
     filter: drop-shadow(0 0 0.2rem var(--primary-color-dark));
+    border-color:var(--primary-color);
 }

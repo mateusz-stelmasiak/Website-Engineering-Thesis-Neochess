@@ -91,6 +91,30 @@ export async function getGameIsInGame(userId,sessionToken){
     }
 }
 
+
+export async function getEloChangeInLastGames(userId, sessionToken) {
+    try {
+        //if session token expired/is not available, try getting a new one
+        if(sessionToken==='none'){
+            let resp= await getSessionToken();
+            sessionToken= resp.sessionToken;
+        }
+
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            headers: authHeader(sessionToken),
+            timeout: 6000
+        };
+
+        const response = await fetchWithTimeout(API_URL + '/get_ELO_change_in_last_game?userId='+userId, requestOptions);
+        const respObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return respObj;
+    } catch (error) {
+        console.log(error.name === 'AbortError');
+    }
+}
 export async function getGameInfo(gameRoomId, sessionToken) {
     try {
         //if session token expired/is not available, try getting a new one

@@ -1,4 +1,4 @@
-import {Component, useEffect, useState} from "react";
+import { useEffect, useState} from "react";
 import GameContainer from "./Components/GameContainer"
 import Chat from "./Components/Chat"
 import P5Wrapper from "react-p5-wrapper"
@@ -30,8 +30,8 @@ import {authorizeSocket, emit} from "../../redux/actions/socketActions";
 import GameTimersWidget from "./Components/GameTimersWidget";
 import TurnIndicator from "./Components/TurnIndicator";
 import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
-import {GameResult} from "./Components/GameResult";
 import {SocketStatus} from "../../serverCommunication/WebSocket";
+import GameResult from "./Components/GameResult";
 
 
 function PlayGameScreen({

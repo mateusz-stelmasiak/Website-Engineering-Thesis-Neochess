@@ -331,6 +331,20 @@ class ChessDB:
         mycursor.close()
         return result
 
+    def get_ELO_change_in_two_last_games(self,userId):
+        mycursor = self.mydb.cursor()
+
+        sql_find = ("""SELECT Participants.currELO FROM Games,Participants
+                         WHERE Participants.UserID = %s AND Participants.GameID = Games.GameID
+                         ORDER BY Games.GameID DESC
+                         LIMIT 2""")
+
+        data_find = (userId,)
+        mycursor.execute(sql_find, data_find)
+        result = mycursor.fetchall()
+        mycursor.close()
+        return result
+
 
 tempDB = ChessDB()
 tempDB.create_db()

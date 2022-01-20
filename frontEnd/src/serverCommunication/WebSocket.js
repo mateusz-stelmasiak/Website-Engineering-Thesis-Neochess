@@ -184,6 +184,12 @@ export default class SocketClient {
 
     //custom event handler, executes given function on event
     on(event, fun) {
+
+        //do not double register events
+        // if (this.socket && this.socket._callbacks && this.socket._callbacks['$'+event] !==undefined){
+        //     return
+        // }
+
         return new Promise((resolve, reject) => {
             if (!this.socket) return reject('No socket connection.');
             this.socket.on(event, fun);

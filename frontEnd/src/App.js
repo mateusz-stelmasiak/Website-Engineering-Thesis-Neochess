@@ -23,8 +23,6 @@ export const GAME_DEBUGING_MODE = false;
 
 function App({socket, sessionToken, userId, gameId, isInGame}) {
     const history = useHistory();
-    let routeToMain = () => history.push('/');
-    const routeToGame = (gameId) => history.push('/play?id=' + gameId);
     const [loading, setLoading] = useState(true);
 
     //try to regenerate the session on reload
@@ -33,10 +31,8 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
         //try to regenerate the session on reload
         if (sessionToken === 'none' && userId) {
             getSessionToken().then((resp) => {
-                    // if (resp === undefined || !resp.sessionToken) {
-                    //
-                    // }
                     setLoading(false);
+                    socket.authorize();
                 }
             );
         } else {
@@ -45,8 +41,6 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
 
         //connect the socket on startup
         socket.connect();
-
-
 
     }, []);
 

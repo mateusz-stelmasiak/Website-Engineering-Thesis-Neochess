@@ -321,6 +321,40 @@ def get_game_info():
 
     return generate_response(request, data, 200)
 
+@app.route('/get_ELO_change_in_last_game', methods=['GET', 'OPTIONS'])
+def get_ELO_change_in_last_game():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode: print("PLAYER_ELO CHANGE REQUEST " + str(request.args))
+    user_id = request.args['userId']
+
+    # handle user not having a session at all or invalid authorization
+    session_token = request.headers['Authorization']
+    if not authorize_user(user_id, session_token):
+        if debug_mode: print('Authorization failed')
+        return generate_response(request, {"error": "Authorisation failed."}, 401)
+
+    try:
+        db = ChessDB.ChessDB()
+        elo_last_two_games = db.get_ELO_change_in_two_last_games(user_id)
+        games_played= db.count_games(user_id)[0]
+
+        #player has played only one game so far
+        if games_played==1:
+            elo_change= elo_last_two_games[0][0]-RatingSystem.starting_ELO
+        else:
+            elo_change= elo_last_two_games[0][0]-elo_last_two_games[1][0]
+
+    except Exception as ex:
+        if debug_mode: ("DB ERROR" + str(ex))
+        return generate_response(request, {"error": "Database error"}, 503)
+
+    data = {
+        'eloChange': elo_change,
+    }
+
+    return generate_response(request, data, 200)
 
 @app.route('/get_available_game_modes', methods=['GET', 'OPTIONS'])
 def get_available_game_modes():

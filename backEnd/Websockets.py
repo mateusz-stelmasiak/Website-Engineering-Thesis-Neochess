@@ -652,8 +652,11 @@ def make_move(data):
         print("DB ERROR" + str(ex))
 
     # check for checkmates
+    if game_room_id not in games:
+        print("NO_SUCH_GAME_EXISTS")
+        return
+    
     is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
-    print(is_checkmate)
     if is_checkmate:
         finish_game(game_info, curr_turn)
 

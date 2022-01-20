@@ -1,34 +1,77 @@
 .GameResult{
-    height: 100%;
-    width: 100%;
     position: fixed;
     z-index: 20;
     top: 0;
     right: 0;
-    background-color: rgba(43,43,43,0.8);
-    overflow-x: hidden;
-    padding-top: 60px;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(43,43,43,0.9);
     transition: 0.5s;
+    padding: 2rem 2%;
 
     color: var(--text-color);
 
     display: flex;
     align-content: center;
-    justify-items: center;
+    justify-content: center;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
+.GameResult .SectionTitle{
+    width: min(50rem,90%);
+    text-transform: uppercase;
 
-.GameResult p{
-    font-weight: 500;
-    font-size: 5rem;
 }
+.GameResult .SectionTitle span{
+    color:var(--sec-color);
+    font-size: min(7rem,13vw);
+    font-weight: bold;
+    padding: unset;
+}
+
+.GameResult .SectionTitle hr{
+    border-color: var(--sec-color);;
+   background-color: var(--sec-color-dark);
+    filter: drop-shadow(0 0 0.5rem var(--sec-color));
+    height: 0.4rem;
+}
+.GameResult h4 {
+    margin: 0;
+    text-align: center;
+    font-weight: normal;
+    font-size: 2rem;
+}
+
+.GameResult .GameResult-eloChange{
+    display: flex;
+    flex-direction: column;
+    padding: 4rem 0;
+    align-items: center;
+}
+
+.GameResult .GameResult-eloChange h3{
+    margin: 0;
+    font-size: min(5rem,8vw);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.GameResult .GameResult-eloChange span{
+    font-size: 1.5rem;
+}
+
+.GameResult .GameResult-eloChange h3 span{
+    font-weight: normal;
+    font-size: min(5rem,8vw);
+}
+
 
 .GameResult button{
     all:unset;
-
-    padding: 0.7rem 3rem;
+    max-width: 80vw;
+    padding: 0.7rem 2rem;
     border-radius: 0.8rem;
     background-color: var(--primary-color);
     color:var(--body-color);
