@@ -53,10 +53,66 @@ export async function deleteUser() {
 
         const response = await fetchWithTimeout(API_URL + '/delete?id=' + userId, requestOptions);
         const responseObj = await handleResponse(response);
-
         if (FETCH_DEBUGGING_MODE) console.log(response);
-
         return responseObj;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export async function getUserData() {
+    try {
+        const storeState = store.getState();
+        const userId = storeState.user.userId;
+        const sessionToken = storeState.user.sessionToken;
+
+        if (sessionToken == 'none' || !userId) {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.reload(true);
+            return;
+        }
+
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            headers: authHeader(sessionToken),
+            timeout: 600000
+        }
+
+        const response = await fetchWithTimeout(API_URL + '/getUserDetails?id=' + userId, requestOptions);
+        const responseObj = await handleResponse(response)
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return responseObj;
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export async function deleteUserAccount() {
+    try {
+        const storeState = store.getState();
+        let userId = storeState.user.userId;
+        let sessionToken = storeState.user.sessionToken;
+
+        if (sessionToken == 'none' || !userId) {
+            localStorage.clear();
+            sessionStorage.clear();
+            window.location.reload(true);
+            return;
+        }
+
+        const requestOptions = {
+            method: 'DELETE',
+            mode: 'cors',
+            headers: authHeader(sessionToken),
+            timeout: 600000
+        }
+
+        const response = await fetchWithTimeout(API_URL + '/delete?id=' + userId, requestOptions);
+        const respObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+        return respObj;
     } catch (error) {
         console.log(error)
     }
@@ -75,29 +131,29 @@ export async function updateUser(username, password, is2FaEnabled, twoFaCode, em
             return;
         }
 
-        const hashedPassword = sha256(password)
+        const hashedPassword = password !== "" ? sha256(password) : null;
 
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
-            headers: {'Content-Type': 'application/json'},
-            credentials: 'include',
+            headers: {
+                ...{
+                    'Content-Type': 'application/json',
+                }, ...authHeader(sessionToken)
+            },
             body: JSON.stringify({
                 username,
                 hashedPassword,
+                email,
                 is2FaEnabled,
                 twoFaCode,
-                email
             })
         }
 
         const response = await fetchWithTimeout(API_URL + '/update?id=' + userId, requestOptions);
         const respObj = await handleResponse(response);
-
         if (FETCH_DEBUGGING_MODE) console.log(respObj);
-
         return respObj;
-
     } catch (error) {
         console.log(error)
     }
@@ -115,7 +171,6 @@ export async function reSentActivationEmail(data) {
         const responseObj = await handleResponse(response);
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return responseObj;
-
     } catch (error) {
         console.log(error)
     }

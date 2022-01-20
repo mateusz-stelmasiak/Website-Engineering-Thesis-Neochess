@@ -41,6 +41,8 @@ function StatsContainer({userId,sessionToken,dispatch}) {
             return;
         }
 
+        console.log(resp)
+
         dispatch(setUserElo(resp.elo))
         await setCurrentElo(resp.elo);
         await setRankDeviation(resp.deviation);

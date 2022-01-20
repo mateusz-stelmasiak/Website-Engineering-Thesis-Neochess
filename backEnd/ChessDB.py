@@ -75,7 +75,7 @@ class ChessDB:
         return mycursor.fetchone()[0]
 
     def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
-        mycursor = self.mydb.cursor()
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
                     "(Username, Password, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
@@ -88,7 +88,7 @@ class ChessDB:
         mycursor.close()
 
     def remove_user(self, user_id):
-        mycursor = self.mydb.cursor(buffered=True)
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_delete = ("""DELETE FROM Users WHERE userID = %s""")
 
@@ -98,7 +98,7 @@ class ChessDB:
         mycursor.close()
 
     def activate_user_account(self, email):
-        mycursor = self.mydb.cursor(buffered=True)
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_update = ("""UPDATE Users SET AccountConfirmed = true WHERE Email = %s""")
 
@@ -165,18 +165,17 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def update_user(self, user_id, new_user_data_json):
-        mycursor = self.mydb.cursor()
+    def update_user(self, user, new_user_data_json):
+        mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
-        current_user = self.get_user_by_id(user_id)
-
         username = new_user_data_json['username']
-        password = new_user_data_json['password']
+        password = new_user_data_json['hashedPassword'] if new_user_data_json['hashedPassword'] is not None\
+            else user['Password']
         email = new_user_data_json['email']
         is_2_fa_enabled = new_user_data_json['is2FaEnabled']
 
-        if current_user[3] != email:
+        if user['Email'] != email:
             is_account_activated = False
 
         sql_update_query = ("""UPDATE Users SET Username = %s,
@@ -193,7 +192,7 @@ class ChessDB:
         mycursor.close()
 
     def update_password(self, new_password, email):
-        mycursor = self.mydb.cursor()
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_update = ("""UPDATE Users SET Password = %s WHERE UserID = %s""")
 
@@ -229,7 +228,7 @@ class ChessDB:
         mycursor.close()
 
     def get_user_by_email(self, email):
-        mycursor = self.mydb.cursor(buffered=True)
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
 
@@ -241,7 +240,7 @@ class ChessDB:
         return user_data
 
     def get_user(self, username, email=None):
-        mycursor = self.mydb.cursor(buffered=True)
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.Username = %s")
 
@@ -269,7 +268,7 @@ class ChessDB:
         return result
 
     def get_user_by_id(self, userId):
-        mycursor = self.mydb.cursor()
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.userID = %s")
 
@@ -355,7 +354,7 @@ class ChessDB:
         sql_count = (
             "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameID = Participants.GameID")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(Username)['userID'],)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -368,7 +367,7 @@ class ChessDB:
                         WHERE UserID = %s AND Games.GameID = Participants.GameID)t1 
                         WHERE Score = 1;""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(Username)['userID'],)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -381,7 +380,7 @@ class ChessDB:
                      WHERE UserID = %s AND Games.GameID = Participants.GameID)t1
                      WHERE Score = 0.5""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(Username)['userID'],)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -394,7 +393,7 @@ class ChessDB:
                          WHERE UserID = %s AND Games.GameID = Participants.GameID)t1
                          WHERE Score = 0""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(Username)['userID'],)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
