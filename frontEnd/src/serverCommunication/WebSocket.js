@@ -6,11 +6,12 @@ import {setSocketStatus} from "../redux/actions/socketActions";
 import {
     flipCurrentTurn, setBlackScore,
     setBlackTime,
-    setCurrentFEN,
-    setOpponentStatus, setWhiteScore,
+    setCurrentFEN, setDrawProposedColor,
+    setOpponentStatus,
     setWhiteTime
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
+import {toast} from "react-hot-toast";
 
 const socketPath = '';
 
@@ -167,6 +168,15 @@ export default class SocketClient {
             store.dispatch(setWhiteTime(data.whiteTime))
             store.dispatch(setBlackTime(data.blackTime))
         });
+
+        this.on("draw_response", data => {
+            if (data === undefined) return;
+            if (data.accepted == false) {
+                toast.error("Draw proposal declined");
+            }
+            store.dispatch(setDrawProposedColor(null));
+        })
+
     }
 
     authListeners() {
@@ -183,6 +193,11 @@ export default class SocketClient {
 
     //custom event handler, executes given function on event
     on(event, fun) {
+        // //do not double register events
+        // if (this.socket && this.socket._callbacks && this.socket._callbacks['$'+event] !==undefined){
+        //     return
+        // }
+
         return new Promise((resolve, reject) => {
             if (!this.socket) return reject('No socket connection.');
             this.socket.on(event, fun);
@@ -192,18 +207,32 @@ export default class SocketClient {
 
     //establishes the connect with the websocket and also ensures constant reconnection if connection closes
     connect = () => {
+        console.log("CONNECTING...")
         this.socket = io.connect(API_URL, {path: socketPath});
         let that = this;
         let connectInterval;
         store.dispatch(setSocketStatus(SocketStatus.connecting));
 
-        this.authListeners();
-        this.gameListeners();
+        this.socket.on('disconnect', (reason) => {
+            console.log(
+                `Socket is closed. Reconnect will be attempted in ${Math.min(
+                    10000 / 1000,
+                    (that.timeout + that.timeout) / 1000
+                )} second.`,
+                reason
+            );
+            this.is_connected = false
+            this.is_authorized = false;
+            store.dispatch(setSocketStatus(SocketStatus.disconnected));
+            that.timeout = that.timeout + that.timeout; //increment retry interval
+            //call check function after timeout
+            connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));
+        });
 
         this.socket.on('connect', () => {
             console.log("connected websocket!");
             this.is_connected = true;
-            store.dispatch(setSocketStatus(SocketStatus.connected));
+            store.dispatch(setSocketStatus( SocketStatus.connected));
             that.timeout = 500; // reset timer to 250 on open of websocket connection
             clearTimeout(connectInterval); // clear Interval on on open of websocket connection
             this.authorize();
@@ -227,27 +256,17 @@ export default class SocketClient {
         });
 
 
-        this.socket.on('disconnect', (reason) => {
-            console.log(
-                `Socket is closed. Reconnect will be attempted in ${Math.min(
-                    10000 / 1000,
-                    (that.timeout + that.timeout) / 1000
-                )} second.`,
-                reason
-            );
-            this.is_connected = false
-            this.is_authorized = false;
-            store.dispatch(setSocketStatus(SocketStatus.disconnected));
-            that.timeout = that.timeout + that.timeout; //increment retry interval
-            //call check function after timeout
-            connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));
-        });
 
+        this.authListeners();
+        this.gameListeners();
     };
 
     //connect to check if the connection is closed, if so attempts to reconnect
     check = () => {
+        console.log("CHECKING")
+        console.log( this.is_connected);
+        console.log("IS CONNECTED ^");
         //check if websocket instance is closed, if so call `connect` function.
-        if (!this.socket || this.is_connected) this.connect();
+        if (!this.socket || this.is_connected===false) this.connect();
     };
 }

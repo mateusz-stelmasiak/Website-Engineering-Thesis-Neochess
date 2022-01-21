@@ -56,15 +56,24 @@ ex. "color: var (--some-color);"
 
 html{
     margin: 0 0;
+    scroll-padding-top: 8rem;
 }
 
 body {
     margin: 0 0;
-    width: 100vw;
     font-family: 'Montserrat', serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--body-color);
 }
 
+.failText{
+    color:var(--fail-color)
+}
+.succText{
+    color:var(--success-color)
+}
+.neutralText{
+    color:var(--primary-color-dark)
+}
 

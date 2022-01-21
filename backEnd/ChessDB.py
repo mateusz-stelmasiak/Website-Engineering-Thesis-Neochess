@@ -2,8 +2,9 @@ from datetime import date
 import mysql.connector
 import RatingSystem
 
-#to account for time difference due to timezones (in hh:mm:ss)
-server_time_difference='02:00:00'
+# to account for time difference due to timezones (in hh:mm:ss)
+server_time_difference = '02:00:00'
+
 
 class ChessDB:
 
@@ -22,7 +23,8 @@ class ChessDB:
         mycursor.execute('''create table if not exists Games
                              (GameID integer primary key AUTO_INCREMENT, 
                              win_type varchar(100), 
-                             played DATETIME);''')
+                             played DATETIME,
+                             GameMode int not null DEFAULT 0);''')
 
         mycursor.execute('''create table if not exists Users
                             (userID integer primary key AUTO_INCREMENT,
@@ -32,7 +34,8 @@ class ChessDB:
                             Joined DATE not null,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
-                            ELOVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
+                            ELOVolatility FLOAT not null DEFAULT ''' + str(
+            RatingSystem.starting_ELO_volatility) + ''' );''')
 
         mycursor.execute('''CREATE table if not exists Participants
                             (ParticipantID integer primary key AUTO_INCREMENT, 
@@ -57,7 +60,7 @@ class ChessDB:
 
     def get_curr_date_time(self):
         mycursor = self.mydb.cursor()
-        date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '"+server_time_difference+"') AS Today"
+        date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '" + server_time_difference + "') AS Today"
         mycursor.execute(date)
 
         return mycursor.fetchone()[0]
@@ -83,15 +86,15 @@ class ChessDB:
         mycursor.close()
 
     # gdzie moves to lista list gdzie move = (Color, move_order, move)
-    def add_game(self, w_id, w_score, b_id, b_score, win_type, moves):
+    def add_game(self, w_id, w_score, b_id, b_score, win_type, moves, game_mode_id):
         mycursor = self.mydb.cursor()
 
         sql_game = ("INSERT INTO Games "
-                    "(win_type, played) "
-                    "VALUES (%s, %s)")
+                    "(win_type, played,GameMode) "
+                    "VALUES (%s, %s,%s)")
 
         date = self.get_curr_date_time()
-        data_game = (win_type, date)
+        data_game = (win_type, date, game_mode_id)
         mycursor.execute(sql_game, data_game)
         game_id = mycursor.lastrowid
 
@@ -117,15 +120,14 @@ class ChessDB:
         mycursor.close()
         return game_id
 
-    def add_move(self, game_id, Color, move_order, Move):
+    def add_move(self, game_id, color, move_order, move):
         mycursor = self.mydb.cursor()
 
         sql_move = ("INSERT INTO Moves"
                     "(GameID, ParticipantID, move_order, Move)"
                     "VALUES (%s, %s, %s, %s)")
 
-        move_string = str(Move['startingSquare']) + str(Move['targetSquare']) + " " + Move['mtype']
-        data_move = (game_id, self.get_participant(Color, game_id)[0], move_order, move_string)
+        data_move = (game_id, self.get_participant(color, game_id)[0], move_order, move)
         mycursor.execute(sql_move, data_move)
         self.mydb.commit()
         mycursor.close()
@@ -268,53 +270,52 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def count_games(self, Username):
+    def count_games(self, user_id, game_mode=0):
         mycursor = self.mydb.cursor()
 
         sql_count = (
-            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameID = Participants.GameID")
+            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-
-    def count_wins(self, Username):
+    def count_wins(self, user_id, game_mode=0):
         mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
-                        WHERE UserID = %s AND Games.GameID = Participants.GameID)t1 
+                        WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                         WHERE Score = 1;""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-    def count_draws(self, Username):
+    def count_draws(self, user_id, game_mode=0):
         mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID,Score FROM Games, Participants
-                     WHERE UserID = %s AND Games.GameID = Participants.GameID)t1
+                     WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
                      WHERE Score = 0.5""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-    def count_losses(self, Username):
+    def count_losses(self, user_id, game_mode=0):
         mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
-                         WHERE UserID = %s AND Games.GameID = Participants.GameID)t1
+                         WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
                          WHERE Score = 0""")
 
-        data_count = (self.get_user_by_id(Username)[0],)
+        data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -329,6 +330,20 @@ class ChessDB:
         data_count = (gameID,)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
+        mycursor.close()
+        return result
+
+    def get_ELO_change_in_two_last_games(self, userId):
+        mycursor = self.mydb.cursor()
+
+        sql_find = ("""SELECT Participants.currELO FROM Games,Participants
+                         WHERE Participants.UserID = %s AND Participants.GameID = Games.GameID
+                         ORDER BY Games.GameID DESC
+                         LIMIT 2""")
+
+        data_find = (userId,)
+        mycursor.execute(sql_find, data_find)
+        result = mycursor.fetchall()
         mycursor.close()
         return result
 

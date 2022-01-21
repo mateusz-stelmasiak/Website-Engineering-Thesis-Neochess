@@ -28,6 +28,7 @@ class Game:
         self.num_of_moves = num_of_moves
         self.timer = timer
         self.defender_state = DefenderState()
+        self.draw_proposed='null'
 
 
 class GameMode:

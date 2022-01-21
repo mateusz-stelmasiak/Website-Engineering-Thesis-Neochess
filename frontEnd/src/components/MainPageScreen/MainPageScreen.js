@@ -1,17 +1,18 @@
 import React, {useEffect} from "react";
 import FindGameWidget from "./Components/FindGameWidget";
 import MatchHistory from "./Components/MatchHistory/MatchHistory";
-import Section from "../Layouts/Section";
+import Section from "../Layout/Section/Section";
 import StatsContainer from "./Components/Stats/StatsContainer"
 import RejoinGameWidget from "./Components/RejoinGameWidget";
-import FooterHeaderLayout from "../Layouts/FooterHeaderLayout";
+import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
 import {toast} from "react-hot-toast";
 import {getGameIsInGame} from "../../serverCommunication/DataFetcher";
 import {setIsInGame} from "../../redux/actions/userActions";
 import {setGameId, setGameMode, setOpponentUsername, setPlayingAs} from "../../redux/actions/gameActions";
 import {connect} from "react-redux";
 import {authorizeSocket} from "../../redux/actions/socketActions";
-import FooterHeaderWithMarginsLayout from "../Layouts/FooterHeaderWithMarginsLayout";
+import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
+import CookiesConsent from "../Cookies/CookiesConsent";
 
 function MainPageScreen({userId, sessionToken, dispatch}) {
 
@@ -33,9 +34,16 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
         toast.custom((t) => (<RejoinGameWidget toastId={t.id}/>), {
             duration: Infinity
         });
+
+
     }
 
     useEffect(() => {
+        //cookie consent
+        toast.custom((t) => (<CookiesConsent toastId={t.id}/>), {
+            duration: Infinity
+        });
+
         dispatch(authorizeSocket(userId,sessionToken));
         checkIfIsInGame();
     }, []);
@@ -44,7 +52,7 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
         <FooterHeaderWithMarginsLayout>
 
             <FindGameWidget/>
-            <Section section="STATS">
+            <Section sectionID="STATS">
                     <StatsContainer/>
                     <MatchHistory/>
             </Section>

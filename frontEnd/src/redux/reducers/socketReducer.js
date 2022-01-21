@@ -17,7 +17,7 @@ export default function socketReducer(state = socketInitialState, action) {
         case actions.SET_SOCKET_STATUS:
             return {...state, status:action.payload}
         case actions.AUTHORIZE_SOCKET:
-            if (!state.socket.is_authorized) state.socket.authorizeFromDispatch(action.payload.userId,action.payload.sessionToken)
+            state.socket.authorizeFromDispatch(action.payload.userId,action.payload.sessionToken)
             return state
         case actions.EMIT:
             if (state.socket.is_authorized) state.socket.emit(action.payload.event,action.payload.msg)
