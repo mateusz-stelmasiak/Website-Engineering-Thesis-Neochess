@@ -22,4 +22,6 @@ input[type=number] {
 
 .registerLoadingContainer {
     margin-top: 5px !important;
+    margin-left: 40px;
+    display: flex;
 }

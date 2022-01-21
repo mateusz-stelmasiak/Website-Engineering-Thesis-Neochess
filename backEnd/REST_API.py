@@ -385,7 +385,7 @@ def delete_user():
                     "response": "Incorrect 2FA code"
                 }, 403)
 
-        # db.remove_user(user_id)
+        db.remove_user(user_id)
         del Sessions[str(user_id)]
         resp = generate_response(request, {
             "response": 'OK'
@@ -467,15 +467,14 @@ def update_user():
 
         request_data = request.get_json()
 
-        if db.user_exists(request_data['username']):
-            return generate_response(request, {
-                "response": "Username already taken"
-            }, 403)
-
         if db.user_exists(request_data['email']) and user['Email'] != request_data['email']:
             return generate_response(request, {
                 "response": "Email address already taken"
             }, 403)
+        else:
+            token = account_serializer.dumps(request_data['email'], salt=app.config['SECRET_KEY'])
+            link = url_for('confirm_email', token=token, _external=True)
+            mail.send_welcome_message(user['Username'], request_data['email'], link)
 
         if request_data['hashedCurrentPassword'] != user['Password']:
             return generate_response(request, {

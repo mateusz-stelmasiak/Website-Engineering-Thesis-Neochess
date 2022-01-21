@@ -181,22 +181,21 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
-        username = new_user_data_json['username']
         new_password = new_user_data_json['hashedNewPassword'] if new_user_data_json['hashedNewPassword'] is not None\
             else user['Password']
-        email = new_user_data_json['email']
+        email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
         is_2_fa_enabled = new_user_data_json['is2FaEnabled']
 
-        if user['Email'] != email:
+        if user['Email'] != email and email != "":
             is_account_activated = False
 
-        sql_update_query = ("""UPDATE Users SET Username = %s,
+        sql_update_query = ("""UPDATE Users SET
                                 Password = %s,
                                 Email = %s,
                                 2FA = %s,
                                 AccountConfirmed = %s""")
 
-        data_update = (username, new_password, email, is_2_fa_enabled, is_account_activated)
+        data_update = (new_password, email, is_2_fa_enabled, is_account_activated)
         mycursor.execute(sql_update_query, data_update)
 
         self.mydb.commit()

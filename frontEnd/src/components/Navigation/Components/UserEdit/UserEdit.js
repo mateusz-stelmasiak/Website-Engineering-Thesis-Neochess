@@ -20,7 +20,11 @@ function UserEditForm(props) {
     const [newPassword, setNewPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
     const [email, setEmail] = useState("");
+    const [confirmEmail, setConfirmEmail] = useState("");
+    const [areEmailsEqual, setAreEmailsEqual] = useState(false);
+
     const [is2FaEnabled, setIs2FaEnabled] = useState(!!Number(props.is2FaEnabled));
     const [twoFaCode, setTwoFaCode] = useState("");
     const [qrCode, setQrCode] = useState("");
@@ -107,6 +111,15 @@ function UserEditForm(props) {
         confPassword === newPassword ? setArePasswordsEqual(true) : setArePasswordsEqual(false);
     }
 
+    function checkEmailConfirm(confEmail) {
+        setConfirmEmail(confEmail)
+        if (confEmail.length === 0) {
+            setAreEmailsEqual(false);
+            return;
+        }
+        confEmail === email ? setAreEmailsEqual(true) : setAreEmailsEqual(false);
+    }
+
     function checkEmail(email) {
         setEmail(email);
         if (validator.isEmail(email)) {
@@ -121,11 +134,11 @@ function UserEditForm(props) {
             setIs2FaEnabled(false)
         } else {
             setIs2FaEnabled(true)
-            setQrCode((await get2FaCode(email))['qr_code']);
+            setQrCode((await get2FaCode(props.email))['qr_code']);
         }
     }
 
-    async function handleSubmit(event) {
+    async function handlePasswordChange(event) {
         event.preventDefault();
         //reset error message
         setErrorMessage("");
@@ -142,6 +155,12 @@ function UserEditForm(props) {
             }, 5000)
             return;
         }
+
+        await handleSubmit(event)
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
 
         if (currentPassword !== "") {
             setIsLoadingShown(true)
@@ -162,6 +181,7 @@ function UserEditForm(props) {
         } else {
             setErrorMessage("Current password cannot be empty");
         }
+
         setTimeout(() => {
             setErrorMessage("");
             setIsLoadingShown(false);
@@ -235,7 +255,7 @@ function UserEditForm(props) {
                             />
                             <Button
                                 className="ButtonStyle"
-                                onClick={handleSubmit} type="submit"
+                                onClick={handlePasswordChange} type="submit"
                             >Change password</Button>
                         </div>
                         <div className="EmailAddressContainer">
@@ -252,8 +272,9 @@ function UserEditForm(props) {
                                 required
                                 placeholder="Confirm new e-mail address..."
                                 type="text"
-                                value={email}
-                                onChange={(e) => checkEmail(e.target.value)}
+                                value={confirmEmail}
+                                style={{background: areEmailsEqual ? successColor : failColor}}
+                                onChange={(e) => checkEmailConfirm(e.target.value)}
                             />
                             <Button
                                 className="ButtonStyle"

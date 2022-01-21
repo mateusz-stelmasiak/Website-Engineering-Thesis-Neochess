@@ -73,7 +73,7 @@ function DeleteAccount(props) {
                     {eye}
                 </i>
             </div>
-            {!props.is2FaEnabled ?
+            {props.is2FaEnabled ?
                 <Form.Control
                     className="TwoFaCodeInput"
                     required
