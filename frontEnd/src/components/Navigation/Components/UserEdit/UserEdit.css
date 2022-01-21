@@ -10,32 +10,67 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.infoContainer {
-    margin-top: 25px !important;
-    display: flow-root !important;
-}
-
 .twoFaImg {
     height: 100px !important;
     margin-top: 25px;
 }
 
-.registeringProgress {
+.UserEditForm {
+    width: 90%;
+    display: table;
+    margin: 0 auto;
+}
+
+.updateProgress {
     margin-right: 10px !important;
     margin-top: 18px !important;
 }
 
-.registerLoadingContainer {
+.ButtonStyle {
+    margin-top: 40px !important;
+    float: right !important;
+}
+
+.PasswordContainer {
+    margin-right: 75px;
+}
+
+.EditFormContainer {
+    display: flex !important;
+    justify-content: space-around;
+}
+
+.PasswordEmailContainer {
+    display: flex;
+    width: 50%;
+}
+
+.FormContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    margin-top: 25px;
+    justify-content: center;
+}
+
+.TwoFaDeleteContainer {
+    display: flex;
+    align-items: center;
+}
+
+.TwoFaContainer {
+    align-items: center;
+    margin-right: 75px;
+}
+
+.updateLoadingContainer {
     display: flex;
     margin-left: 65px;
+    margin-top: 30px;
 }
 
-:root{
+:root {
     --textfield-bg-color: #0b0b0b;
-}
-
-.UserEditForm {
-    width: 40%;
 }
 
 .AccountDelete {
@@ -48,7 +83,7 @@ input[type=number] {
 }
 
 .twoFaForm {
-    margin-top: 25px !important;
+    margin-top: 30px !important;
     display: flow-root !important;
 }
 
@@ -87,26 +122,23 @@ input[type=number] {
     display: flow-root !important;
 }
 
-.UserEditForm form{
-    margin-top:1.5rem;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+.UserEditForm form {
+    margin-top: 1.5rem;
 }
 
 .UserEditForm h1 {
-    all:unset;
+    all: unset;
     display: block;
     text-align: center;
     font-weight: bold;
-    font-size: min(3em,5vw);
+    font-size: min(3em, 5vw);
     animation: text_glow 5s infinite;
     color: var(--sec-color);
     margin-top: 50px;
 }
 
-.UserEditForm .form-control{
-    all:unset;
+.UserEditForm .form-control {
+    all: unset;
     padding: 0.7rem 1rem;
     width: 90%;
 
@@ -117,11 +149,11 @@ input[type=number] {
     border-radius: 10rem;
 }
 
-.UserEditForm .form-check{
+.UserEditForm .form-check {
     color: var(--text-color);
 }
 
-.UserEditForm p{
+.UserEditForm p {
     font-size: 0.9rem;
     color: var(--text-color);
     margin: 0.4rem 0rem;
@@ -130,7 +162,7 @@ input[type=number] {
 
 .UserEditForm .pass-wrapper {
     position: relative;
-    width: 100%;
+    /*width: 100%;*/
     display: flex;
 }
 
@@ -139,12 +171,13 @@ input[type=number] {
     top: 38%;
     right: 10%;
 }
-.UserEditForm i:hover{
+
+.UserEditForm i:hover {
     color: var(--primary-color-dark);
     cursor: pointer;
 }
 
-.response{
+.response {
     display: flex;
     flex-wrap: wrap;
     color: var(--text-color);
@@ -154,7 +187,7 @@ input[type=number] {
 }
 
 .emailField {
-    margin-top:25px !important;
+    margin-top: 25px !important;
 }
 
 .errorMessage {
@@ -163,13 +196,13 @@ input[type=number] {
     color: var(--sec-color);
 }
 
-.errorMessage:before{
+.errorMessage:before {
     content: "Operation failed: ";
     color: var(--fail-color);
     margin-right: 0.2rem;
 }
 
-.feedbackMessage:before{
+.feedbackMessage:before {
     content: "Operation status: ";
     color: var(--success-color);
     margin-right: 0.2rem;
@@ -180,25 +213,50 @@ input[type=number] {
     text-align: left;
 }
 
-.UserEditForm Button{
-    all:unset;
+.UserEditForm Button {
+    all: unset;
 
     padding: 0.7rem 4.5rem;
 
     background-color: var(--sec-color);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
     margin-top: 1rem;
 }
-.UserEditForm Button:hover{
-    transition:200ms;
+
+.UserEditForm Button:hover {
+    transition: 200ms;
     transform: scale(1.1);
     background-color: var(--sec-color-dark);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
 }
 
 /* Animate the color text glow */
 @keyframes text_glow {
-    from {text-shadow: 2px 2px 15px}
-    50% {text-shadow: 2px 2px 20px}
-    to {text-shadow: 2px 2px 15px }
+    from {
+        text-shadow: 2px 2px 15px
+    }
+    50% {
+        text-shadow: 2px 2px 20px
+    }
+    to {
+        text-shadow: 2px 2px 15px
+    }
+}
+
+@media (max-width: 1050px) {
+    .EditFormContainer {
+        margin-top: 50px;
+        display: flow-root !important;
+    }
+
+    .PasswordEmailContainer {
+        align-items: center;
+        width: 100%;
+    }
+
+    .TwoFaDeleteContainer {
+        margin-top: 75px;
+        width: 100%;
+        justify-content: space-around;
+    }
 }

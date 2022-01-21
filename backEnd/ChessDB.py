@@ -74,6 +74,18 @@ class ChessDB:
 
         return mycursor.fetchone()[0]
 
+    def user_exists(self, data):
+        mycursor = self.mydb.cursor(dictionary=True)
+
+        sql_user = ("""SELECT * FROM Users WHERE Username = %s or Email = %s""")
+
+        data_user = (data, data)
+
+        mycursor.execute(sql_user, data_user)
+        user = mycursor.fetchone()
+
+        return True if user is not None else False
+
     def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
         mycursor = self.mydb.cursor(dictionary=True)
 
@@ -169,22 +181,21 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
-        username = new_user_data_json['username']
-        password = new_user_data_json['hashedPassword'] if new_user_data_json['hashedPassword'] is not None\
+        new_password = new_user_data_json['hashedNewPassword'] if new_user_data_json['hashedNewPassword'] is not None\
             else user['Password']
-        email = new_user_data_json['email']
+        email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
         is_2_fa_enabled = new_user_data_json['is2FaEnabled']
 
-        if user['Email'] != email:
+        if user['Email'] != email and email != "":
             is_account_activated = False
 
-        sql_update_query = ("""UPDATE Users SET Username = %s,
+        sql_update_query = ("""UPDATE Users SET
                                 Password = %s,
                                 Email = %s,
                                 2FA = %s,
                                 AccountConfirmed = %s""")
 
-        data_update = (username, password, email, is_2_fa_enabled, is_account_activated)
+        data_update = (new_password, email, is_2_fa_enabled, is_account_activated)
         mycursor.execute(sql_update_query, data_update)
 
         self.mydb.commit()

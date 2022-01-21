@@ -1,5 +1,4 @@
 import Form from "react-bootstrap/Form";
-import "../UserEdit.css";
 import "./DeleteAccount.css";
 import React, {useState} from "react";
 import {connect} from "react-redux";
@@ -12,11 +11,13 @@ import {disconnectSocket, setSocketStatus} from "../../../../../redux/actions/so
 import {SocketStatus} from "../../../../../serverLogic/WebSocket";
 import {useHistory} from "react-router-dom";
 
+
 function DeleteAccount(props) {
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [deleteResult, setDeleteResult] = useState("")
+    const [twoFaCode, setTwoFaCode] = useState("")
 
     const togglePasswordVisiblity = () => {
         setPasswordShown(!passwordShown);
@@ -28,7 +29,7 @@ function DeleteAccount(props) {
     async function onDeleteClicked(event) {
         event.preventDefault()
         if (password !== "") {
-            const response = await deleteUserAccount(password)
+            const response = await deleteUserAccount(password, twoFaCode, props.is2FaEnabled)
 
             if (response['response'] === "OK") {
                 setDeleteResult("Account has been successfully deleted");
@@ -57,7 +58,6 @@ function DeleteAccount(props) {
 
     return <>
         <div className="DeleteAccountContainer">
-            <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
             <div className="pass-wrapper mt2">
                 <Form.Control
                     required
@@ -73,10 +73,20 @@ function DeleteAccount(props) {
                     {eye}
                 </i>
             </div>
+            {props.is2FaEnabled ?
+                <Form.Control
+                    className="TwoFaCodeInput"
+                    required
+                    placeholder="2FA code..."
+                    type="text"
+                    value={twoFaCode}
+                    onChange={(e) => setTwoFaCode(e.target.value)}
+                /> : null}
             <p>{deleteResult}</p>
             <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                 <ul>{errorMessage}</ul>
             </div>
+            <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
         </div>
     </>
 }

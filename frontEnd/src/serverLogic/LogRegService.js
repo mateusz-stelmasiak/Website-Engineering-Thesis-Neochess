@@ -89,7 +89,7 @@ export async function getUserData() {
     }
 }
 
-export async function deleteUserAccount(password) {
+export async function deleteUserAccount(password, twoFaCode, isTwoFaEnabled) {
     try {
         const storeState = store.getState();
         const userId = storeState.user.userId;
@@ -113,7 +113,9 @@ export async function deleteUserAccount(password) {
                 }, ...authHeader(sessionToken)
             },
             body: JSON.stringify({
-                hashedPassword
+                hashedPassword,
+                isTwoFaEnabled,
+                twoFaCode
             })
         }
 
@@ -126,7 +128,7 @@ export async function deleteUserAccount(password) {
     }
 }
 
-export async function updateUser(username, password, is2FaEnabled, twoFaCode, email) {
+export async function updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email) {
     try {
         const storeState = store.getState();
         let userId = storeState.user.userId;
@@ -139,7 +141,8 @@ export async function updateUser(username, password, is2FaEnabled, twoFaCode, em
             return;
         }
 
-        const hashedPassword = password !== "" ? sha256(password) : null;
+        const hashedNewPassword = newPassword !== "" ? sha256(newPassword) : null;
+        const hashedCurrentPassword = sha256(currentPassword);
 
         const requestOptions = {
             method: 'POST',
@@ -150,8 +153,8 @@ export async function updateUser(username, password, is2FaEnabled, twoFaCode, em
                 }, ...authHeader(sessionToken)
             },
             body: JSON.stringify({
-                username,
-                hashedPassword,
+                hashedNewPassword,
+                hashedCurrentPassword,
                 email,
                 is2FaEnabled,
                 twoFaCode,
