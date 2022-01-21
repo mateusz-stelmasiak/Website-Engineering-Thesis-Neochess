@@ -1,0 +1,17 @@
+.CookieTable{
+    margin-bottom: 2rem;
+    border: 1px solid var(--primary-color-opaque);
+    color: var(--text-color);
+}
+.CookieTable th{
+    padding: 1.2rem;
+}
+.CookieTable td{
+    padding: 1rem;
+
+}
+
+.CookieTable thead{
+    text-align: left;
+    background-color:var(--section-bg-color) ;
+}

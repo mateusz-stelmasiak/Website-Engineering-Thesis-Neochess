@@ -5,13 +5,14 @@ class SectionTitle extends Component {
 
     render() {
         return (
-            <h1 className="SectionTitle">
+            <span className="SectionTitle">
+                <hr/>
                 <span>{this.props.children}</span>
-                <div className="SectionTitle-ornament"/>
-            </h1>
+                <hr/>
+            </span>
+
         );
     }
-
 }
 
 export default SectionTitle;

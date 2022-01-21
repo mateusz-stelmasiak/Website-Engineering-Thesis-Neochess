@@ -1,0 +1,182 @@
+.CookiesConsent{
+    background-color: var(--section-bg-color);
+    max-width: 60vw;
+    padding: 0.5rem 5%;
+    display: flex;
+    color: var(--text-color);
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 3rem;
+    animation: fadeInUp;
+    animation-delay: 3.5s;
+    animation-duration: 1.5s;
+    animation-fill-mode: backwards;
+    text-align: justify;
+    animation-iteration-count: 1;
+    border-radius: 10rem;
+}
+
+
+.CookiesConsent a{
+    color: var(--body-color);
+}
+.CookiesConsent .buttons-container{
+    min-width: 15rem;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+}
+
+.CookiesConsent button{
+    all:unset;
+    font-size: 1rem;
+    padding: 0.7rem 0.5rem;
+    color:var(--body-color);
+    text-align: center;
+    cursor: pointer;
+    transition: 200ms;
+}
+.CookiesConsent button:hover{
+  transform: scale(1.1);
+}
+
+.CookiesConsent #acc{
+    background-color: var(--primary-color);
+}
+
+.CookiesConsent #man{
+    background-color: var(--sec-color);
+}
+
+.CookiePreferences{
+    position: fixed;
+    z-index: 102;
+    top:0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--section-bg-color);
+
+    width: min(90%,25rem);
+    overflow-y: scroll;
+
+    padding: 3rem 5%;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 1.5rem;
+    animation: fadeInRight;
+    animation-duration: 0.3s;
+    animation-fill-mode: backwards;
+    text-align: justify;
+    animation-iteration-count: 1
+}
+.CookiePreferences-overlay{
+    content: " ";
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: 101;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.CookiePreferences::-webkit-scrollbar {
+    width: 0;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+.CookiePreferences::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+
+.CookiePreferences svg{
+    fill: var(--primary-color);
+    position: absolute;
+    top:2rem;
+    right:2rem;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.CookiePreferences svg:hover{
+    transform: scale(1.2);
+}
+.CookiePreferences h1{
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 0;
+    text-align: left;
+}
+.CookiePreferences p{
+    margin: 0;
+}
+.CookiePreferences
+.CookiePreferences .responsiveTable table,
+.CookiePreferences .responsiveTable thead,
+.CookiePreferences .responsiveTable tbody,
+.CookiePreferences .responsiveTable th,
+.CookiePreferences .responsiveTable td,
+.CookiePreferences .responsiveTable tr {
+    display: block;
+}
+
+.CookiePreferences .responsiveTable thead tr {
+    display: none;
+}
+
+.CookiePreferences .responsiveTable tbody tr {
+    border: 1px solid #000;
+    padding: .25em;
+}
+
+.CookiePreferences .responsiveTable td.pivoted {
+    /* Behave like a "row" */
+    border: none !important;
+    position: relative;
+    padding-left: calc(50% + 10px) !important;
+    text-align: left !important;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    margin-bottom: 1rem;
+}
+
+.CookiePreferences .responsiveTable td .tdBefore {
+    /* Now like a table header */
+    position: absolute;
+    display: block;
+
+    /* Top/left values mimic padding */
+    left: 1rem;
+    width: calc(50% - 20px);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-align: left !important;
+    font-weight: 600;
+}
+.CookiePrefContainer{
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+}
+.CookiePrefContainer h2{
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.CookiePrefContainer .cookietype-and-switch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+@media only screen and (max-width: 1000px){
+    .CookiesConsent {
+        flex-direction: column;
+        row-gap: 1.5rem;
+    }
+    .CookiesConsent .buttons-container {
+        min-width: 90%;
+        max-width: 90%;
+        row-gap: 0.7rem;
+    }
+}

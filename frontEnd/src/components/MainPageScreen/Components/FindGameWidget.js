@@ -39,7 +39,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
     //styling
     const idleStyle = {color: 'var(--primary-color-dark)'}
-    const inQStyle = {color: 'var(--sec-color)'}
+    const inQStyle = {color: 'var(--sec-color)', filter: 'drop-shadow(0 0 10rem var(--sec-color))'}
 
     const inQGameModeTextStyle = {color: 'var(--sec-color-dark)'}
 
@@ -48,7 +48,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         setCurrGameMode(-1);
         loadAvailableGamemodes();
 
-        //TODO move to socket?
         socket.on("queue_info", data => {
             setPlayersInQ(data.playersInQueue);
         });
@@ -62,6 +61,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             dispatch(setGameId(data.gameId));
             dispatch(setGameMode(data.gameMode));
             dispatch(setIsInGame(true));
+            leaveQ(currGameMode);
             routeToNext(data.gameId);
         });
 
@@ -75,12 +75,24 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     let loadAvailableGamemodes = async () => {
         setCurrGameMode(-1);
 
-        const resp = await getAvailableGameModes(sessionToken);
+        //try to read gamemodes from cache
+        let cachedGames = sessionStorage.getItem('gameModes');
+        if (cachedGames){
+            cachedGames = JSON.parse(cachedGames);
+            console.log(cachedGames);
+            setGameModeButtons(cachedGames);
+        }
+
+        let resp = await getAvailableGameModes(sessionToken);
         if (resp === undefined || resp.error !== undefined) {
             setGameModeButtons(["ERROR"]);
             return;
         }
+
         setGameModeButtons(resp);
+
+        //cache
+        sessionStorage.setItem('gameModes',JSON.stringify(resp));
     }
 
 
@@ -101,6 +113,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         //reselecting the same mode
         if (isInQ === true && (gameModeId === currGameMode)) {
+
             return;
         }
 
@@ -139,10 +152,12 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     return (
         <section id="PLAY" className="FindGameWidget">
 
+            <hr/>
             <div className="FindGameWidget-mainText">
                 <h1>FIND A GAME</h1>
                 <h2 style={isInQ ? inQStyle : idleStyle}>{buttonTexts[selectedText]}</h2>
             </div>
+            <hr/>
 
             <div className="FindGameWidget-gameModes">
                 {gameModeButtons && gameModeButtons.map(

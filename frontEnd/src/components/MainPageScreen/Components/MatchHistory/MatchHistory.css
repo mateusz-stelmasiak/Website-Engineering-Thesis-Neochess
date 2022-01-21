@@ -1,7 +1,6 @@
 .MatchHistory{
     display: flex;
     flex-wrap: wrap;
-    margin-top: 5rem;
     justify-content: center;
 }
 .MatchHistory--header{
@@ -43,7 +42,7 @@
 }
 
 .MatchHistory-pages span{
-    background-color: var(--sec-color-dark);
+    background-color: var(--primary-color-dark);
     color:var(--body-color);
     padding: 0.2rem 2rem;
 
@@ -51,7 +50,7 @@
 }
 .MatchHistory-pages button{
     all:unset;
-    color: var(--sec-color);
+    color: var(--primary-color);
     padding: 0rem 0.1rem;
     cursor: pointer;
     font-size: 1.2rem;
