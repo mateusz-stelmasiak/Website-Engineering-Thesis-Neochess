@@ -102,6 +102,7 @@ input[type=number] {
     font-size: min(3em,5vw);
     animation: text_glow 5s infinite;
     color: var(--sec-color);
+    margin-top: 50px;
 }
 
 .UserEditForm .form-control{

@@ -14,6 +14,7 @@ import {
     updateUser
 } from "../../../../serverLogic/LogRegService";
 import DeleteAccount from "./DeleteAccount/DeleteAccount";
+import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
 
 function UserEditForm(props) {
     //fields in form
@@ -198,7 +199,8 @@ function UserEditForm(props) {
 
     return <>
         <div className="UserEditForm">
-            <h1>USER: {username}</h1>
+            <SectionTitle>ACCOUNT DETAILS</SectionTitle>
+            <h1 className="UserAccountDetailsLabel">USER: {username}</h1>
             <Form>
                 <Form.Control
                     required
