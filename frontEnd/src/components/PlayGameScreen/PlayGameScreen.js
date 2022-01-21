@@ -3,7 +3,7 @@ import GameContainer from "./Components/GameContainer"
 import Chat from "./Components/Chat"
 
 import P5Wrapper from "react-p5-wrapper"
-import sketch from "./Game/Main";
+import sketch, {gameMode} from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverLogic/DataFetcher";
 import PlayersInfo from "./Components/PlayersInfo";
 import "./PlayGameScreen.css";
@@ -148,8 +148,8 @@ class PlayGameScreen extends Component {
         const storeState = store.getState();
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
-        store.dispatch((setWhiteScore(this.props.whiteScore)))
-        store.dispatch((setBlackScore(this.props.blackScore)))
+
+
 
         let makeMoveEvent = {
             event: 'make_move',

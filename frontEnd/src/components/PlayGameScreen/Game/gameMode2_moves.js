@@ -41,7 +41,6 @@ export function add_piece() {
         if (piece.dragging === 1 && piece.type_letter !== 'e' && board.SetupState === 0) {
             let Target_Square_position = piece.get_closest_position();
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
-            console.log("BIG SMOKE");
             console.log(playingAs);
             console.log(board.color_to_move)
             console.log(playingAs === board.color_to_move)
