@@ -94,7 +94,7 @@ function PlayGameScreen({
         await dispatch(setIsInGame(true));
 
 
-        if (isInGame) {
+        if (resp.inGame) {
             //get game info for game setup
             let response = await getGameInfo(gameId, sessionToken);
             if (response === undefined) return

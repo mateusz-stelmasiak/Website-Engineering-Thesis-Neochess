@@ -668,6 +668,9 @@ def propose_draw(data):
     game_id = data_obj['gameroomId']
     player_id = data_obj['playerId']
 
+    print("PROPOSED A DRAW")
+    print(data_obj)
+
     # authorize player
     if not check_auth(request.sid, player_id):
         print("Unathorized!! ")

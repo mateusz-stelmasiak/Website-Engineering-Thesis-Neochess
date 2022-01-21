@@ -50,6 +50,7 @@ export function Chat({socket, username, userId, gameId,dispatch,drawProposedColo
         })
 
         socket.on('draw_proposed',(data)=>{
+            console.log("DRAW PROPOSED");
             if (socket === undefined || !socket.is_connected || data === undefined) return;
             setShowDrawProposal(true);
         })
