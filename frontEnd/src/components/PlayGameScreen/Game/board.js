@@ -249,7 +249,7 @@ export default class Board {
         if (currentTurn === playingAs && this.lastmove[0] !== -1) {
             this.p5.push()
             this.p5.noStroke();
-            this.p5.fill(this.p5.color(108, 169, 82,255/2));
+            this.p5.fill(this.p5.color(108, 169, 82, 255 / 2));
             this.p5.fill(this.p5.color(108, 169, 82, 255 / 2));
             let startHighlight = pixel_positions[this.lastmove.StartSquare];
             let endHighlight = pixel_positions[this.lastmove.EndSquare];
@@ -367,12 +367,15 @@ export default class Board {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         } else {
             let storeVars = store.getState().game;
-            if(storeVars.blackScore>-1 || storeVars.whiteScore>-1) {
+            if (storeVars.blackScore > -1 && storeVars.whiteScore > -1) {
                 this.color_to_move = storeVars.currentTurn
-            }
-            else if (storeVars.blackScore == 0 && storeVars.whiteScore == 0) {
+            } else if (storeVars.blackScore == 0 && storeVars.whiteScore == 0) {
                 this.color_to_move = 'w'
-            }else{
+            } else if (storeVars.blackScore == -1) {
+                this.color_to_move = 'w'
+            } else if (storeVars.whiteScore == -1) {
+                this.color_to_move = 'b'
+            } else {
                 this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
             }
         }
