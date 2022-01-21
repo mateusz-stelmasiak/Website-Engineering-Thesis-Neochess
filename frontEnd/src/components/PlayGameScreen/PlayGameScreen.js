@@ -148,8 +148,6 @@ class PlayGameScreen extends Component {
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
 
-        store.dispatch((setWhiteScore(this.props.whiteScore)))
-        store.dispatch((setBlackScore(this.props.blackScore)))
 
         let makeMoveEvent = {
             event: 'make_move',
