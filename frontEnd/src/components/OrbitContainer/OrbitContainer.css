@@ -19,8 +19,6 @@
     }
 }
 
-
-
 .OrbitContainer{
     display: flex;
     align-items: center;
@@ -61,8 +59,6 @@
     animation: spin-right 10s linear infinite;
 }
 
-
-
 /* ---------- Repeating styles for the inner orbiting circles ---------- */
 .inner-orbit-cirlces {
     height: 10px;
@@ -92,8 +88,6 @@
     border: 2px  var(--sec-color) dashed;
     filter:saturate(200%);
 }
-
-
 
 /* ---------- Repeating styles for the inner orbiting circles ---------- */
 .middle-orbit-spinners {

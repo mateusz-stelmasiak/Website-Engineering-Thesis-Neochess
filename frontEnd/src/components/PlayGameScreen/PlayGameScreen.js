@@ -1,13 +1,13 @@
 import {Component} from "react";
-import GameContainer from "./Components/GameContainer"
-import Chat from "./Components/Chat"
+import GameContainer from "./Components/GameContainer/GameContainer"
+import Chat from "./Components/Chat/Chat"
 
 import P5Wrapper from "react-p5-wrapper"
 import sketch from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverLogic/DataFetcher";
-import PlayersInfo from "./Components/PlayersInfo";
+import PlayersInfo from "./Components/PlayersInfo/PlayersInfo";
 import "./PlayGameScreen.css";
-import GameButtons from "./Components/GameButtons";
+import GameButtons from "./Components/GameButton/GameButtons";
 import {store} from "../../index";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
@@ -29,11 +29,11 @@ import {setIsInGame} from "../../redux/actions/userActions";
 import {withRouter} from "react-router-dom"
 import {GAME_DEBUGING_MODE} from "../../App";
 import {emit} from "../../redux/actions/socketActions";
-import GameTimer from "./Components/GameTimer";
+import GameTimer from "./Components/GameTimer/GameTimer";
 import {sleep} from "../../serverLogic/Utils";
 import {CSSTransition} from "react-transition-group";
-import GameTimersWidget from "./Components/GameTimersWidget";
-import TurnIndicator from "./Components/TurnIndicator";
+import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
+import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
 
 class PlayGameScreen extends Component {
 

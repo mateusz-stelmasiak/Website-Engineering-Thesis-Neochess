@@ -31,8 +31,6 @@
 }
 
 @media (max-width: 950px) {
-
-
     .Footer .hyperlinksContainer{
         display: flex;
         justify-content: flex-end;

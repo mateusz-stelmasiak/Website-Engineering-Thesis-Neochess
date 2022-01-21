@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import "./NavBar.css";
-import ProfileWidget from "./Components/ProfileWidget"
-import LogoWidget from "./Components/LogoWidget"
+import ProfileWidget from "../Components/ProfileWidget/ProfileWidget"
+import LogoWidget from "../Components/LogoWidget/LogoWidget"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
-import {logout} from "../../serverLogic/LogRegService";
+import {logout} from "../../../serverLogic/LogRegService";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
+import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 
 //buttons on different subpages
 let landingPageItems = ["PLAY", "LOGIN", "REGISTER"];

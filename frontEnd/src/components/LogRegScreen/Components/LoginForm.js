@@ -9,7 +9,7 @@ import {useHistory} from 'react-router-dom';
 import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serverLogic/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
-import Dots from "../../CommonComponents/Dots";
+import Dots from "../../CommonComponents/Dots/Dots";
 import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
 
 function LoginForm({dispatch}) {

@@ -9,7 +9,7 @@ import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverLogic/DataFetcher";
-import NavBar from "./components/Navigation/NavBar";
+import NavBar from "./components/Navigation/NavBar/NavBar";
 import ForgotPasswordForm from "./components/LogRegScreen/Components/ForgotPassword/ForgotPasswordForm";
 import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
 

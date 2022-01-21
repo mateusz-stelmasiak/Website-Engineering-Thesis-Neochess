@@ -2,9 +2,9 @@ import "./Chat.css"
 import Form from "react-bootstrap/Form";
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
+import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import ScrollToBottom from 'react-scroll-to-bottom';
-import {getCurrentTimestamp} from "../../../serverLogic/Utils";
+import {getCurrentTimestamp} from "../../../../serverLogic/Utils";
 
 export let spamInterval=2000
 export let initialSpamCooldown=1000

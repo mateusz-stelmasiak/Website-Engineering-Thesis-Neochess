@@ -67,7 +67,7 @@ export default function CircleWidget(props) {
             console.log(props.views)
             let tmp = props.navigation.map((navButton, index) => {
                     return (
-                        <a onClick={() => changeView(index)}>
+                        <a key={index} onClick={() => changeView(index)}>
                             {navButton}
                         </a>
                     );

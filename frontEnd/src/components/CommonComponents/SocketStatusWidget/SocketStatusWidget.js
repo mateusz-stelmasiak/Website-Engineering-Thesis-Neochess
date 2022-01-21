@@ -1,9 +1,9 @@
 import React from "react";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
+import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import "./SocketStatusWidget.css";
 import {Fade, Tooltip} from "react-bootstrap";
-import {SocketStatus} from "../../serverLogic/WebSocket";
+import {SocketStatus} from "../../../serverLogic/WebSocket";
 
 const {Component} = require("react");
 

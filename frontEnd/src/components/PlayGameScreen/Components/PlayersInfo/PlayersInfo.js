@@ -1,10 +1,10 @@
 
 import "./PlayersInfo.css"
-import {SocketStatus} from "../../../serverLogic/WebSocket";
+import {SocketStatus} from "../../../../serverLogic/WebSocket";
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
-import SocketStatusWidget from "../../CommonComponents/SocketStatusWidget";
+import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
+import SocketStatusWidget from "../../../CommonComponents/SocketStatusWidget/SocketStatusWidget";
 
 class PlayersInfo extends Component{
     constructor(props) {

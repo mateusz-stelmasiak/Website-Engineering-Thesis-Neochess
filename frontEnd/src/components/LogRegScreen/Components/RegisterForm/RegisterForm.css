@@ -10,11 +10,6 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
-.infoContainer {
-    margin-top: 25px !important;
-    display: flow-root !important;
-}
-
 .twoFaImg {
     height: 100px !important;
     margin-top: 25px;
@@ -27,4 +22,6 @@ input[type=number] {
 
 .registerLoadingContainer {
     margin-top: 5px !important;
+    margin-left: 40px;
+    display: flex;
 }

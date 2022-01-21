@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import "./TurnIndicator.css"
 import Blink from "react-blink-text";
-import {board} from "../Game/Main";
+import {board} from "../../Game/Main";
 
 function TurnIndicator ({currentTurn,playingAs}){
     const [turnIndicatorText,setTurnIndicatorText]= useState("It's your turn now!")

@@ -1,9 +1,9 @@
 import "./GameButtons.css"
 import {Component} from "react";
 import {connect} from "react-redux";
-import {emit} from "../../../redux/actions/socketActions";
-import {store} from "../../../index";
-import {flipCurrentTurn} from "../../../redux/actions/gameActions";
+import {emit} from "../../../../redux/actions/socketActions";
+import {store} from "../../../../index";
+import {flipCurrentTurn} from "../../../../redux/actions/gameActions";
 
 class GameButtons extends Component{
     // constructor(props) {

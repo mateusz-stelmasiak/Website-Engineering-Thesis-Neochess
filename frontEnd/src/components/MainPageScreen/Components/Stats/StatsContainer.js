@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import "./StatsContainer.css"
-import SectionTitle from "../../../CommonComponents/SectionTitle";
-import Dots from "../../../CommonComponents/Dots";
+import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
+import Dots from "../../../CommonComponents/Dots/Dots";
 import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverLogic/DataFetcher";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
@@ -40,6 +40,8 @@ function StatsContainer({userId,sessionToken,dispatch}) {
             setDraws("");
             return;
         }
+
+        console.log(resp)
 
         dispatch(setUserElo(resp.elo))
         await setCurrentElo(resp.elo);
