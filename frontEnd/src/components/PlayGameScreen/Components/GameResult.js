@@ -59,12 +59,12 @@ function GameResult({gameStatus, userId, sessionToken}) {
             <h4>GAME ENDED</h4>
 
             <SectionTitle>
-                {gameStatus !== "Draw" && "YOU"}&nbsp;{gameStatus}
+                {gameStatus.toUpperCase() !== "DRAW" && "YOU"}&nbsp;{gameStatus}
             </SectionTitle>
             {!loading &&
             <div className="GameResult-eloChange">
                 <h3 style={eloChange>=0? gainEloStyle:lossEloStyle}>
-                {eloChange>0 && "+"}
+                    {eloChange>0 && "+"}
                     <Reel theme={theme} text={eloChange.toString()}/>
                     <span>&nbsp;ELO</span>
                     </h3>
@@ -72,11 +72,10 @@ function GameResult({gameStatus, userId, sessionToken}) {
                     </div>
                 }
 
-
                 <button onClick={returnToMain}>MAIN MENU</button>
             </div>
-                );
-            }
+    );
+}
 
 const mapStateToProps = (state) => {
     return {

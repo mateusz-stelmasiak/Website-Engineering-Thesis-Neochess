@@ -102,7 +102,7 @@ function MatchHistory(props) {
 
         //handle empty match history
         let respArr = JSON.parse(resp);
-        if (respArr.length === 0 || !Array.isArray(respArr)) {
+        if (respArr.length === 1 || !Array.isArray(respArr)) {
             setMatchHistory(getEmptyMatchHistoryItem());
             return;
         }
@@ -135,8 +135,8 @@ function MatchHistory(props) {
 
 
     let getEmptyMatchHistoryItem = () => {
-        let p1Info = new PlayerInfo(<Dots>Loading</Dots>, "WHITE", "----");
-        let p2Info = new PlayerInfo(<Dots>Loading</Dots>, "BLACK", "----");
+        let p1Info = new PlayerInfo("--", "WHITE", "----");
+        let p2Info = new PlayerInfo("--", "BLACK", "----");
         let date = new MatchDate("--:--", "--/--/--");
         let matchItemInfo = new MatchItemInfo(MatchResult.none, "--", p1Info, p2Info, date);
         return <MatchHistoryItem matchItemInfo={matchItemInfo}/>;

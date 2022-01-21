@@ -205,7 +205,7 @@ def register():
     username = request_data['username']
     hashed_password = request_data['hashedPassword']
     if debug_mode: print("REGISTER REQUEST " + str(request_data))
-    #TODO hash password server side + salt?
+    # TODO hash password server side + salt?
 
     try:
         # handle username taken
@@ -293,7 +293,7 @@ def get_game_info():
             },
             'blackTime': game.timer.black_time,
             'whiteTime': game.timer.white_time,
-            'drawProposedColor':game.draw_proposed
+            'drawProposedColor': game.draw_proposed
             }
 
     if str(game.game_mode_id) == '1':
@@ -321,6 +321,7 @@ def get_game_info():
 
     return generate_response(request, data, 200)
 
+
 @app.route('/get_ELO_change_in_last_game', methods=['GET', 'OPTIONS'])
 def get_ELO_change_in_last_game():
     if request.method == "OPTIONS":
@@ -338,13 +339,13 @@ def get_ELO_change_in_last_game():
     try:
         db = ChessDB.ChessDB()
         elo_last_two_games = db.get_ELO_change_in_two_last_games(user_id)
-        games_played= db.count_games(user_id)[0]
+        games_played = db.count_games(user_id)[0]
 
-        #player has played only one game so far
-        if games_played==1:
-            elo_change= elo_last_two_games[0][0]-RatingSystem.starting_ELO
+        # player has played only one game so far
+        if games_played < 1:
+            elo_change = elo_last_two_games[0][0] - RatingSystem.starting_ELO
         else:
-            elo_change= elo_last_two_games[0][0]-elo_last_two_games[1][0]
+            elo_change = elo_last_two_games[0][0] - elo_last_two_games[1][0]
 
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
@@ -355,6 +356,7 @@ def get_ELO_change_in_last_game():
     }
 
     return generate_response(request, data, 200)
+
 
 @app.route('/get_available_game_modes', methods=['GET', 'OPTIONS'])
 def get_available_game_modes():
@@ -400,6 +402,11 @@ def get_player_stats():
         games_won = db.count_wins(user_id)
         games_lost = db.count_losses(user_id)
         draws = db.count_draws(user_id)
+        # defender stats
+        defender_played = db.count_games(user_id, 1)
+        defender_won = db.count_wins(user_id, 1)
+        defender_lost = db.count_losses(user_id, 1)
+        defender_draws = db.count_draws(user_id, 1)
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
@@ -410,7 +417,11 @@ def get_player_stats():
         'gamesPlayed': games_played,
         'gamesWon': games_won,
         'gamesLost': games_lost,
-        'draws': draws
+        'draws': draws,
+        'defenderPlayed': defender_played,
+        'defenderWon': defender_won,
+        'defenderLost': defender_lost,
+        'defenderDraws': defender_draws
     }
 
     return generate_response(request, data, 200)
@@ -460,15 +471,15 @@ def get_history():
         start = page * games_per_page
         end = (page * games_per_page) + games_per_page
         game_history = db.get_games(user_id, start, end)
-        count_games=db.count_games(user_id)
-        max_page = int( count_games[0]/ games_per_page)+1
+        count_games = db.count_games(user_id)
+        max_page = int(count_games[0] / games_per_page) + 1
     except Exception as ex:
         if debug_mode: ("DB ERROR" + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
 
     history = []
 
-    #return max Page number
+    # return max Page number
     history.append({'maxPage': max_page})
 
     # maps results from numbers to strings

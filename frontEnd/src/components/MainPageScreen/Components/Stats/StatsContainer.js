@@ -16,6 +16,10 @@ function StatsContainer({userId, sessionToken, dispatch}) {
     const [gamesWon, setGamesWon] = useState("");
     const [gamesLost, setGamesLost] = useState("");
     const [draws, setDraws] = useState("");
+    const [defGamesPlayed, setDefGamesPlayed] = useState("");
+    const [defGamesWon, setDefGamesWon] = useState("");
+    const [defGamesLost, setDefGamesLost] = useState("");
+    const [defDraws, setDefDraws] = useState("");
     const [updateDate, setUpdateDate] = useState("--:--:--");
     const [isLoading, setIsLoading] = useState(true);
 
@@ -42,6 +46,11 @@ function StatsContainer({userId, sessionToken, dispatch}) {
         setGamesWon("");
         setGamesLost("");
         setDraws("");
+        setDefGamesPlayed("");
+        setDefGamesLost("");
+        setDefGamesWon("");
+        setDefDraws("");
+
 
         const resp = await getPlayerStats(userId, sessionToken);
         if (FETCH_DEBUGGING_MODE) console.log(resp);
@@ -62,6 +71,10 @@ function StatsContainer({userId, sessionToken, dispatch}) {
         await setGamesWon(resp.gamesWon);
         await setGamesLost(resp.gamesLost);
         await setDraws(resp.draws);
+        await setDefGamesPlayed(resp.defenderPlayed);
+        await setDefGamesLost(resp.defenderLost);
+        await setDefGamesWon(resp.defenderWon);
+        await setDefDraws(resp.defenderDraws);
 
         //set update date
         let time = new Date().getTime();
@@ -118,10 +131,10 @@ function StatsContainer({userId, sessionToken, dispatch}) {
 
                 <div className="StatsContainer-categorie">
                     <h1>{iconDefender}&nbsp;DEFENDER STATS</h1>
-                    <p>Games Played: <span>&nbsp;--</span></p>
-                    <p>Games Won: <span className="succText">&nbsp;--</span></p>
-                    <p>Games Lost: <span className="failText">&nbsp;--</span></p>
-                    <p>Draws: <span className="neutralText">&nbsp;--</span></p>
+                    <p>Games Played: <span>&nbsp;{defGamesPlayed}{isLoading && <Dots>loading</Dots>}</span></p>
+                    <p>Games Won: <span className="succText">&nbsp;{defGamesWon}{isLoading && <Dots>loading</Dots>}</span></p>
+                    <p>Games Lost: <span className="failText">&nbsp;{defGamesLost}{isLoading && <Dots>loading</Dots>}</span></p>
+                    <p>Draws: <span className="neutralText">&nbsp;{defDraws}{isLoading && <Dots>loading</Dots>}</span></p>
                 </div>
             </div>
 
