@@ -29,6 +29,7 @@ function DeleteAccount(props) {
         event.preventDefault()
         if (password !== "") {
             const response = await deleteUserAccount(password)
+
             if (response['response'] === "OK") {
                 setDeleteResult("Account has been successfully deleted");
                 setTimeout(() => {
@@ -72,7 +73,7 @@ function DeleteAccount(props) {
                     {eye}
                 </i>
             </div>
-            {deleteResult !== "" ? <p>{deleteResult}</p> : null}
+            <p>{deleteResult}</p>
             <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                 <ul>{errorMessage}</ul>
             </div>
