@@ -74,6 +74,18 @@ class ChessDB:
 
         return mycursor.fetchone()[0]
 
+    def user_exists(self, data):
+        mycursor = self.mydb.cursor(dictionary=True)
+
+        sql_user = ("""SELECT * FROM Users WHERE Username = %s or Email = %s""")
+
+        data_user = (data, data)
+
+        mycursor.execute(sql_user, data_user)
+        user = mycursor.fetchone()
+
+        return True if user is not None else False
+
     def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
         mycursor = self.mydb.cursor(dictionary=True)
 
@@ -170,7 +182,7 @@ class ChessDB:
         is_account_activated = True
 
         username = new_user_data_json['username']
-        password = new_user_data_json['hashedPassword'] if new_user_data_json['hashedPassword'] is not None\
+        new_password = new_user_data_json['hashedNewPassword'] if new_user_data_json['hashedNewPassword'] is not None\
             else user['Password']
         email = new_user_data_json['email']
         is_2_fa_enabled = new_user_data_json['is2FaEnabled']
@@ -184,7 +196,7 @@ class ChessDB:
                                 2FA = %s,
                                 AccountConfirmed = %s""")
 
-        data_update = (username, password, email, is_2_fa_enabled, is_account_activated)
+        data_update = (username, new_password, email, is_2_fa_enabled, is_account_activated)
         mycursor.execute(sql_update_query, data_update)
 
         self.mydb.commit()

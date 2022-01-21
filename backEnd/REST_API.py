@@ -305,14 +305,13 @@ def register():
     try:
         # handle username taken
         db = ChessDB.ChessDB()
-        user = db.get_user(username, email)
 
-        if "username" in user and user['username']:
+        if db.user_exists(username):
             return generate_response(request, {
                 "error": "Username already taken"
             }, 403)
 
-        if "email" in user and user['email']:
+        if db.user_exists(email):
             return generate_response(request, {
                 "error": "Email already taken"
             }, 403)
@@ -370,13 +369,23 @@ def delete_user():
 
     try:
         db = ChessDB.ChessDB()
+        user = db.get_user_by_id(user_id)
 
-        if db.get_user_by_id(user_id)['Password'] != request_data['hashedPassword']:
+        if user['Password'] != request_data['hashedPassword']:
             return generate_response(request, {
                 "response": "Incorrect password"
             }, 403)
 
-        db.remove_user(user_id)
+        if request_data['isTwoFaEnabled']:
+            otp_secret = user['OTPSecret']
+            otp = pyotp.totp.TOTP(otp_secret)
+            verify_result = otp.verify(request_data['twoFaCode'])
+            if not verify_result:
+                return generate_response(request, {
+                    "response": "Incorrect 2FA code"
+                }, 403)
+
+        # db.remove_user(user_id)
         del Sessions[str(user_id)]
         resp = generate_response(request, {
             "response": 'OK'
@@ -456,17 +465,24 @@ def update_user():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
 
-        if "username" in user and user['username']:
+        request_data = request.get_json()
+
+        if db.user_exists(request_data['username']):
             return generate_response(request, {
-                "error": "Username already taken"
+                "response": "Username already taken"
             }, 403)
 
-        if "email" in user and user['email']:
+        if db.user_exists(request_data['email']) and user['Email'] != request_data['email']:
             return generate_response(request, {
-                "error": "Email already taken"
+                "response": "Email address already taken"
             }, 403)
 
-        db.update_user(user, request.get_json())
+        if request_data['hashedCurrentPassword'] != user['Password']:
+            return generate_response(request, {
+                "response": "Incorrect password"
+            }, 403)
+
+        db.update_user(user, request_data)
 
         return generate_response(request, {
             "response": "OK"
