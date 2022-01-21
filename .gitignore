@@ -1,5 +1,12 @@
-
 *.pyc
-venv/
-.idea/
 /support/docker-files/*
+.idea/
+backEnd/.idea/backEnd.iml
+backEnd/.idea/inspectionProfiles/profiles_settings.xml
+backEnd/.idea/misc.xml
+backEnd/.idea/modules.xml
+backEnd/.idea/vcs.xml
+backEnd/venv/
+.idea/inspectionProfiles/Project_Default.xml
+backEnd/.idea/inspectionProfiles/Project_Default.xml
+

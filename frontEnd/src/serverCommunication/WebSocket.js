@@ -57,7 +57,6 @@ export default class SocketClient {
         this.ping = 1000;
     }
 
-
     disconnect() {
         return new Promise((resolve) => {
             this.socket.disconnect(() => {
@@ -81,6 +80,22 @@ export default class SocketClient {
                 return resolve();
             });
         });
+    }
+
+    async authorizeFromDispatch(userId,sessionToken) {
+        if (!this.is_authorized) {
+            //don't try to auth if user is yet to log in
+            if(sessionToken==='none'|| userId===undefined) {
+                return;
+            }
+
+            let authData = {
+                userId: userId,
+                sessionToken: sessionToken
+            };
+
+            this.socket.emit('authorize', authData);
+        }
     }
 
     //authenticate client's socket
@@ -228,7 +243,6 @@ export default class SocketClient {
             connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));
         });
 
-        //ping socket conitnously
     };
 
     //connect to check if the connection is closed, if so attempts to reconnect

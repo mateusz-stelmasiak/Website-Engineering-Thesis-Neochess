@@ -41,7 +41,7 @@ export async function getSessionToken() {
     }
 }
 
-export async function getMatchHistory(userId,sessionToken) {
+export async function getMatchHistory(userId,sessionToken,page,perPage) {
 
     try {
         //if session token expired/is not available, try getting a new one
@@ -58,7 +58,7 @@ export async function getMatchHistory(userId,sessionToken) {
             timeout: 1000000
         };
 
-        const response = await fetchWithTimeout(API_URL + '/match_history?userId=' + userId, requestOptions);
+        const response = await fetchWithTimeout(API_URL + '/match_history?userId=' + userId +'&page='+page+'&perPage='+perPage, requestOptions);
         const respObj = await handleResponse(response);
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;
@@ -131,6 +131,26 @@ export async function getPlayerStats(userId,sessionToken) {
         };
 
         const response = await fetchWithTimeout(API_URL + '/player_stats?userId=' + userId, requestOptions);
+        const respObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return respObj;
+    } catch (error) {
+        console.log(error.name === 'AbortError');
+    }
+}
+
+
+export async function getAvailableGameModes(sessionToken){
+    try {
+
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            headers: authHeader(sessionToken),
+            timeout: 6000
+        };
+
+        const response = await fetchWithTimeout(API_URL + '/get_available_game_modes', requestOptions);
         const respObj = await handleResponse(response);
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;

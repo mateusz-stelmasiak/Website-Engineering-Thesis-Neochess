@@ -1,6 +1,6 @@
 // Import all actions
 import * as actions from '../actions/gameActions'
-import {SocketStatus} from "../../serverLogic/WebSocket";
+import {SocketStatus} from "../../serverCommunication/WebSocket";
 
 
 export const gameInitialState = {

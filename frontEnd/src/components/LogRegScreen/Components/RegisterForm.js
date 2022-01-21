@@ -1,14 +1,14 @@
 import React, {useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import "./RegisterForm.css";
-import "../../../serverLogic/APIConfig.js"
+import "../../../serverCommunication/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {login, register} from "../../../serverLogic/LogRegService"
+import {login, register} from "../../../serverCommunication/LogRegService"
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
+import {authorizeSocket} from "../../../redux/actions/socketActions";
 
 
 function RegisterForm({dispatch}) {
@@ -149,7 +149,6 @@ function RegisterForm({dispatch}) {
         dispatch(setUsername(username));
         dispatch(setUserElo(resp.userElo));
         dispatch(setSessionToken(resp.sessionToken));
-
         routeToNext();
     }
 

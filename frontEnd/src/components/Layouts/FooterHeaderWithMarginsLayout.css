@@ -1,0 +1,13 @@
+.FooterHeaderWithMarginsLayout{
+    display: flex;
+    flex-direction: column;
+    row-gap: 3rem;
+}
+
+.FooterHeaderWithMarginsLayout .Layout--content{
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    margin: 0 auto;;
+    row-gap: 5rem;
+}

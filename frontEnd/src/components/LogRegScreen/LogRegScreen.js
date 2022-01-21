@@ -1,7 +1,7 @@
 import React from "react";
-import CircleWidget from "../CommonComponents/CircleWidget";
+import CircleWidget from "./Components/OrbitContainer/CircleWidget";
 import "./LogRegScreen.css"
-import OrbitContainer from "../OrbitContainer/OrbitContainer";
+import OrbitContainer from "./Components/OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
 import RegisterForm from "./Components/RegisterForm";
 
@@ -35,8 +35,6 @@ export default function LogRegScreen() {
         size={'small'}
     >
     </CircleWidget>
-
-
 
     return (
         <div className="LogRegScreen">
