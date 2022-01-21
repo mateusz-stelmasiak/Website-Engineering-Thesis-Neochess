@@ -367,8 +367,10 @@ export default class Board {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         } else {
             let storeVars = store.getState().game;
-            this.color_to_move = storeVars.currentTurn
-            if (storeVars.blackScore == 0 && storeVars.whiteScore == 0) {
+            if(storeVars.blackScore>-1 || storeVars.whiteScore>-1) {
+                this.color_to_move = storeVars.currentTurn
+            }
+            else if (storeVars.blackScore == 0 && storeVars.whiteScore == 0) {
                 this.color_to_move = 'w'
             }else{
                 this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
