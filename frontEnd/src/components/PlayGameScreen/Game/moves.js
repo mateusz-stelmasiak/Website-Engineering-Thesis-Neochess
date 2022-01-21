@@ -591,7 +591,6 @@ export function make_a_move() {
                         board.numOfMoves += 1;
                     }
                     board.lastPawnMoveOrCapture += 1;
-                    //TODO zbijanko + moze case z tego zrob
                     if (move.type === 'P') {
                         let EP_target2;
                         piece.color === 'w' ? EP_target2 = TargetSquare + Directions[0] : EP_target2 = TargetSquare + Directions[1];

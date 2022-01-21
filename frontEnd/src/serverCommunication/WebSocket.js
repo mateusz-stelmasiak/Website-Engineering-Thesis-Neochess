@@ -7,7 +7,7 @@ import {
     flipCurrentTurn, setBlackScore,
     setBlackTime,
     setCurrentFEN, setDrawProposedColor,
-    setOpponentStatus,
+    setOpponentStatus, setWhiteScore,
     setWhiteTime
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
@@ -149,7 +149,6 @@ export default class SocketClient {
             store.dispatch(setWhiteScore(data.whiteScore));
             store.dispatch(setBlackScore(data.blackScore));
             store.dispatch(flipCurrentTurn());
-            board.change_Turn();
             console.log(data);
 
         });

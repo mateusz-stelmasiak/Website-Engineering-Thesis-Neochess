@@ -12,8 +12,6 @@ import {
 } from "./Main";
 import Piece from "./Piece";
 import {Generate_moves, Generate_opponent_moves, moves} from "./moves";
-import CSquare from "./CSquare";
-import {forEach} from "react-bootstrap/ElementChildren";
 import {store} from "../../../index";
 
 
@@ -146,6 +144,7 @@ export default class Board {
 
     load_FEN() {
         let split_FEN = this.FEN.split(' ')
+        console.log("WITAM OTO TEST 2" + this.FEN)
         this.color_to_move = split_FEN[1];   //setting color to move from fen
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
@@ -180,6 +179,7 @@ export default class Board {
                 }
             }
         }
+        console.log("WITAM OTO TEST" + this.color_to_move)
 
     }
 
@@ -294,7 +294,7 @@ export default class Board {
                     piece.draw_piece();
                 }
                 i++;
-                if (i % 8 === 0) {      //TODO co to wogole jest to i XDDDDDD
+                if (i % 8 === 0) {
                     i = 0;
                 }
             } else {
@@ -318,7 +318,6 @@ export default class Board {
                 this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * (rew + 1) / 2, size - scalar, size - scalar);
                 this.p5.pop()
             } else if (playingAs === 'b' && rew % 2 === 0) {
-
                 this.p5.push()
                 this.p5.translate(scalar / 2, scalar / 2);
                 this.p5.tint(200, 127);
@@ -352,9 +351,7 @@ export default class Board {
                 if (dragged_index2 !== -1) {
                     this.gameMode2_grid[dragged_index2].draw_piece();
                 }
-
             }
-
         } else if (this.SetupState < 0 && this.gameMode2_grid.length === 1) {
             this.gameMode2_grid = [];
         }
@@ -363,21 +360,20 @@ export default class Board {
 
     change_Turn() {
 
-        if (gameMode != 1) {
+        let storeVars = store.getState().game;
+        let gameMode = storeVars.gameMode;
+        if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
+            this.color_to_move = 'w';
+        } else if(gameMode==1 && storeVars.whiteScore <0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        }else if(gameMode==1 && storeVars.blackScore <0){
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        } else if (gameMode == 1 && (storeVars.blackScore == 0)) {
+            this.color_to_move = 'w'
+        } else if (gameMode == 1 && (storeVars.whiteScore == 0)) {
+            this.color_to_move = 'b'
         } else {
-            let storeVars = store.getState().game;
-            if (storeVars.blackScore > -1 && storeVars.whiteScore > -1) {
-                this.color_to_move = storeVars.currentTurn
-            } else if (storeVars.blackScore == 0 && storeVars.whiteScore == 0) {
-                this.color_to_move = 'w'
-            } else if (storeVars.blackScore == -1) {
-                this.color_to_move = 'w'
-            } else if (storeVars.whiteScore == -1) {
-                this.color_to_move = 'b'
-            } else {
-                this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-            }
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }
 
     }

@@ -6,12 +6,9 @@ import ChessLogic
 from REST_API import *
 from enum import Enum
 
-
-
 # SOCKET IO CONFIG
 app = app
 socketio = SocketIO(app, cors_allowed_origins="*", ping_interval=5)
-
 thread = None
 timer_thread = None
 
@@ -87,7 +84,7 @@ def authorize(data):
         # game rejoin communicate (in case player was in queue when disconnected)
         emit("game_found",
              {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-              'gameMode': game.game_mode_id,'whiteScore':game.white_score,'blackScore':game.black_score},
+              'gameMode': game.game_mode_id, 'whiteScore': game.white_score, 'blackScore': game.black_score},
              to=request.sid)
 
         # notify opponent that the player reconnected
@@ -296,7 +293,8 @@ def find_match(game_mode_id, player):
             try:
                 # create game in db
                 db = ChessDB.ChessDB()
-                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],game_mode_id)
+                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],
+                                      game_mode_id)
                 game_id_hash = hashlib.sha256(str(game_id).encode())
                 game_room_id = str(game_id_hash.hexdigest())
 
@@ -486,11 +484,32 @@ def place_defender_piece(data):
     # get opposite turn
     opp_turn = 'w'
     if str(games[game_room_id].game_mode_id) == "1":
-        if curr_turn == 'b' and int(games[game_room_id].defender_state.white_score) == 0 and int(
-                games[game_room_id].defender_state.black_score) != 0:
+        if int(games[game_room_id].defender_state.white_score) == 0 and int(games[game_room_id].defender_state.black_score) == 0:
+            opp_turn = 'w'
+        elif int(games[game_room_id].defender_state.white_score) < 0:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        elif int(games[game_room_id].defender_state.black_score) < 0:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        elif int(games[game_room_id].defender_state.black_score) == 0:
+            opp_turn = 'w'
+        elif int(games[game_room_id].defender_state.white_score) == 0:
             opp_turn = 'b'
-        elif curr_turn == 'w':
-            opp_turn = 'b'
+        else:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        # if curr_turn == 'b' and int(games[game_room_id].defender_state.white_score) == 0 and int(
+        #         games[game_room_id].defender_state.black_score) != 0:
+        #     opp_turn = 'b'
+        # elif curr_turn == 'w':
+        #     opp_turn = 'b'
     print(curr_turn)
     print(int(games[game_room_id].defender_state.black_score))
     print(games[game_room_id].defender_state.white_score)
@@ -663,7 +682,7 @@ def make_move(data):
         game_id = game_info.game_id
         db = ChessDB.ChessDB()
         print("ADDING MOVE TO BD " + str(move_AN_notation))
-        move_string= str(move_AN_notation)
+        move_string = str(move_AN_notation)
         db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
     except Exception as ex:
         print("DB ERROR" + str(ex))
@@ -677,7 +696,8 @@ def make_move(data):
     if is_checkmate:
         finish_game(game_info, curr_turn)
 
-#propose a draw
+
+# propose a draw
 @socketio.on("propose_draw")
 def propose_draw(data):
     data_obj = json.loads(data)
@@ -700,32 +720,31 @@ def propose_draw(data):
         print("Wrong game")
         return
 
-    game_obj=game_info_pack[0]
-    playing_as=game_info_pack[1]
-
+    game_obj = game_info_pack[0]
+    playing_as = game_info_pack[1]
 
     opp_color = 'w'
     if playing_as == 'w':
         opp_color = 'b'
 
-    #if you already proposed a draw, don't propose again
+    # if you already proposed a draw, don't propose again
     if games[game_obj.game_room_id].draw_proposed == playing_as:
         return
 
     # if a draw was already proposed by the opponent, just accept it
     if games[game_obj.game_room_id].draw_proposed == opp_color:
-        finish_game(game_obj,'none')
+        finish_game(game_obj, 'none')
         emit('draw_response', {'accepted': True}, room=game_obj.game_room_id, include_self=True)
         return
 
-
-    #set draw proposed by player color in game info
+    # set draw proposed by player color in game info
     games[game_obj.game_room_id].draw_proposed = playing_as
 
     # send to everyone in the room except sender
     emit('draw_proposed', {}, room=game_obj.game_room_id, include_self=False)
 
-#accept a draw
+
+# accept a draw
 @socketio.on("answer_draw")
 def answer_draw(data):
     data_obj = json.loads(data)
@@ -750,15 +769,15 @@ def answer_draw(data):
     game_obj = game_info_pack[0]
     playing_as = game_info_pack[1]
 
-    opp_color= 'w'
-    if playing_as=='w':
-        opp_color='b'
+    opp_color = 'w'
+    if playing_as == 'w':
+        opp_color = 'b'
 
-    #check if it was opponent proposed a draw
+    # check if it was opponent proposed a draw
     if games[game_obj.game_room_id].draw_proposed != opp_color:
         return
 
-    #if it was declined, clear gameobject draw proposal
+    # if it was declined, clear gameobject draw proposal
     if not accepted:
         games[game_obj.game_room_id].draw_proposed = None
 
@@ -766,7 +785,7 @@ def answer_draw(data):
         finish_game(game_obj, 'none')
 
     # send to everyone in the room
-    emit('draw_response', {'accepted':accepted}, room=game_obj.game_room_id, include_self=False)
+    emit('draw_response', {'accepted': accepted}, room=game_obj.game_room_id, include_self=False)
 
 
 # in game chat
@@ -795,5 +814,4 @@ def send_chat_to_server(data):
     emit('receive_message', {'text': text, 'playerName': player_name}, room=game_info.game_room_id, include_self=False)
 
 
-
-socketio.run(app, host='127.0.0.1', port=5000, debug=True,log_output='False')
+socketio.run(app, host='127.0.0.1', port=5000, debug=True, log_output='False')
