@@ -87,7 +87,7 @@ def authorize(data):
         # game rejoin communicate (in case player was in queue when disconnected)
         emit("game_found",
              {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-              'gameMode': game.game_mode_id,'whiteScore':game.white_score,'blackScore':game.black_score},
+              'gameMode': game.game_mode_id,'whiteScore':game.defender_state.white_score,'blackScore':game.defender_state.black_score},
              to=request.sid)
 
         # notify opponent that the player reconnected

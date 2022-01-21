@@ -7,7 +7,7 @@ import {
     flipCurrentTurn, setBlackScore,
     setBlackTime,
     setCurrentFEN, setDrawProposedColor,
-    setOpponentStatus,
+    setOpponentStatus, setWhiteScore,
     setWhiteTime
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";

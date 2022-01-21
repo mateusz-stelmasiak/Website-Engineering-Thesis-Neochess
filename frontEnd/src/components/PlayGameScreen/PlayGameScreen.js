@@ -126,7 +126,7 @@ function PlayGameScreen({
     }
 
     let placeDefenderPiece = async (FEN, spentPoints) => {
-        const storeState = store.getState();
+        let storeState = store.getState();
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
 
