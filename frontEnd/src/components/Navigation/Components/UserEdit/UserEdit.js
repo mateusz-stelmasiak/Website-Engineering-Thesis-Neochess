@@ -70,7 +70,6 @@ function UserEditForm(props) {
         if (!passwordContainsUppercase) errors.push("password without upperCase");
         if (!passwordContainsNumber) errors.push("password without a number");
         if (!arePasswordsEqual) errors.push("passwords don't match");
-        if (!isEmailValid) errors.push("email is incorrect");
         return errors;
     }
 
@@ -80,10 +79,6 @@ function UserEditForm(props) {
 
     function hasUppercase(string) {
         return /[A-Z]/.test(string);
-    }
-
-    function hasWhiteSpace(string) {
-        return /[\s]/.test(string);
     }
 
     function checkNewPassword(pass) {
@@ -136,6 +131,19 @@ function UserEditForm(props) {
             setIs2FaEnabled(true)
             setQrCode((await get2FaCode(props.email))['qr_code']);
         }
+    }
+
+    async function handleEmailChange(event) {
+        event.preventDefault()
+        if (!isEmailValid) {
+            setErrorMessage("Given email is invalid")
+            setTimeout(() => {
+                setErrorMessage("")
+            }, 5000)
+            return;
+        }
+
+        await handleSubmit(event);
     }
 
     async function handlePasswordChange(event) {
@@ -278,7 +286,7 @@ function UserEditForm(props) {
                             />
                             <Button
                                 className="ButtonStyle"
-                                onClick={handleSubmit} type="submit"
+                                onClick={handleEmailChange} type="submit"
                             >Change email</Button>
                         </div>
                     </div>
