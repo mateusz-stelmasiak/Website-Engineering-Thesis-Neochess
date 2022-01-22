@@ -253,9 +253,7 @@ export default class SocketClient {
             //call check function after timeout
             connectInterval = setTimeout(this.check, Math.min(10000, that.timeout));
         });
-
-
-
+        
         this.authListeners();
         this.gameListeners();
     };
