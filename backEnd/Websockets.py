@@ -359,7 +359,7 @@ def finish_game(game_info, win_color):
         black_v = black_user_info[7]
 
         # game ended by white,ergo he won, else he didn't
-        white_result = int(curr_turn == 'w')
+        white_result = int(win_color == 'w')
         white_ELO, white_dv, white_v, black_ELO, black_dv, black_v = RatingSystem.calculate_glicko(white_ELO, white_dv,
                                                                                                    white_v, black_ELO,
                                                                                                    black_dv, black_v,

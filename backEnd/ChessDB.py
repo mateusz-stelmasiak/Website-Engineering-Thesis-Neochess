@@ -30,8 +30,8 @@ class ChessDB:
                             Password varchar(64) not null, 
                             Country varchar(64), 
                             Joined DATE not null,
-                            ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
-                            ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
+                            ELO FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
+                            ELODeviation FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             ELOVolatility FLOAT not null DEFAULT ''' + str(RatingSystem.starting_ELO_volatility) + ''' );''')
 
         mycursor.execute('''CREATE table if not exists Participants
@@ -42,7 +42,7 @@ class ChessDB:
                             Foreign key (UserID) references  Users(UserID) on delete cascade, 
                             Score FLOAT not null, 
                             Color varchar(32) not null,
-                            currELO int not null);''')
+                            currELO FLOAT not null);''')
 
         mycursor.execute('''create table if not exists Moves
                             (MoveID integer primary key AUTO_INCREMENT,
