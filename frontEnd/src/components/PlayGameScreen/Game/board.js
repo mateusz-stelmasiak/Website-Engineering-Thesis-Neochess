@@ -147,6 +147,7 @@ export default class Board {
         let split_FEN = this.FEN.split(' ')
         console.log("WITAM OTO TEST 2" + this.FEN)
         this.color_to_move = split_FEN[1];   //setting color to move from fen
+        this.enPassant = split_FEN[3];
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
         }

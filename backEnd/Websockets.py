@@ -650,8 +650,8 @@ def make_move(data):
         print("NOT UR TURN")
         return
 
-    is_move_legal, move_AN_notation = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'],
-                                                               move['targetSquare'])
+    valid_move = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'], move['targetSquare'])
+    is_move_legal, move_AN_notation = valid_move
     if not is_move_legal:
         emit('illegal_move', move, to=request.sid)
         print("INVALID MOVE")
@@ -671,6 +671,7 @@ def make_move(data):
         return
 
     new_FEN = ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN, move_AN_notation)
+    print(new_FEN)
     games[game_room_id].curr_FEN = new_FEN
     move_order = game_info.num_of_moves
     games[game_room_id].num_of_moves = move_order + 1
