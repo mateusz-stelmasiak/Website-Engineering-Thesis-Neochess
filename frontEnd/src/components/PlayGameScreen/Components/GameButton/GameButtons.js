@@ -5,7 +5,8 @@ import {faFlag,faHandshake} from "@fortawesome/free-solid-svg-icons";
 import {Tooltip} from "react-bootstrap";
 import {toast} from "react-hot-toast";
 import {setDrawProposedColor} from "../../../../redux/actions/gameActions";
-import {emit} from "../../addons/libraries/p5.pre-min";
+import {emit} from "../../../../redux/actions/socketActions";
+
 
 function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){
     let surrenderIcon= <FontAwesomeIcon icon={faFlag}/>

@@ -7,10 +7,10 @@ import ScrollToBottom from 'react-scroll-to-bottom';
 import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {getCurrentTimestamp} from "../../../../serverCommunication/Utils";
-import {emit} from "../../addons/libraries/p5.pre-min";
 import ChatMessages from "../ChatMessages";
 import DrawProposal from "../DrawProposal";
 import {playingAs} from "../../Game/Main";
+import {emit} from "../../../../redux/actions/socketActions";
 
 export let spamInterval = 2000
 export let initialSpamCooldown = 1000
