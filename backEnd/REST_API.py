@@ -2,13 +2,13 @@ import json
 
 from flask import Flask, request, jsonify, make_response, url_for, redirect
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from hashlib import sha256
 
 import ChessDB
 import random
 import hashlib
 from flask_cors import CORS
 import RatingSystem
-from ResetPasswordService import ResetPasswordService
 from ServerState import *
 import pyotp
 import base64
@@ -136,7 +136,7 @@ def login():
     user_account_activated = True if str(user['AccountConfirmed']) == "1" else False
 
     # actual user's password doesn't match given
-    if user_pass != request_data['hashedPassword']:
+    if user_pass != sha256(str.encode(request_data['hashedPassword'])).hexdigest():
         return generate_response(request, {
             "error": "Incorrect password"
         }, 403)
@@ -371,7 +371,7 @@ def delete_user():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
 
-        if user['Password'] != request_data['hashedPassword']:
+        if user['Password'] != sha256(str.encode(request_data['hashedPassword'])).hexdigest():
             return generate_response(request, {
                 "response": "Incorrect password"
             }, 403)
@@ -476,7 +476,7 @@ def update_user():
             link = url_for('confirm_email', token=token, _external=True)
             mail.send_welcome_message(user['Username'], request_data['email'], link)
 
-        if request_data['hashedCurrentPassword'] != user['Password']:
+        if request_data['hashedCurrentPassword'] != sha256(str.encode(user['Password'])).hexdigest():
             return generate_response(request, {
                 "response": "Incorrect password"
             }, 403)

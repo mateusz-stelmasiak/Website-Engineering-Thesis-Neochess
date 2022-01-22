@@ -2,6 +2,8 @@ from datetime import date
 import mysql.connector
 import RatingSystem
 
+from hashlib import sha256
+
 # to account for time difference due to timezones (in hh:mm:ss)
 server_time_difference = '02:00:00'
 
@@ -94,7 +96,7 @@ class ChessDB:
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
-        data_user = (username, password, email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)
+        data_user = (username, sha256(str.encode(password)).hexdigest(), email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()
@@ -181,8 +183,10 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
-        new_password = new_user_data_json['hashedNewPassword'] if new_user_data_json['hashedNewPassword'] is not None\
+        new_password = sha256(str.encode(new_user_data_json['hashedNewPassword'])).hexdigest() \
+            if new_user_data_json['hashedNewPassword'] is not None\
             else user['Password']
+
         email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
         is_2_fa_enabled = new_user_data_json['is2FaEnabled']
 
@@ -207,7 +211,7 @@ class ChessDB:
 
         sql_update = ("""UPDATE Users SET Password = %s WHERE UserID = %s""")
 
-        data_update = (new_password, self.get_user_by_email(email)[0])
+        data_update = (sha256(str.encode(new_password)).hexdigest(), self.get_user_by_email(email)['userID'])
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
