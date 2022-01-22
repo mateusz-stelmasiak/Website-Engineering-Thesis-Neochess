@@ -1,7 +1,7 @@
 import "./GameTimer.css"
 import React, { useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {classNames, formatTimeMinutes} from "../../../serverCommunication/Utils";
+import {classNames, formatTimeMinutes} from "../../../../serverCommunication/Utils";
 
 //time below which the timer becomes red
 const LOW_TIME_BOUNDARY = 10;
@@ -30,7 +30,6 @@ function GameTimer({currentTurn, playerColor, blackTime, whiteTime, style}) {
         };
     }, [currentTurn]);
 
-
     return (
         <div style={style} className="GameTimer">
             <div className={classNames(classes)}>
@@ -38,8 +37,6 @@ function GameTimer({currentTurn, playerColor, blackTime, whiteTime, style}) {
             </div>
         </div>
     );
-
-
 }
 
 const mapStateToProps = (state) => {
@@ -49,4 +46,5 @@ const mapStateToProps = (state) => {
         blackTime: state.game.blackTime
     };
 };
+
 export default connect(mapStateToProps)(GameTimer);

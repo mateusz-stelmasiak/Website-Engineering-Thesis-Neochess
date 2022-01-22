@@ -4,18 +4,18 @@ import React, {Component, useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import ScrollToBottom from 'react-scroll-to-bottom';
-import {getCurrentTimestamp} from "../../../serverCommunication/Utils";
-import {emit} from "../../../redux/actions/socketActions";
 import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import ChatMessages from "./ChatMessages";
-import DrawProposal from "./DrawProposal";
-import {playingAs} from "../Game/Main";
+import {getCurrentTimestamp} from "../../../../serverCommunication/Utils";
+import {emit} from "../../addons/libraries/p5.pre-min";
+import ChatMessages from "../ChatMessages";
+import DrawProposal from "../DrawProposal";
+import {playingAs} from "../../Game/Main";
 
 export let spamInterval = 2000
 export let initialSpamCooldown = 1000
 
-export function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
+function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
     let [messages, setMessages] = useState([]);
     let [typedMsg, setTypedMsg] = useState("");
     let [error, setError] = useState("");
@@ -55,10 +55,6 @@ export function Chat({socket, username, userId, gameId,dispatch,drawProposedColo
             setShowDrawProposal(true);
         })
     }, [])
-
-
-
-
 
     let handleSubmit = (event) => {
         event.preventDefault();
@@ -131,6 +127,5 @@ export function Chat({socket, username, userId, gameId,dispatch,drawProposedColo
         </section>
     );
 }
-
 
 export default connect(mapAllStateToProps)(Chat);

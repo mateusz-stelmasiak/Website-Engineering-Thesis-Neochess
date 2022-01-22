@@ -1,20 +1,17 @@
 import React, {useEffect, useState} from "react";
 import "./FindGameWidget.css"
-import {formatTime} from "../../../serverCommunication/Utils"
-import useTimer from "../../CommonComponents/Timer";
-import Dots from "../../CommonComponents/Dots"
 import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
-import {setGameId, setGameMode, setPlayingAs} from "../../../redux/actions/gameActions";
-import {setIsInGame} from "../../../redux/actions/userActions";
-import {emit} from "../../../redux/actions/socketActions";
-import {
-    getAvailableGameModes,
-} from "../../../serverCommunication/DataFetcher";
 import {faChessPawn, faChess} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {Tooltip} from "react-bootstrap";
 import {toast} from "react-hot-toast";
+import useTimer from "../../../CommonComponents/Timer";
+import Dots from "../../../CommonComponents/Dots/Dots";
+import {setGameId, setGameMode, setPlayingAs} from "../../../../redux/actions/gameActions";
+import {setIsInGame} from "../../../../redux/actions/userActions";
+import {getAvailableGameModes} from "../../../../serverCommunication/DataFetcher";
+import {emit} from "../../../../redux/actions/socketActions";
+import {formatTime} from "../../../../serverCommunication/Utils";
 
 
 function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
@@ -35,7 +32,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     //routing after having succesfully found a game
     const history = useHistory();
     const routeToNext = (gameId) => history.push('/play?id=' + gameId);
-
 
     //styling
     const idleStyle = {color: 'var(--primary-color-dark)'}
@@ -71,13 +67,12 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         }
     }, [])
 
-
     let loadAvailableGamemodes = async () => {
         setCurrGameMode(-1);
 
         //try to read gamemodes from cache
         let cachedGames = sessionStorage.getItem('gameModes');
-        if (cachedGames){
+        if (cachedGames) {
             cachedGames = JSON.parse(cachedGames);
             console.log(cachedGames);
             setGameModeButtons(cachedGames);
@@ -88,13 +83,10 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             setGameModeButtons(["ERROR"]);
             return;
         }
-
         setGameModeButtons(resp);
-
         //cache
-        sessionStorage.setItem('gameModes',JSON.stringify(resp));
+        sessionStorage.setItem('gameModes', JSON.stringify(resp));
     }
-
 
     const findGame = (gameModeId) => {
         //already in game
@@ -117,14 +109,12 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             return;
         }
 
-
         leaveQ(currGameMode);
         setCurrGameMode(gameModeId);
         setSelectedText(1);
         timerRestart();
         joinQ(gameModeId);
     }
-
 
     let joinQ = async (gameModeId) => {
         let joinQEvent = {
@@ -173,31 +163,28 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                                                                       style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/> :
                                     <FontAwesomeIcon icon={faChessPawn}
                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>}
-                                <h1  style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
+                                <h1 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
                             </button>
                         );
                     })
                 }
             </div>
 
-
             {isInQ &&
-            <div className="QInfo">
-                <ul>
-                    <li key="QInfo-wait-time"><span>Wait time:</span> {formatTime(timer)}</li>
-                    <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
-                    <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
-                </ul>
+                <div className="QInfo">
+                    <ul>
+                        <li key="QInfo-wait-time"><span>Wait time:</span> {formatTime(timer)}</li>
+                        <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
+                        <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
+                    </ul>
 
-                <button className="QInfo-leave" onClick={() => {
-                    findGame(-1)
-                }}>
-                    LEAVE QUEUE
-                </button>
-            </div>
+                    <button className="QInfo-leave" onClick={() => {
+                        findGame(-1)
+                    }}>
+                        LEAVE QUEUE
+                    </button>
+                </div>
             }
-
-
         </section>
     );
 }
@@ -212,4 +199,3 @@ const mapStateToProps = (state) => {
 };
 
 export default connect(mapStateToProps)(FindGameWidget);
-

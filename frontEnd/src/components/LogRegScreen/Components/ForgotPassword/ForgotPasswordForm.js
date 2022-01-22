@@ -4,8 +4,8 @@ import validator from "validator";
 import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import "./ForgotPasswordForm.css";
-import {sendResetPassword} from "../../../../serverLogic/LogRegService";
 import {useHistory} from "react-router-dom";
+import {sendResetPassword} from "../../../../serverCommunication/LogRegService";
 
 
 function ForgotPasswordForm({dispatch}) {

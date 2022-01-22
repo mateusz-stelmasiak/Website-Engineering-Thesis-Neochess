@@ -1,15 +1,15 @@
 import React, {useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import "../../../serverCommunication/APIConfig.js"
+import "../../../../serverCommunication/APIConfig";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {login, register} from "../../../serverCommunication/LogRegService"
-import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
 import ReCAPTCHA from "react-google-recaptcha";
-
+import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
+import {check2FaCode, login, reSentActivationEmail, register} from "../../../../serverCommunication/LogRegService";
+import validator from 'validator';
 
 
 function RegisterForm({dispatch}) {
@@ -170,7 +170,7 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        let resp = await register(username, password, captchaValue, email, is2FaEnabled)
+        const resp = await register(username, password, email, is2FaEnabled, captchaValue);
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);

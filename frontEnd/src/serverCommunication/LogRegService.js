@@ -227,7 +227,7 @@ export async function setNewPassword(token, newPassword) {
     }
 }
 
-export async function register(username, password, email, is2FaEnabled) {
+export async function register(username, password, captcha, email, is2FaEnabled) {
     try {
         let hashedPassword = sha256(password);
         const requestOptions = {
@@ -238,7 +238,8 @@ export async function register(username, password, email, is2FaEnabled) {
                 username,
                 hashedPassword,
                 email,
-                is2FaEnabled
+                is2FaEnabled,
+                captcha
             })
         };
 

@@ -5,8 +5,8 @@ import {connect} from "react-redux";
 import "./SetNewPassword.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
-import {setNewPassword} from "../../../../serverLogic/LogRegService";
 import {useHistory, useLocation} from "react-router-dom";
+import {setNewPassword} from "../../../../serverCommunication/LogRegService";
 
 
 function SetNewPasswordForm({dispatch}) {

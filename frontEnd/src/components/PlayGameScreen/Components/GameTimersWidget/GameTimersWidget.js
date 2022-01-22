@@ -1,10 +1,10 @@
 import "./GameTimersWidget.css"
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import GameTimer from "./GameTimer";
+import GameTimer from "../GameTimer/GameTimer";
 
 
-function GameTimersWidget({playingAs,children}) {
+function GameTimersWidget({playingAs, children}) {
     const [whiteOrder, setWhiteOrder] = useState(-1)
     const [blackOrder, setBlackOrder] = useState(-1)
 

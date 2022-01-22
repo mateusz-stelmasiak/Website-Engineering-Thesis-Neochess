@@ -1,11 +1,9 @@
 import React from "react";
-import CircleWidget from "./Components/OrbitContainer/CircleWidget";
 import "./LogRegScreen.css"
 import OrbitContainer from "./Components/OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
 import RegisterForm from "./Components/RegisterForm/RegisterForm";
-import ForgotPasswordForm from "./Components/ForgotPassword/ForgotPasswordForm";
-import SetNewPasswordForm from "./Components/SetNewPassword/SetNewPasswordForm";
+import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
 
 
 export default function LogRegScreen() {

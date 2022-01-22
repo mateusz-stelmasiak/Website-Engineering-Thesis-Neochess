@@ -1,12 +1,11 @@
 import "./GameButtons.css"
-import {Component} from "react";
 import {connect} from "react-redux";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFlag,faHandshake} from "@fortawesome/free-solid-svg-icons";
-import {emit} from "../../../redux/actions/socketActions";
 import {Tooltip} from "react-bootstrap";
 import {toast} from "react-hot-toast";
-import {setDrawProposedColor} from "../../../redux/actions/gameActions";
+import {setDrawProposedColor} from "../../../../redux/actions/gameActions";
+import {emit} from "../../addons/libraries/p5.pre-min";
 
 function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){
     let surrenderIcon= <FontAwesomeIcon icon={faFlag}/>
@@ -41,7 +40,6 @@ function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){
         toast.success("Draw proposed");
     }
 
-
     let makeAIMove = () =>{
         let makeMoveEvent ={
             event:'make_AI_move',
@@ -53,8 +51,6 @@ function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){
         }
         dispatch(emit(makeMoveEvent));
     }
-
-
 
     return (
         <section className="GameButtons">
@@ -72,8 +68,6 @@ function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){
             </Tooltip>
         </section>
     );
-
-
 }
 
 // {this.props.gameMode==="1" && <button onClick={this.makeAIMove}>MAKE AI MOVE</button>
@@ -87,4 +81,5 @@ const mapStateToProps = (state) => {
         drawProposedColor: state.game.drawProposedColor
     };
 };
+
 export default connect(mapStateToProps)(GameButtons);

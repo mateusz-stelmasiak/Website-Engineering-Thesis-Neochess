@@ -1,10 +1,9 @@
-
 import "./PlayersInfo.css"
-import {SocketStatus} from "../../../serverCommunication/WebSocket";
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import SocketStatusWidget from "../../../CommonComponents/SocketStatusWidget/SocketStatusWidget";
+import {SocketStatus} from "../../../../serverCommunication/WebSocket";
 
 class PlayersInfo extends Component{
     constructor(props) {
@@ -13,7 +12,6 @@ class PlayersInfo extends Component{
             opponentStatus: SocketStatus.connecting
         }
     }
-
 
     render() {
         return (
@@ -38,7 +36,6 @@ class PlayersInfo extends Component{
             </section>
         );
     }
-
 }
 
 export default connect(mapAllStateToProps)(PlayersInfo);

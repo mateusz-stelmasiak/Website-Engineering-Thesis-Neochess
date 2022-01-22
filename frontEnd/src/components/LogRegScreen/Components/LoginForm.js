@@ -6,10 +6,9 @@ import "../../../serverCommunication/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from 'react-router-dom';
-import {login, logout} from "../../../serverCommunication/LogRegService"
+import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serverCommunication/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
-import Dots from "../../CommonComponents/Dots/Dots";
 import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
 
 

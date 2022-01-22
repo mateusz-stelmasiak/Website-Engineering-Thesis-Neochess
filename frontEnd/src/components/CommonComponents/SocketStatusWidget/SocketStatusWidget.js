@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import "./SocketStatusWidget.css";
 import {Fade, Tooltip} from "react-bootstrap";
-import {SocketStatus} from "../../serverCommunication/WebSocket";
+import {SocketStatus} from "../../../serverCommunication/WebSocket";
 
 const {Component} = require("react");
 
@@ -16,15 +16,13 @@ class SocketStatusWidget extends Component {
     }
 
     render() {
-
-        let displayedSocketStatus= this.props.socketStatus;
-        if (this.state.isOpponentSocket && this.props.opponentsStatus ){
-            displayedSocketStatus=this.props.opponentsStatus;
+        let displayedSocketStatus = this.props.socketStatus;
+        if (this.state.isOpponentSocket && this.props.opponentsStatus) {
+            displayedSocketStatus = this.props.opponentsStatus;
             //if player is disconnected show opponents status as unknown
-            if (this.props.socketStatus===SocketStatus.disconnected){
-                displayedSocketStatus=SocketStatus.unknown;
+            if (this.props.socketStatus === SocketStatus.disconnected) {
+                displayedSocketStatus = SocketStatus.unknown;
             }
-
         }
 
         return (
@@ -35,6 +33,7 @@ class SocketStatusWidget extends Component {
         );
     }
 }
+
 // Map Redux state to React component props
 const mapStateToProps = (state) => {
     return {
@@ -42,4 +41,5 @@ const mapStateToProps = (state) => {
         opponentsStatus: state.game.opponentsStatus
     };
 };
+
 export default connect(mapStateToProps)(SocketStatusWidget);

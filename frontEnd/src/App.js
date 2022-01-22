@@ -12,10 +12,9 @@ import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
 import {toast, Toaster} from "react-hot-toast";
-import CookiesConsent from "./components/Cookies/CookiesConsent";
-import RejoinGameWidget from "./components/MainPageScreen/Components/RejoinGameWidget";
 import CookiesPreferences from "./components/Cookies/CookiesPreferences";
 import CookiesPage from "./components/Cookies/CookiesPage";
+import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
 
 
 export const GAME_DEBUGING_MODE = false;

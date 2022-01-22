@@ -1,10 +1,7 @@
 import { useEffect, useState} from "react";
-import GameContainer from "./Components/GameContainer"
-import Chat from "./Components/Chat"
 import P5Wrapper from "react-p5-wrapper"
 import sketch, {board} from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";
-import PlayersInfo from "./Components/PlayersInfo";
 import "./PlayGameScreen.css";
 import GameButtons from "./Components/GameButton/GameButtons";
 import {store} from "../../index";
@@ -27,11 +24,14 @@ import {
 import {setIsInGame} from "../../redux/actions/userActions";
 import {useHistory} from "react-router-dom"
 import {authorizeSocket, emit} from "../../redux/actions/socketActions";
-import GameTimersWidget from "./Components/GameTimersWidget";
-import TurnIndicator from "./Components/TurnIndicator";
 import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
 import {SocketStatus} from "../../serverCommunication/WebSocket";
 import GameResult from "./Components/GameResult";
+import PlayersInfo from "./Components/PlayersInfo/PlayersInfo";
+import GameContainer from "./Components/GameContainer/GameContainer";
+import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
+import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
+import Chat from "./Components/Chat/Chat";
 
 
 function PlayGameScreen({
@@ -180,7 +180,6 @@ function PlayGameScreen({
 
                     <PlayersInfo/>
 
-
                     {!loadingGameInfo &&
                         <>
                             <Chat/>
@@ -211,8 +210,6 @@ function PlayGameScreen({
             </div>
         </FooterHeaderLayout>
     );
-
-
 }
 
 export default connect(mapAllStateToProps)(PlayGameScreen);
