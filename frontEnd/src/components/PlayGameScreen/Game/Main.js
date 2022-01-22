@@ -8,6 +8,8 @@ import {
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
 import {add_piece} from "./gameMode2_moves";
+import {store} from "../../../index";
+
 
 export var Font;
 export var pos_to_stocknot_dict = [];
@@ -166,13 +168,7 @@ export default function sketch(p5) {
                 board.SetupState=50;
             }
         }
-        if(currentTurn !==undefined){
-            board.color_to_move=currentTurn;
-            console.log(currentTurn);
-        }else{
-            console.log("nie dostaem");
-            board.color_to_move="w";
-        }
+
         board.load_FEN();
         calculatePixelPositions();
         count_squares_to_edge();

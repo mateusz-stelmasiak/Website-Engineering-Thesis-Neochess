@@ -1,0 +1,6 @@
+.ShowOnClick button{
+    all:unset;
+    color: var(--text-color);
+    cursor: pointer;
+    text-decoration: underline;
+}

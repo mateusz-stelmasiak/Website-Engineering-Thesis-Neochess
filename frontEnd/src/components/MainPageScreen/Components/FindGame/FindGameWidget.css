@@ -1,100 +1,120 @@
-
-.PlayGameWidget{
-    height: 18rem;
-    width: 100%;
+.FindGameWidget{
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    padding-top: 5rem;
     flex-direction: column;
+    row-gap: 1rem;
 }
-.PlayGameWidget-mainButton{
-    all:unset;
-    cursor: pointer;
-    width:28rem;
-    padding: 0rem 10rem;
 
-    font-size:2rem;
-    border-radius: 3rem;
-    font-weight: 0;
-    color: #1c534b;
-    background: rgb(200,199,199);
-    background: linear-gradient(90deg, rgba(200,199,199,1) 30%, rgba(254,254,254,1) 100%);
-    -webkit-box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);
-    box-shadow: 5px 5px 24px 5px rgba(0,0,0,0.5);
+.FindGameWidget .FindGameWidget-mainText{
+    all:unset;
+    color: var(--primary-color);
+    transition: 100ms linear;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    transition: background 100ms linear;
+    text-align: center;
 }
 
-.GameModes-enter {
-    opacity: 0;
-    transform: scale(0.9);
+.FindGameWidget .FindGameWidget-mainText h1{
+    margin: 0;
+    font-size: 3rem;
+    font-weight: bold;
+}
+.FindGameWidget .FindGameWidget-mainText h2{
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
 }
 
-
-.PlayGameWidget .GameModes{
+.FindGameWidget hr{
+    margin-top: -0.3rem;
+    color: var(--primary-color);
+    width: min(100%,40rem);
+    height: 0.4rem;
+    background: var(--primary-color);
+    filter: drop-shadow(0 0 0.2rem var(--primary-color-dark));
+}
+.FindGameWidget .FindGameWidget-gameModes{
     margin-top: 2rem;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
+    justify-content: center;
+    column-gap: 3rem;
+    row-gap: 3rem;
 }
 
-.PlayGameWidget-gameModeButton{
+.FindGameWidget .FindGameWidget-gameModeButton{
     all:unset;
     cursor: pointer;
 
-    padding: 0.5rem 3rem;
-    margin-left: 1rem;
+    width: min(10rem,40vw);
+    height: min(10rem,40vw);
 
-    font-size:1.5rem;
-    font-weight: 0;
-    color: #1c534b;
-    background: rgb(200,199,199);
-    background: linear-gradient(90deg, rgba(200,199,199,1) 30%, rgba(254,254,254,1) 100%);
-    transition: background 200ms linear;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    row-gap: 0.3rem;
+    position: relative;
 }
 
-.GameModes-enter-active {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 300ms, transform 300ms;
+.FindGameWidget .FindGameWidget-gameModeButton svg{
+    width: 70%;
+    height: 70%;
+    color: var(--primary-color-dark);
 }
-.GameModes-exit {
-    opacity: 1;
-}
-.GameModes-exit-active {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 300ms, transform 300ms;
+
+.FindGameWidget .FindGameWidget-gameModeButton h1{
+    margin: 0;
+    font-size: 2rem;
+    color: var(--primary-color-dark);
 }
 
 
 
-.PlayGameWidget-gameModeButton:hover{
+.FindGameWidget .FindGameWidget-gameModeButton:hover{
     transform: scale(1.02);
-
 }
-
 
 
 .QInfo{
-    margin-top:1rem;
-    list-style: none;
     color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    row-gap: 1rem;
 }
 
-.QInfo-enter-active {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 300ms, transform 300ms;
+.QInfo ul{
+    all:unset;
+    list-style: none;
+    width: 100%;
 }
-.QInfo-exit {
-    opacity: 1;
+
+
+.QInfo li span{
+    color:var(--primary-color-dark);
+    font-weight: normal;
 }
-.QInfo-exit-active {
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 300ms, transform 300ms;
+
+.QInfo button{
+    all:unset;
+    cursor: pointer;
+    color:var(--sec-color);
+}
+
+.QInfo button:before, .QInfo button:after{
+    content: " | ";
+}
+
+/*resize play game text to fit screen*/
+@media (max-width: 420px) {
+    .FindGameWidget .FindGameWidget-mainText h1{
+        font-size: 2rem;
+    }
 }

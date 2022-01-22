@@ -94,8 +94,7 @@ export function Generate_moves(grid, check, gtype) {
     } else {
         moves = ally_moves;
     }
-    if (playingAs !== board.color_to_move)
-    {
+    if (playingAs !== board.color_to_move) {
         moves = [];
     }
 
@@ -247,7 +246,7 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
     if (piece.did_move === 0) {
         let target = startSquare + Directions[3] * 3;
         let Piece_on_Target = grid[target];
-        if (Piece_on_Target!=undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
+        if (Piece_on_Target !== undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
             //roszada krótka
             if (grid[startSquare + Directions[3] * 2].type_letter === 'e' && grid[startSquare + Directions[3]].type_letter === 'e')
 
@@ -259,7 +258,7 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
 
         target = startSquare + Directions[2] * 4;
         Piece_on_Target = grid[target];
-        if (Piece_on_Target!=undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
+        if (Piece_on_Target !== undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
             if (grid[startSquare + Directions[2] * 2].type_letter === 'e' && grid[startSquare + Directions[2]].type_letter === 'e'
                 && grid[startSquare + Directions[2] * 3].type_letter === 'e') {
 
@@ -270,7 +269,6 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
 
 
     }
-    //
 
 }
 
@@ -575,7 +573,6 @@ export function generate_pos_to_stocknot_dict() {
 }
 
 
-
 export function make_a_move() {
     for (let i = 0; i < board.grid.length; i++) {
         let piece = board.grid[i];
@@ -594,7 +591,6 @@ export function make_a_move() {
                         board.numOfMoves += 1;
                     }
                     board.lastPawnMoveOrCapture += 1;
-                    //TODO zbijanko + moze case z tego zrob
                     if (move.type === 'P') {
                         let EP_target2;
                         piece.color === 'w' ? EP_target2 = TargetSquare + Directions[0] : EP_target2 = TargetSquare + Directions[1];
@@ -647,7 +643,7 @@ export function make_a_move() {
                     moves = [];
                     opponent_moves = [];
 
-                    if(gameMode!==1 || board.SetupState===-1){
+                    if (gameMode !== 1 || board.SetupState === -1) {
                         let data = {
                             'startingSquare': StartingSquare,
                             'targetSquare': TargetSquare,

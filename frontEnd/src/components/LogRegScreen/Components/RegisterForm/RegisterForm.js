@@ -1,16 +1,15 @@
 import React, {useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import "./RegisterForm.css";
-import "../LoadingComponent.css";
-import "../../../../serverLogic/APIConfig.js"
+import "../../../serverCommunication/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from "react-router-dom";
-import {check2FaCode, login, register, reSentActivationEmail} from "../../../../serverLogic/LogRegService"
+import {login, register} from "../../../serverCommunication/LogRegService"
+import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions"
 import {connect} from 'react-redux'
-import validator from 'validator'
-import {get2FaCode} from "../../../../serverLogic/DataFetcher";
+import ReCAPTCHA from "react-google-recaptcha";
+
 
 
 function RegisterForm({dispatch}) {
@@ -171,7 +170,7 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        let resp = await register(username, password, email, is2FaEnabled)
+        let resp = await register(username, password, captchaValue, email, is2FaEnabled)
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
@@ -222,6 +221,14 @@ function RegisterForm({dispatch}) {
             setReSentResult("")
         }, 2500)
     }
+
+    //captcha
+    const [captchaValue, setCaptchaValue] = useState(null);
+
+    function captchaChange(value) {
+        setCaptchaValue(value);
+    }
+
 
     return (
         <div className="LogRegForm">
@@ -280,6 +287,14 @@ function RegisterForm({dispatch}) {
                     value={email}
                     onChange={(e) => checkEmail(e.target.value)}
                 />
+                <ReCAPTCHA
+                    sitekey={process.env.REACT_APP_CAPTCHA_KEY}
+                    onChange={captchaChange}
+                    size="normal"
+                    theme='dark'
+                />
+
+
 
                 {isEmailValid ?
                     <div className="infoContainer">

@@ -1,8 +1,7 @@
 import "./GameTimersWidget.css"
-import React, {Component, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import useTimer from "../../../CommonComponents/Timer";
-import GameTimer from "../GameTimer/GameTimer";
+import GameTimer from "./GameTimer";
 
 
 function GameTimersWidget({playingAs,children}) {

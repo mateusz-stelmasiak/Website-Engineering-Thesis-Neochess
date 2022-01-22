@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
 import "./SocketStatusWidget.css";
 import {Fade, Tooltip} from "react-bootstrap";
-import {SocketStatus} from "../../../serverLogic/WebSocket";
+import {SocketStatus} from "../../serverCommunication/WebSocket";
 
 const {Component} = require("react");
 
@@ -12,7 +12,6 @@ class SocketStatusWidget extends Component {
         super(props);
         this.state = {
             isOpponentSocket: this.props.isOpponentSocket, //dictates if it should display opponent's or player's socket status
-
         }
     }
 

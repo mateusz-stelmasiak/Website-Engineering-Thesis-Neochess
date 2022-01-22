@@ -640,13 +640,15 @@ def is_in_game():
 
     game = game_info[0]
     playing_as = game_info[1]
+    opponent_username = game_info[2]
     print(game)
 
     data = {
         "inGame": True,
         "gameId": game.game_room_id,
         "gameMode": game.game_mode_id,
-        "playingAs": playing_as
+        "playingAs": playing_as,
+        "opponentUsername": opponent_username
     }
 
     return generate_response(request, data, 200)
@@ -688,7 +690,8 @@ def get_game_info():
                 "playingAs": 'b'
             },
             'blackTime': game.timer.black_time,
-            'whiteTime': game.timer.white_time
+            'whiteTime': game.timer.white_time,
+            'drawProposedColor': game.draw_proposed
             }
 
     if str(game.game_mode_id) == '1':
@@ -710,7 +713,8 @@ def get_game_info():
                 'blackTime': game.timer.black_time,
                 'whiteTime': game.timer.white_time,
                 'whiteScore': game.defender_state.white_score,
-                'blackScore': game.defender_state.black_score
+                'blackScore': game.defender_state.black_score,
+                'drawProposedColor': game.draw_proposed
                 }
 
     return generate_response(request, data, 200)
@@ -733,6 +737,62 @@ def get_2fa_code():
     data = {
         "qr_code": base64.b64encode(mail.get_qr_code(otp_url)).decode()
     }
+
+    return generate_response(request, data, 200)
+    
+
+@app.route('/get_ELO_change_in_last_game', methods=['GET', 'OPTIONS'])
+def get_ELO_change_in_last_game():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    if debug_mode: print("PLAYER_ELO CHANGE REQUEST " + str(request.args))
+    user_id = request.args['userId']
+
+    # handle user not having a session at all or invalid authorization
+    session_token = request.headers['Authorization']
+    if not authorize_user(user_id, session_token):
+        if debug_mode: print('Authorization failed')
+        return generate_response(request, {"error": "Authorisation failed."}, 401)
+
+    try:
+        db = ChessDB.ChessDB()
+        elo_last_two_games = db.get_ELO_change_in_two_last_games(user_id)
+        games_played = db.count_games(user_id)[0]
+
+        # player has played only one game so far
+        if games_played < 1:
+            elo_change = elo_last_two_games[0][0] - RatingSystem.starting_ELO
+        else:
+            elo_change = elo_last_two_games[0][0] - elo_last_two_games[1][0]
+
+    except Exception as ex:
+        if debug_mode: ("DB ERROR" + str(ex))
+        return generate_response(request, {"error": "Database error"}, 503)
+
+    data = {
+        'eloChange': elo_change,
+    }
+
+    return generate_response(request, data, 200)
+
+
+@app.route('/get_available_game_modes', methods=['GET', 'OPTIONS'])
+def get_available_game_modes():
+    if request.method == "OPTIONS":
+        return generate_response(request, {}, 200)
+
+    data = []
+    for game_mode in game_modes:
+        data.append(
+            {
+                "gameModeId": game_mode.game_mode_id,
+                "gameModeName": game_mode.game_mode_name,
+                "gameModeDesc": game_mode.game_mode_desc,
+                "gameModeTime": game_mode.game_mode_time,
+                "gameModeIcon": game_mode.game_mode_icon
+            }
+        )
 
     return generate_response(request, data, 200)
 
@@ -768,7 +828,11 @@ def get_player_stats():
         games_won = db.count_wins(user_id)
         games_lost = db.count_losses(user_id)
         draws = db.count_draws(user_id)
-
+        # defender stats
+        defender_played = db.count_games(user_id, 1)
+        defender_won = db.count_wins(user_id, 1)
+        defender_lost = db.count_losses(user_id, 1)
+        defender_draws = db.count_draws(user_id, 1)
     except Exception as ex:
         if debug_mode:
             ("DB ERROR" + str(ex))
@@ -783,7 +847,11 @@ def get_player_stats():
         'gamesPlayed': games_played,
         'gamesWon': games_won,
         'gamesLost': games_lost,
-        'draws': draws
+        'draws': draws,
+        'defenderPlayed': defender_played,
+        'defenderWon': defender_won,
+        'defenderLost': defender_lost,
+        'defenderDraws': defender_draws
     }
 
     return generate_response(request, data, 200)
@@ -827,18 +895,19 @@ def get_history():
     # set page to 0 if not given in request
     page = 0
     if 'page' in request.args:
-        page = request.args['page']
+        page = int(request.args['page'])
     # num of games on given page, default 10
     games_per_page = 10
     if 'perPage' in request.args:
-        games_per_page = request.args['perPage']
+        games_per_page = int(request.args['perPage'])
 
     try:
         db = ChessDB.ChessDB()
         start = page * games_per_page
-        end = page * games_per_page + games_per_page
+        end = (page * games_per_page) + games_per_page
         game_history = db.get_games(user_id, start, end)
-
+        count_games = db.count_games(user_id)
+        max_page = int(count_games[0] / games_per_page) + 1
     except Exception as ex:
         if debug_mode:
             ("DB ERROR" + str(ex))
@@ -848,6 +917,10 @@ def get_history():
         }, 503)
 
     history = []
+
+    # return max Page number
+    history.append({'maxPage': max_page})
+
     # maps results from numbers to strings
     possible_results = {'0.0': 'loss', '0.5': 'draw', '1.0': 'win'}
     for game in game_history:

@@ -1,6 +1,6 @@
 
 import "./PlayersInfo.css"
-import {SocketStatus} from "../../../../serverLogic/WebSocket";
+import {SocketStatus} from "../../../serverCommunication/WebSocket";
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";

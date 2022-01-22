@@ -95,7 +95,6 @@ input[type=number] {
 }
 
 .errorMessage {
-    flex: 1 1 100%;
     margin-top: 1rem;
 }
 
@@ -132,7 +131,9 @@ input[type=number] {
     color:var(--section-bg-color);
 }
 
-
+.rc-anchor-container{
+    margin-top: 1rem;
+}
 
 @media all and (min-width: 480px) {
 

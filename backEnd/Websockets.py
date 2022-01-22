@@ -1,10 +1,10 @@
+import logging
+
 from flask import copy_current_request_context
 from flask_socketio import SocketIO, emit, join_room, leave_room
 import ChessLogic
 from REST_API import *
 from enum import Enum
-
-debug_mode = True
 
 # SOCKET IO CONFIG
 app = app
@@ -80,10 +80,13 @@ def authorize(data):
                 playing_as + " with FEN " + str(game.curr_FEN)))
 
         join_room(game.game_room_id, request.sid)
+
         # game rejoin communicate (in case player was in queue when disconnected)
         emit("game_found",
              {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-              'gameMode': game.game_mode_id},
+
+              'gameMode': game.game_mode_id,'whiteScore':game.defender_state.white_score,'blackScore':game.defender_state.black_score},
+
              to=request.sid)
 
         # notify opponent that the player reconnected
@@ -292,7 +295,8 @@ def find_match(game_mode_id, player):
             try:
                 # create game in db
                 db = ChessDB.ChessDB()
-                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [])
+                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],
+                                      game_mode_id)
                 game_id_hash = hashlib.sha256(str(game_id).encode())
                 game_room_id = str(game_id_hash.hexdigest())
 
@@ -306,9 +310,10 @@ def find_match(game_mode_id, player):
                 emit('update_opponents_socket_status', {'status': 'connected'}, room=game_room_id)
 
                 # create game in server storage
+                game_mode = game_modes[int(game_mode_id)]
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, white_player, black_player, 'w',
-                                           game_mode_starting_FEN[int(game_mode_id)], 0,
-                                           Timer(game_mode_times[int(game_mode_id)]))
+                                           game_mode.game_mode_starting_FEN, 0,
+                                           Timer(game_mode.game_mode_time))
             except Exception as ex:
                 print("DB ERROR" + str(ex))
 
@@ -480,14 +485,46 @@ def place_defender_piece(data):
 
     # get opposite turn
     opp_turn = 'w'
-    if curr_turn == 'w':
-        opp_turn = 'b'
+    if str(games[game_room_id].game_mode_id) == "1":
+        if int(games[game_room_id].defender_state.white_score) == 0 and int(games[game_room_id].defender_state.black_score) == 0:
+            opp_turn = 'w'
+        elif int(games[game_room_id].defender_state.white_score) < 0:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        elif int(games[game_room_id].defender_state.black_score) < 0:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        elif int(games[game_room_id].defender_state.black_score) == 0:
+            opp_turn = 'w'
+        elif int(games[game_room_id].defender_state.white_score) == 0:
+            opp_turn = 'b'
+        else:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
+        # if curr_turn == 'b' and int(games[game_room_id].defender_state.white_score) == 0 and int(
+        #         games[game_room_id].defender_state.black_score) != 0:
+        #     opp_turn = 'b'
+        # elif curr_turn == 'w':
+        #     opp_turn = 'b'
+    print(curr_turn)
+    print(int(games[game_room_id].defender_state.black_score))
+    print(games[game_room_id].defender_state.white_score)
+    print("opp turn to :" + opp_turn)
+
     games[game_room_id].curr_turn = opp_turn
     # update FEN with turn info
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
 
-    emit('place_defender_piece_local', {'FEN': updated_FEN, 'spentPoints': spent_points}, to=opponent_sid)
+    emit('place_defender_piece_local',
+         {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,
+          'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
 
 
 @socketio.on('make_AI_move')
@@ -539,9 +576,9 @@ def make_AI_move(data):
 
     curr_FEN = data_obj['FEN']
     try:
-        new_FEN,move = ChessLogic.get_best_move(curr_FEN)
+        new_FEN, move = ChessLogic.get_best_move(curr_FEN)
     except Exception as ex:
-        print("STOCKFISH DIED COZ "+str(ex))
+        print("STOCKFISH DIED COZ " + str(ex))
         return
 
     print(move)
@@ -613,7 +650,6 @@ def make_move(data):
         print("NOT UR TURN")
         return
 
-
     is_move_legal, move_AN_notation = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'],
                                                                move['targetSquare'])
     if not is_move_legal:
@@ -634,8 +670,7 @@ def make_move(data):
         print("NO_SUCH_GAME_EXISTS")
         return
 
-
-    new_FEN= ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN,move_AN_notation)
+    new_FEN = ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN, move_AN_notation)
     games[game_room_id].curr_FEN = new_FEN
     move_order = game_info.num_of_moves
     games[game_room_id].num_of_moves = move_order + 1
@@ -648,16 +683,111 @@ def make_move(data):
     try:
         game_id = game_info.game_id
         db = ChessDB.ChessDB()
-        print("ADDING MOVE TO BD " + move_AN_notation)
-        db.add_move(game_id, str(curr_turn).upper(), move_order, move_AN_notation)
+        print("ADDING MOVE TO BD " + str(move_AN_notation))
+        move_string = str(move_AN_notation)
+        db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
     except Exception as ex:
         print("DB ERROR" + str(ex))
 
     # check for checkmates
+    if game_room_id not in games:
+        print("NO_SUCH_GAME_EXISTS")
+        return
+
     is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
-    print(is_checkmate)
     if is_checkmate:
         finish_game(game_info, curr_turn)
+
+
+# propose a draw
+@socketio.on("propose_draw")
+def propose_draw(data):
+    data_obj = json.loads(data)
+
+    game_id = data_obj['gameroomId']
+    player_id = data_obj['playerId']
+
+    print("PROPOSED A DRAW")
+    print(data_obj)
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    # check if player is in the selected game
+    game_info_pack = get_is_player_in_game(player_id)
+    if not game_info_pack or str(game_info_pack[0].game_room_id) != str(game_id):
+        print("Wrong game")
+        return
+
+    game_obj = game_info_pack[0]
+    playing_as = game_info_pack[1]
+
+    opp_color = 'w'
+    if playing_as == 'w':
+        opp_color = 'b'
+
+    # if you already proposed a draw, don't propose again
+    if games[game_obj.game_room_id].draw_proposed == playing_as:
+        return
+
+    # if a draw was already proposed by the opponent, just accept it
+    if games[game_obj.game_room_id].draw_proposed == opp_color:
+        finish_game(game_obj, 'none')
+        emit('draw_response', {'accepted': True}, room=game_obj.game_room_id, include_self=True)
+        return
+
+    # set draw proposed by player color in game info
+    games[game_obj.game_room_id].draw_proposed = playing_as
+
+    # send to everyone in the room except sender
+    emit('draw_proposed', {}, room=game_obj.game_room_id, include_self=False)
+
+
+# accept a draw
+@socketio.on("answer_draw")
+def answer_draw(data):
+    data_obj = json.loads(data)
+    print(data_obj)
+
+    game_id = data_obj['gameroomId']
+    player_id = data_obj['playerId']
+    accepted = data_obj['accepted']
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    # check if player is in the selected game
+    game_info_pack = get_is_player_in_game(player_id)
+    if not game_info_pack or str(game_info_pack[0].game_room_id) != str(game_id):
+        print("Wrong game")
+        return
+
+    game_obj = game_info_pack[0]
+    playing_as = game_info_pack[1]
+
+    opp_color = 'w'
+    if playing_as == 'w':
+        opp_color = 'b'
+
+    # check if it was opponent proposed a draw
+    if games[game_obj.game_room_id].draw_proposed != opp_color:
+        return
+
+    # if it was declined, clear gameobject draw proposal
+    if not accepted:
+        games[game_obj.game_room_id].draw_proposed = None
+
+    if accepted:
+        finish_game(game_obj, 'none')
+
+    # send to everyone in the room
+    emit('draw_response', {'accepted': accepted}, room=game_obj.game_room_id, include_self=False)
 
 
 # in game chat
@@ -665,10 +795,10 @@ def make_move(data):
 def send_chat_to_server(data):
     data_obj = json.loads(data)
 
-    player_name = data_obj['playerName']
-    text = data_obj['text']
+    player_name = data_obj['username']
+    text = data_obj['msg']
     game_id = data_obj['gameId']
-    player_id = data_obj['playerId']
+    player_id = data_obj['userId']
 
     # authorize player
     if not check_auth(request.sid, player_id):
@@ -686,4 +816,4 @@ def send_chat_to_server(data):
     emit('receive_message', {'text': text, 'playerName': player_name}, room=game_info.game_room_id, include_self=False)
 
 
-socketio.run(app, host='127.0.0.1', port=5000, debug=debug_mode)
+socketio.run(app, host='127.0.0.1', port=5000, debug=True, log_output='False')

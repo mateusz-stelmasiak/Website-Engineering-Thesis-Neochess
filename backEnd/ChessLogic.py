@@ -48,7 +48,6 @@ def is_valid_move(FEN, startSquare, targetSquare):
     board.set_fen(FEN)
     stockfish_move = convert_pos_to_stockfish_notation(startSquare) + convert_pos_to_stockfish_notation(targetSquare)
     board_move = chess.Move.from_uci(stockfish_move)
-    print(board.legal_moves)
     return chess.Move.from_uci(stockfish_move) in board.legal_moves, board_move
 
 

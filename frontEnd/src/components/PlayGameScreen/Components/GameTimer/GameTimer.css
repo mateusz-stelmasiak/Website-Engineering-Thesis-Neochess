@@ -6,15 +6,17 @@
     margin-top: 1rem;
 }
 .GameTimer > div{
-    color: var(--text-color);
+    color: var(--sec-color-dark);
     font-size: 2.5rem;
     opacity: 0.6;
+
 }
 
 .GameTimer .active{
     opacity: 1;
     -webkit-animation: pulsate 3s ease-out;
     -webkit-animation-iteration-count: infinite;
+    filter: drop-shadow(0 0 0.5rem var(--sec-color-dark));
 }
 
 .GameTimer .low-time{
