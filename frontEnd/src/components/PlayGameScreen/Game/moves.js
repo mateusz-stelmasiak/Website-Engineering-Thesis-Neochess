@@ -16,7 +16,7 @@ class move {
         this.EndSquare = ending_square;
         this.type = arguments.length === 3 ? type : "n";
         // typy ruchow R - roszada dluga, r - roszada krotka , C - capture, P - pion wysuniety do en passant
-        //CP - zbicie przez en passant
+        //CP - zbicie przez en passant  PR - promocja
     }
 }
 
