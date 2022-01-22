@@ -15,18 +15,18 @@ import {playingAs} from "../../Game/Main";
 export let spamInterval = 2000
 export let initialSpamCooldown = 1000
 
-function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
+function Chat({socket, username, userId, gameId, dispatch, drawProposedColor}) {
     let [messages, setMessages] = useState([]);
     let [typedMsg, setTypedMsg] = useState("");
     let [error, setError] = useState("");
     let [lastMsgTimeStamp, setLastMsgTimeStamp] = useState(undefined);
     let [spamCooldown, setSpamCooldown] = useState(initialSpamCooldown);
-    let [showDrawProposal,setShowDrawProposal]=useState(false);
+    let [showDrawProposal, setShowDrawProposal] = useState(false);
 
-    let sendIcon =<FontAwesomeIcon icon={faPaperPlane}/>
+    let sendIcon = <FontAwesomeIcon icon={faPaperPlane}/>
 
     let addMessageToLog = (msg) => {
-        let messageLog=messages;
+        let messageLog = messages;
         setMessages([]); // do not delete, otherwise component won't update
         messageLog.push(msg);
         setMessages(messageLog);
@@ -34,7 +34,7 @@ function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
 
     useEffect(() => {
         //if was disconnected during draw proposal/ reloads page
-        if(drawProposedColor!==null && drawProposedColor!=="null" && drawProposedColor!==playingAs){
+        if (drawProposedColor !== null && drawProposedColor !== "null" && drawProposedColor !== playingAs) {
             setShowDrawProposal(true);
         }
 
@@ -49,7 +49,7 @@ function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
             addMessageToLog(msg);
         })
 
-        socket.on('draw_proposed',(data)=>{
+        socket.on('draw_proposed', (data) => {
             console.log("DRAW PROPOSED");
             if (socket === undefined || !socket.is_connected || data === undefined) return;
             setShowDrawProposal(true);
@@ -63,7 +63,7 @@ function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
         let msg = typedMsg;
 
         //prevent sending empty msgs
-        if(msg.length===0){
+        if (msg.length === 0) {
             return;
         }
 
@@ -94,8 +94,8 @@ function Chat({socket, username, userId, gameId,dispatch,drawProposedColor}) {
         setTypedMsg("");
     }
 
-    let updateTypedMsg = (msg)=>{
-        if(msg.length>150) return
+    let updateTypedMsg = (msg) => {
+        if (msg.length > 150) return
         setTypedMsg(msg)
     }
 

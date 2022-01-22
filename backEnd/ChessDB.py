@@ -15,6 +15,8 @@ class ChessDB:
                                             password="Serek123",
                                             database="neo-chess-database")
 
+        self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
     def __del__(self):
         self.mydb.close()
 
@@ -31,6 +33,7 @@ class ChessDB:
                             (userID integer primary key AUTO_INCREMENT,
                             Username varchar(64) unique not null, 
                             Password varchar(64) not null, 
+                            Salt varchar(12) not null,
                             Email varchar(64) not null,
                             2FA boolean not null DEFAULT false,
                             OTPSecret varchar(64) not null,
@@ -63,6 +66,9 @@ class ChessDB:
 
         mycursor.close()
 
+    def get_salt(self):
+        return ''.join(random.choice(self.alphabet) for _ in range(12))
+
     def get_curr_date_time(self):
         mycursor = self.mydb.cursor()
         date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '" + server_time_difference + "') AS Today"
@@ -93,11 +99,13 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+                    "(Username, Password, Salt, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
-        data_user = (username, sha256(str.encode(password)).hexdigest(), email, is2FaEnabled, otp_secret, country, date, elo, elo_dv, elo_v)
+        salt = self.get_salt()
+        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
+                     otp_secret, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()

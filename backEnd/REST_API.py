@@ -136,7 +136,7 @@ def login():
     user_account_activated = True if str(user['AccountConfirmed']) == "1" else False
 
     # actual user's password doesn't match given
-    if user_pass != sha256(str.encode(request_data['hashedPassword'])).hexdigest():
+    if user_pass != sha256(str.encode(f"{request_data['hashedPassword']}{user['Salt']}")).hexdigest():
         return generate_response(request, {
             "error": "Incorrect password"
         }, 403)
@@ -371,7 +371,7 @@ def delete_user():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
 
-        if user['Password'] != sha256(str.encode(request_data['hashedPassword'])).hexdigest():
+        if user['Password'] != sha256(str.encode(f"{request_data['hashedPassword']}{user['Salt']}")).hexdigest():
             return generate_response(request, {
                 "response": "Incorrect password"
             }, 403)
@@ -476,7 +476,7 @@ def update_user():
             link = url_for('confirm_email', token=token, _external=True)
             mail.send_welcome_message(user['Username'], request_data['email'], link)
 
-        if request_data['hashedCurrentPassword'] != sha256(str.encode(user['Password'])).hexdigest():
+        if user['Password'] != sha256(str.encode(f"{request_data['hashedCurrentPassword']}{user['Salt']}")).hexdigest():
             return generate_response(request, {
                 "response": "Incorrect password"
             }, 403)
