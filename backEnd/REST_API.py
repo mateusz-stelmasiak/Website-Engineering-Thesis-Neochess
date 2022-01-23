@@ -117,7 +117,7 @@ def login():
         user = db.get_user(user_name)
     except Exception as ex:
         if debug_mode:
-            ("DB ERROR" + str(ex))
+            ("DB ERROR " + str(ex))
 
         return generate_response(request, {
             "error": "Can't fetch from db"
@@ -283,7 +283,7 @@ def check_2_fa():
 
     except Exception as ex:
         if debug_mode:
-            ("DB ERROR" + str(ex))
+            ("DB ERROR " + str(ex))
 
         return generate_response(request, {
             "error": "Database error"
@@ -336,7 +336,7 @@ def register():
 
     except Exception as ex:
         if debug_mode:
-            ("DB ERROR" + str(ex))
+            ("DB ERROR " + str(ex))
 
         return generate_response(request, {"error": "Database error"}, 503)
 
@@ -770,7 +770,7 @@ def get_ELO_change_in_last_game():
             elo_change = elo_last_two_games[0][0] - elo_last_two_games[1][0]
 
     except Exception as ex:
-        if debug_mode: ("DB ERROR" + str(ex))
+        if debug_mode: ("DB ERROR " + str(ex))
         return generate_response(request, {"error": "Database error"}, 503)
 
     data = {
@@ -842,7 +842,7 @@ def get_player_stats():
         defender_draws = db.count_draws(user_id, 1)
     except Exception as ex:
         if debug_mode:
-            ("DB ERROR" + str(ex))
+            ("DB ERROR " + str(ex))
 
         return generate_response(request, {
             "error": "Database error"
@@ -917,7 +917,7 @@ def get_history():
         max_page = int(count_games[0] / games_per_page) + 1
     except Exception as ex:
         if debug_mode:
-            ("DB ERROR" + str(ex))
+            ("DB ERROR " + str(ex))
 
         return generate_response(request, {
             "error": "Database error"
@@ -961,7 +961,7 @@ def get_history():
             history.append(match)
         except Exception as ex:
             if debug_mode:
-                ("DB ERROR" + str(ex))
+                ("DB ERROR " + str(ex))
 
             return generate_response(request, {
                 "error": "Cannot fetch from db"
