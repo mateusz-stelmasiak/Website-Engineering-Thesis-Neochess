@@ -409,40 +409,60 @@ class ChessDB:
         
         return result
 
-    def count_wins(self, user_id, game_mode=0):
+    def count_wins(self, user_id, game_mode=-1):
         mycursor = self.mydb.cursor()
 
-        sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
-                        WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
-                        WHERE Score = 1;""")
+        if game_mode == -1:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                                              WHERE UserID = %s AND Games.GameID = Participants.GameID) t1 
+                                              WHERE Score = 1;""")
+            data_count = (self.get_user_by_id(user_id)['userID'], )
+        else:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                               WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
+                               WHERE Score = 1;""")
+            data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
 
-        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
+
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-    def count_draws(self, user_id, game_mode=0):
+    def count_draws(self, user_id, game_mode=-1):
         mycursor = self.mydb.cursor()
 
-        sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID,Score FROM Games, Participants
-                     WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
-                     WHERE Score = 0.5""")
+        if game_mode == -1:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                                               WHERE UserID = %s AND Games.GameID = Participants.GameID) t1 
+                                               WHERE Score = 0.5;""")
+            data_count = (self.get_user_by_id(user_id)['userID'],)
+        else:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                                WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
+                                WHERE Score = 0.5;""")
+            data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
 
-        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
+
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-    def count_losses(self, user_id, game_mode=0):
+    def count_losses(self, user_id, game_mode=-1):
         mycursor = self.mydb.cursor()
 
-        sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
-                         WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
-                         WHERE Score = 0""")
+        if game_mode == -1:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                                               WHERE UserID = %s AND Games.GameID = Participants.GameID) t1 
+                                               WHERE Score = 0;""")
+            data_count = (self.get_user_by_id(user_id)['userID'],)
+        else:
+            sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
+                                WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
+                                WHERE Score = 0;""")
+            data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
 
-        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
