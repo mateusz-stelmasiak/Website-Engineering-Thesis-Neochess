@@ -164,12 +164,12 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
     //EN PASSEANT
 
 
-    if (board.enPassant !==undefined && board.enPassant!== '-') {
-        let letterCodeToNubmer = board.enPassant.charCodeAt(0)-97 + (8-board.enPassant[1])*8;
+    if (board.enPassant !== undefined && board.enPassant !== '-') {
+        let letterCodeToNubmer = board.enPassant.charCodeAt(0) - 97 + (8 - board.enPassant[1]) * 8;
         console.log("FEN CO TAM W SRODKU MASZ " + letterCodeToNubmer)
         console.log("BOARD CO TAM W SRODKU MASZ " + board.lastmove.EndSquare)
         let Target
-        piece.color === 'w' ? Target = letterCodeToNubmer + 8 : Target = letterCodeToNubmer - 8 ;
+        piece.color === 'w' ? Target = letterCodeToNubmer + 8 : Target = letterCodeToNubmer - 8;
         let numbers_to_edge;
         piece.color === 'w' ? numbers_to_edge = Numbers_of_squares_to_edge[startSquare][2] : numbers_to_edge = Numbers_of_squares_to_edge[startSquare][3];
         if (Math.abs(startSquare - Target) === 1) {
@@ -183,15 +183,16 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
     if (Squares_to_end > 0) {
         piece.color === 'w' ? Target = startSquare + Directions[5] : Target = startSquare + Directions[4];
         let Piece_on_Target = grid[Target];
-
-        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && Numbers_of_squares_to_edge[startSquare][2] > 0) {
+        let directions = [];
+        piece.color === 'w' ? directions = [Numbers_of_squares_to_edge[startSquare][3], Numbers_of_squares_to_edge[startSquare][2]] : directions = [Numbers_of_squares_to_edge[startSquare][2], Numbers_of_squares_to_edge[startSquare][3]]
+        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && directions[0] > 0) {
 
             t_moves.push(new move(startSquare, Target, 'C'));
 
         }
         piece.color === 'w' ? Target = startSquare + Directions[7] : Target = startSquare + Directions[6];
         Piece_on_Target = grid[Target];
-        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && Numbers_of_squares_to_edge[startSquare][3] > 0) {
+        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && directions[1] > 0) {
 
             t_moves.push(new move(startSquare, Target, 'C'));
 
