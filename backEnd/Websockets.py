@@ -160,7 +160,7 @@ def join_queue(data):
         player_elo = user['ELO']
         username = user['Username']
     except Exception as ex:
-        print("DB ERROR" + str(ex))
+        print("DB ERROR " + str(ex))
         return
 
     # check if player isn't in this queue already
@@ -200,7 +200,7 @@ def join_queue(data):
             games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player, 'w',
                                        starting_FEN, 0, timer)
         except Exception as ex:
-            print("DB ERROR" + str(ex))
+            print("DB ERROR " + str(ex))
 
         return
 
@@ -355,7 +355,7 @@ def find_match(game_mode_id, player):
                                            game_mode.game_mode_starting_FEN, 0,
                                            Timer(game_mode.game_mode_time))
             except Exception as ex:
-                print("DB ERROR" + str(ex))
+                print("DB ERROR " + str(ex))
 
     # notify player of scope change if it has happened
     if player_curr_scope != scope:
@@ -405,7 +405,7 @@ def finish_game(game_info, win_color):
         black_elo_change_int = int(black_elo_change)
 
     except Exception as ex:
-        print("DB ERROR" + str(ex))
+        print("DB ERROR " + str(ex))
 
     #if it was a single player game, player always white
     if not game_multiplayer:
@@ -747,7 +747,7 @@ def make_move(data):
         move_string = str(move_AN_notation)
         db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
     except Exception as ex:
-        print("DB ERROR" + str(ex))
+        print("DB ERROR " + str(ex))
 
     # check for checkmates
     if game_room_id not in games:
