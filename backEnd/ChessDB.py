@@ -231,9 +231,16 @@ class ChessDB:
     def update_password(self, new_password, email):
         mycursor = self.mydb.cursor(dictionary=True)
 
-        sql_update = ("""UPDATE Users SET Password = %s WHERE UserID = %s""")
+        sql_update = ("""UPDATE Users SET Password = %s, Salt = %s WHERE UserID = %s""")
 
-        data_update = (sha256(str.encode(new_password)).hexdigest(), self.get_user_by_email(email)['userID'])
+        salt = self.get_salt()
+
+        data_update = (
+            sha256(str.encode(f"{new_password}{salt}")).hexdigest(),
+            salt,
+            self.get_user_by_email(email)['userID']
+        )
+
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
