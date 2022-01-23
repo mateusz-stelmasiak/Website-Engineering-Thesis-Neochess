@@ -175,7 +175,9 @@ def refresh_session():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("REFRESH_SESSION REQUEST " + " " + str(request.cookies))
+    if debug_mode:
+        print("REFRESH_SESSION REQUEST " + " " + str(request.cookies))
+
     user_id = str(request.args['userId'])
 
     # check if it even contains refresh token cookie
@@ -758,7 +760,7 @@ def get_ELO_change_in_last_game():
 
     try:
         db = ChessDB.ChessDB()
-        elo_last_two_games = db.get_ELO_change_in_two_last_games(user_id)
+        elo_last_two_games = db.get_elo_change_in_two_last_games(user_id)
         games_played = db.count_games(user_id)[0]
 
         # player has played only one game so far
@@ -823,12 +825,13 @@ def get_player_stats():
         db = ChessDB.ChessDB()
         user_info = db.get_user_by_id(user_id)
         print(user_info)
-        elo = user_info['Elo']
-        deviation = user_info['EloDeviation']
+        elo = user_info['ELO']
+        deviation = user_info['ELODeviation']
         games_played = db.count_games(user_id)
         games_won = db.count_wins(user_id)
         games_lost = db.count_losses(user_id)
         draws = db.count_draws(user_id)
+
         # defender stats
         defender_played = db.count_games(user_id, 1)
         defender_won = db.count_wins(user_id, 1)
@@ -842,7 +845,7 @@ def get_player_stats():
             "error": "Database error"
         }, 503)
 
-    data = {
+    return generate_response(request, {
         'elo': elo,
         'deviation': deviation,
         'gamesPlayed': games_played,
@@ -853,9 +856,7 @@ def get_player_stats():
         'defenderWon': defender_won,
         'defenderLost': defender_lost,
         'defenderDraws': defender_draws
-    }
-
-    return generate_response(request, data, 200)
+    }, 200)
 
 
 def generate_example_match_data():
@@ -891,7 +892,9 @@ def get_history():
         if debug_mode:
             print('Authorization failed')
 
-        return generate_response(request, {"error": "Authorisation failed."}, 401)
+        return generate_response(request, {
+            "error": "Authorisation failed"
+        }, 401)
 
     # set page to 0 if not given in request
     page = 0
@@ -936,8 +939,11 @@ def get_history():
                 continue
 
             result = possible_results[black_score]
-            if str(white[2]) == user_id: result = possible_results[white_score]
-            if str(white[2]) == user_id: result = possible_results[white_score]
+            if str(white[2]) == user_id:
+                result = possible_results[white_score]
+
+            if str(white[2]) == user_id:
+                result = possible_results[white_score]
 
             # extract date info from given string
             day_mont_year = str(game[2])[:10]

@@ -350,37 +350,38 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def get_games(self, UserID, Start, End):
-        mycursor = self.mydb.cursor()
+    def get_games(self, user_id, start, end):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("""SELECT Games.* FROM Games, Participants
                        WHERE Participants.UserID = %s AND Games.GameID = Participants.GameID
                        ORDER BY Games.GameID DESC
                        LIMIT %s,%s""")
 
-        data_find = (UserID, Start, End)
+        data_find = (user_id, start, end)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
         return result
 
-    def get_EloHistory(self, Username):
-        mycursor = self.mydb.cursor()
+    def get_elo_history(self, user_id):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("""SELECT Games.played, Participants.currELO FROM Games,Participants
                        WHERE Participants.UserID = %s AND Particpants.GameID = Games.GameID""")
 
-        data_find = (self.get_user(Username)[0],)
+        data_find = (self.get_user(user_id)['userID'],)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
         return result
 
     def count_games(self, user_id, game_mode=0):
-        mycursor = self.mydb.cursor(dictionary=True)
+        mycursor = self.mydb.cursor()
 
         sql_count = (
-            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
+            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s "
+            "AND Games.GameID = Participants.GameID")
 
         data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
@@ -389,7 +390,7 @@ class ChessDB:
         return result
 
     def count_wins(self, user_id, game_mode=0):
-        mycursor = self.mydb.cursor(dictionary=True)
+        mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                         WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
@@ -402,7 +403,7 @@ class ChessDB:
         return result
 
     def count_draws(self, user_id, game_mode=0):
-        mycursor = self.mydb.cursor(dictionary=True)
+        mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID,Score FROM Games, Participants
                      WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
@@ -415,7 +416,7 @@ class ChessDB:
         return result
 
     def count_losses(self, user_id, game_mode=0):
-        mycursor = self.mydb.cursor(dictionary=True)
+        mycursor = self.mydb.cursor()
 
         sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                          WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
@@ -439,7 +440,7 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def get_ELO_change_in_two_last_games(self, userId):
+    def get_elo_change_in_two_last_games(self, user_id):
         mycursor = self.mydb.cursor()
 
         sql_find = ("""SELECT Participants.currELO FROM Games,Participants
@@ -447,7 +448,7 @@ class ChessDB:
                          ORDER BY Games.GameID DESC
                          LIMIT 2""")
 
-        data_find = (userId,)
+        data_find = (user_id,)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
@@ -456,4 +457,3 @@ class ChessDB:
 
 tempDB = ChessDB()
 tempDB.create_db()
-# print(tempDB.count_losses("PainTrain"))

@@ -150,9 +150,10 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
             <div className="FindGameWidget-gameModes">
                 {gameModeButtons && gameModeButtons.map(
-                    (gameMode) => {
+                    (gameMode, index) => {
                         return (
                             <button
+                                key={index}
                                 className="FindGameWidget-gameModeButton"
                                 onClick={() => {
                                     findGame(gameMode.gameModeId)
@@ -177,7 +178,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                         <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
                         <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
                     </ul>
-
                     <button className="QInfo-leave" onClick={() => {
                         findGame(-1)
                     }}>
