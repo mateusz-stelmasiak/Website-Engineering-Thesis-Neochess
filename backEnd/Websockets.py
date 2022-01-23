@@ -134,7 +134,7 @@ def join_queue(data):
     data_obj = json.loads(data)
     player_id = data_obj['playerId']
     game_mode_id = data_obj['gameModeId']
-    game_mode=game_modes[game_mode_id]
+    game_mode = game_modes[game_mode_id]
     game_multiplayer = game_mode.game_mode_multiplayer
 
     # authorize player
@@ -366,7 +366,7 @@ def find_match(game_mode_id, player):
 def finish_game(game_info, win_color):
     game_id = game_info.game_id
     game_mode_id = games[game_info.game_room_id].game_mode_id
-    game_multiplayer= game_modes[int(game_mode_id)].game_mode_multiplayer
+    game_multiplayer = game_modes[int(game_mode_id)].game_mode_multiplayer
 
     # delete game
     if str(game_info.game_room_id) in games:
@@ -407,7 +407,7 @@ def finish_game(game_info, win_color):
     except Exception as ex:
         print("DB ERROR " + str(ex))
 
-    #if it was a single player game, player always white
+    # if it was a single player game, player always white
     if not game_multiplayer:
         white_sid = authorized_sockets[game_info.white_player.id]
 
@@ -419,7 +419,6 @@ def finish_game(game_info, win_color):
             emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=white_sid)
 
         return
-
 
     # notify players of their respective results
     white_sid = authorized_sockets[game_info.white_player.id]
