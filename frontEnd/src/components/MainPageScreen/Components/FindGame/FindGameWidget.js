@@ -143,6 +143,11 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         setIsInQ(false);
     }
 
+    let updatePosStartingScore = (newScore)=>{
+        if(newScore>99) return
+        setPosStartingScore(newScore);
+    }
+
 
     let joinSinglePlayerGame = (gameModeId, positionId) => {
         let joinSingleEvent = {
@@ -212,30 +217,37 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             </div>
 
             {currGameMode === 2 &&
-            <>
-                <Form.Control
-                    required
-                    placeholder="starting score"
-                    type="number"
-                    value={posStartingScore}
-                    onChange={(e) => setPosStartingScore(e.target.value)}
-                />
-                <ul className="PositionList">
-                    {positions.map(
-                        (position, index) => {
-                            return (
-                                <li
-                                    key={"position" + index}
-                                    onClick={() => joinSinglePlayerGame(currGameMode, index)}
-                                >
-                                    {position}
-                                </li>
-                            )
-                        }
-                    )
+            <div className="FindGameWidget-positionsContainer">
+                <div className="scoreInput">
+                    <h2>Starting score</h2>
+                    <Form.Control
+                        required
+                        placeholder="score"
+                        type="number"
+                        value={posStartingScore}
+                        onChange={(e) => updatePosStartingScore(e.target.value)}
+                    />
+                </div>
+
+                <div className="positionList">
+                    {positions===[] ?
+                        <Dots>Loading</Dots>
+                        :
+                        positions.map(
+                            (position, index) => {
+                                return (
+                                    <span
+                                        key={"position" + index}
+                                        onClick={() => joinSinglePlayerGame(currGameMode, index)}
+                                    >
+                                    Position{index}
+                                </span>
+                                )
+                            }
+                        )
                     }
-                </ul>
-            </>
+                </div>
+            </div>
             }
 
             {isInQ &&
