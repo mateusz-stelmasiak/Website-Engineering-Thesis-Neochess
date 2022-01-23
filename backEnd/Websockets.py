@@ -17,7 +17,6 @@ timer_thread = None
 def check_auth(sid, player_id):
     if (str(player_id) not in authorized_sockets) or (sid != authorized_sockets[str(player_id)]):
         return False
-
     return True
 
 
@@ -61,12 +60,16 @@ def authorize(data):
 
     # communicate unauthorised access
     if not authorize_user(player_id, session_token):
-        if debug_mode: print("Authorization of player" + player_id + " failed")
+        if debug_mode:
+            print("Authorization of player" + player_id + " failed")
+
         emit('unauthorized', {'error': 'Unauthorized access'})
         return
 
     # add socket_id to authorized sockets for player
-    if debug_mode: print("Authorization of player" + player_id + " succeded")
+    if debug_mode:
+        print("Authorization of player" + player_id + " succeded")
+
     authorized_sockets[player_id] = request.sid
 
     # check if player was in a game/lobby and add him back [game,playinsAs]

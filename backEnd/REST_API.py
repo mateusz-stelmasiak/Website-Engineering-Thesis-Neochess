@@ -770,7 +770,9 @@ def get_ELO_change_in_last_game():
             elo_change = elo_last_two_games[0][0] - elo_last_two_games[1][0]
 
     except Exception as ex:
-        if debug_mode: ("DB ERROR " + str(ex))
+        if debug_mode:
+            ("DB ERROR " + str(ex))
+
         return generate_response(request, {"error": "Database error"}, 503)
 
     data = {

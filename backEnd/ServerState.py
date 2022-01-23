@@ -214,14 +214,14 @@ def get_id_by_sid(sid):
 # returns [game,color,opponent_username] game object with it's info and
 # which color the given player is playing ('w'/'b')
 # False if player not in game
-def get_is_player_in_game(playerId):
-    if playerId is None:
+def get_is_player_in_game(player_id):
+    if player_id is None:
         return
 
     for roomId, game in games.items():
-        if game.white_player.id == playerId:
+        if game.white_player.id == player_id:
             return [game, 'w', game.black_player.username]
-        if game.black_player.id == playerId:
+        if game.black_player.id == player_id:
             return [game, 'b', game.white_player.username]
 
     return False
