@@ -1,6 +1,4 @@
 import {useEffect, useState} from "react";
-import GameContainer from "./Components/GameContainer"
-import Chat from "./Components/Chat"
 import P5Wrapper from "react-p5-wrapper"
 import sketch, {board} from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";
