@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import P5Wrapper from "react-p5-wrapper"
 import sketch, {board} from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";

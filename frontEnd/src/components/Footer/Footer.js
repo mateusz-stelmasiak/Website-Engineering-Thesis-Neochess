@@ -2,6 +2,7 @@ import "./Footer.css"
 import {Link} from "react-router-dom";
 import {connect} from "react-redux";
 import {setPreferencesOpen} from "../../redux/actions/cookieActions";
+import React from "react";
 
 function Footer({dispatch}){
     return (

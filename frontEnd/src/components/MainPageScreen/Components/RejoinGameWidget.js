@@ -4,6 +4,7 @@ import {authorizeSocket, emit} from "../../../redux/actions/socketActions";
 import {useHistory} from "react-router-dom";
 import {toast} from "react-hot-toast";
 import {setIsInGame} from "../../../redux/actions/userActions";
+import React from "react";
 
 function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
 

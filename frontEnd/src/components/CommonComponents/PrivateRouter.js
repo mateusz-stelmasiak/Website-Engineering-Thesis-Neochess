@@ -1,6 +1,7 @@
 //redirects to login if user is not authenticated
 import {Redirect, Route} from "react-router-dom";
 import {connect} from "react-redux";
+import React from "react";
 
 
 const PrivateRoute = ({ sessionToken,userId,component: Component, ...rest }) =>

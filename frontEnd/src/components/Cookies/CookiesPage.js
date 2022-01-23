@@ -6,6 +6,7 @@ import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayo
 import Section from "../Layout/Section/Section";
 import "./CookiesPage.css"
 import SectionTitle from "../Layout/Section/SectionTitle";
+import React from "react";
 
 export let cookies =
     {

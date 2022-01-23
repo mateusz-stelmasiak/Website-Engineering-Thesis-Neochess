@@ -1,6 +1,7 @@
 *.pyc
 /support/docker-files/*
 .idea/
+p5_backup/
 backEnd/.idea/backEnd.iml
 backEnd/.idea/inspectionProfiles/profiles_settings.xml
 backEnd/.idea/misc.xml

@@ -1,4 +1,4 @@
-import {Component} from "react";
+import React, {Component} from "react";
 import "./VariableColor.css"
 
 export default class VariableColor extends  Component{

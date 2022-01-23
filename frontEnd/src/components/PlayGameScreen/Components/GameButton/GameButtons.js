@@ -6,6 +6,7 @@ import {Tooltip} from "react-bootstrap";
 import {toast} from "react-hot-toast";
 import {setDrawProposedColor} from "../../../../redux/actions/gameActions";
 import {emit} from "../../../../redux/actions/socketActions";
+import React from "react";
 
 
 function GameButtons({dispatch,gameId,userId,FEN,drawProposedColor,playingAs}){

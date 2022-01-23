@@ -3,7 +3,7 @@ import "./GameResult.css"
 import SectionTitle from "../../Layout/Section/SectionTitle";
 import Reel from "react-reel";
 import {connect} from "react-redux";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 
 function GameResult({gameResult,eloChange}) {
     const history = useHistory();

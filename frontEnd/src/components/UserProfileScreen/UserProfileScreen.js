@@ -5,7 +5,7 @@ import Section from "../Layout/Section/Section";
 import SectionTitle from "../Layout/Section/SectionTitle";
 import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
 import UserEditForm from "../Header/Components/UserEdit/UserEdit";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {getUserData} from "../../serverCommunication/LogRegService";
 
 

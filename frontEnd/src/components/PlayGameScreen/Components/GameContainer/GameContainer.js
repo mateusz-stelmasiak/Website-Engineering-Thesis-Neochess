@@ -1,5 +1,5 @@
 import "./GameContainer.css"
-import {Component} from "react";
+import React, {Component} from "react";
 import {connect} from "react-redux";
 
 

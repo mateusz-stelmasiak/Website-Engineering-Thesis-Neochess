@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import './ShowOnClick.css'
 
 export default function ShowOnClick({toShow,text}){
