@@ -28,19 +28,20 @@ class Game:
         self.num_of_moves = num_of_moves
         self.timer = timer
         self.defender_state = DefenderState()
-        self.draw_proposed='null'
+        self.draw_proposed = 'null'
 
 
 class GameMode:
 
-    def __init__(self, game_mode_id, game_mode_name, game_mode_desc,game_mode_time, game_mode_starting_FEN,
-                 game_mode_icon):
+    def __init__(self, game_mode_id, game_mode_name, game_mode_desc, game_mode_time, game_mode_starting_FEN,
+                 game_mode_icon, game_mode_multiplayer=True):
         self.game_mode_id = game_mode_id
         self.game_mode_name = game_mode_name
-        self.game_mode_desc=game_mode_desc
+        self.game_mode_desc = game_mode_desc
         self.game_mode_time = game_mode_time  # max time in gamemode (in s)
         self.game_mode_starting_FEN = game_mode_starting_FEN
-        self.game_mode_icon=game_mode_icon #font awesome icon name (omit fa/fas, just name)
+        self.game_mode_icon = game_mode_icon  # font awesome icon name (omit fa/fas, just name)
+        self.game_mode_multiplayer = game_mode_multiplayer
 
 
 # state 0- placing pieces stage, 1- making them movesss
@@ -146,14 +147,15 @@ defender_FEN = "8/8/8/8/8/8/8/8 w - - 0 1"
 defender_desc = "Chess defender desc"
 defender_starting_score = 20
 
-#Positions? (vs computer)
+# Positions? (vs computer)
 positions_FEN = "8/3PP3/3PP3/3PP3/3PP3/3PP3/1PPPPPP1/1PPPPPP1 w - - 0 1"
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
-    GameMode(0, "Classic",default_desc, 600, default_FEN,'chess-pawn'),  # classic mode, time in S
-    GameMode(1, "Defender",defender_desc, 600, defender_FEN,'chess'),  # defender mode, time in S
-    GameMode(2, "Positions", positions_desc, 600, positions_FEN, 'chess')  # defender mode, time in S
+    GameMode(0, "Classic", default_desc, 600, default_FEN, 'chess'),  # classic mode, time in S
+    GameMode(1, "Defender", defender_desc, 600, defender_FEN, 'chess'),  # defender mode, time in S
+    GameMode(2, "Positions", positions_desc, 600, positions_FEN, 'chess-pawn', game_mode_multiplayer=False)
+    # defender mode, time in S
 ]
 
 

@@ -171,7 +171,7 @@ function PlayGameScreen({
         <FooterHeaderLayout>
             <div className="PlayGameScreenContainer">
                 <div
-                    className={gameMode === '0' ? "PlayGameScreen" : "PlayGameScreen chessDefenderGameScreen"}
+                    className={Number(gameMode) === 1 ? "PlayGameScreen chessDefenderGameScreen" : "PlayGameScreen"}
                     id="PLAY_GAME_SCREEN"
                 >
 

@@ -77,7 +77,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         //try to read gamemodes from cache
         let cachedGames = sessionStorage.getItem('gameModes');
-        if (cachedGames){
+        if (cachedGames) {
             cachedGames = JSON.parse(cachedGames);
             console.log(cachedGames);
             setGameModeButtons(cachedGames);
@@ -88,11 +88,10 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             setGameModeButtons(["ERROR"]);
             return;
         }
-
         setGameModeButtons(resp);
 
         //cache
-        sessionStorage.setItem('gameModes',JSON.stringify(resp));
+        sessionStorage.setItem('gameModes', JSON.stringify(resp));
     }
 
 
@@ -170,11 +169,16 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                 }}
                                 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
                             >
-                                {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}
-                                                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/> :
+                                {console.log(gameMode.gameModeMultiplayer)}
+                                {gameMode.gameModeMultiplayer == true ?
+                                    <FontAwesomeIcon icon={faChess}
+                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
+                                    :
                                     <FontAwesomeIcon icon={faChessPawn}
-                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>}
-                                <h1  style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
+                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
+
+                                }
+                                <h1 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
                             </button>
                         );
                     })

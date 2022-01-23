@@ -134,6 +134,8 @@ def join_queue(data):
     data_obj = json.loads(data)
     player_id = data_obj['playerId']
     game_mode_id = data_obj['gameModeId']
+    game_mode=game_modes[game_mode_id]
+    game_multiplayer = game_mode.game_mode_multiplayer
 
     # authorize player
     if not check_auth(request.sid, player_id):
@@ -147,7 +149,9 @@ def join_queue(data):
         return
 
     print("Player with id " + str(player_id) + " joined the queue for game mode" + str(game_mode_id))
-    join_room('queue' + str(game_mode_id), request.sid)
+
+    if game_multiplayer:
+        join_room('queue' + str(game_mode_id), request.sid)
 
     # get player elo from db
     try:
@@ -165,6 +169,41 @@ def join_queue(data):
         return
 
     player = Player(player_id, username, player_elo, 'u')
+
+    # if player joined a singleplayer queue
+    if not game_multiplayer:
+        print("Creating a new single player game")
+
+        try:
+            game_id = random.randint(0, 9999999999999)
+            game_id_hash = hashlib.sha256(str(game_id).encode())
+            game_room_id = str(game_id_hash.hexdigest())
+
+            # create gameroom for the two players and add both of them
+            join_room(game_room_id)
+
+            # notify the players of their positions and opponents socket status
+            emit("game_found", {'gameId': game_room_id, 'playingAs': 'w', 'gameMode': game_mode_id})
+
+            # TODO here generate starting fen and computer player stats
+            computer_player = Player(-1, 'Computer', 5000, 'b')  # id, name,ELO, playing as #TODO change ELO?
+
+            starting_FEN = game_mode.game_mode_starting_FEN
+            # example starting FEN
+            # starting_FEN="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+            timer = Timer(game_mode.game_mode_time)
+            # example timer
+            # timer = TImer(5000) #in ms
+
+            # create game in server storage
+            games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player, 'w',
+                                       starting_FEN, 0, timer)
+        except Exception as ex:
+            print("DB ERROR" + str(ex))
+
+        return
+
     # as array playerObject,waitTime (in ms), currentScope
     queues.setdefault(str(game_mode_id), []).append([player, 0, initial_scope])
     print(queues)
@@ -326,11 +365,14 @@ def find_match(game_mode_id, player):
 
 def finish_game(game_info, win_color):
     game_id = game_info.game_id
+    game_mode_id = games[game_info.game_room_id].game_mode_id
+    game_multiplayer= game_modes[int(game_mode_id)].game_mode_multiplayer
+
     # delete game
     if str(game_info.game_room_id) in games:
         games.pop(str(game_info.game_room_id), None)
-        
-    win_color_upper_letter=str(win_color).upper()
+
+    win_color_upper_letter = str(win_color).upper()
 
     # update in database
     try:
@@ -365,6 +407,20 @@ def finish_game(game_info, win_color):
 
     except Exception as ex:
         print("DB ERROR" + str(ex))
+
+    #if it was a single player game, player always white
+    if not game_multiplayer:
+        white_sid = authorized_sockets[game_info.white_player.id]
+
+        if win_color_upper_letter == "W":
+            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=white_sid)
+        elif win_color_upper_letter == "B":
+            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=white_sid)
+        else:
+            emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=white_sid)
+
+        return
+
 
     # notify players of their respective results
     white_sid = authorized_sockets[game_info.white_player.id]
