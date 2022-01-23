@@ -162,10 +162,15 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
 
 //5 i 7
     //EN PASSEANT
-    console.log("FEN CO TAM W SRODKU MASZ" + board.enPassant)
-    if (board.lastmove.type === 'P') {
-        let Target = board.lastmove.EndSquare;
-        let numbers_to_edge;        //TODO napraw zeby nie dalo sie bić z rogów planszy XD
+
+
+    if (board.enPassant !==undefined && board.enPassant!== '-') {
+        let letterCodeToNubmer = board.enPassant.charCodeAt(0)-97 + (8-board.enPassant[1])*8;
+        console.log("FEN CO TAM W SRODKU MASZ " + letterCodeToNubmer)
+        console.log("BOARD CO TAM W SRODKU MASZ " + board.lastmove.EndSquare)
+        let Target
+        piece.color === 'w' ? Target = letterCodeToNubmer + 8 : Target = letterCodeToNubmer - 8 ;
+        let numbers_to_edge;
         piece.color === 'w' ? numbers_to_edge = Numbers_of_squares_to_edge[startSquare][2] : numbers_to_edge = Numbers_of_squares_to_edge[startSquare][3];
         if (Math.abs(startSquare - Target) === 1) {
             piece.color === 'w' ? Target = Target + Directions[1] : Target = Target + Directions[0];
