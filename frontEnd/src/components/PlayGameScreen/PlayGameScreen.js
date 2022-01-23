@@ -117,7 +117,7 @@ function PlayGameScreen({
             }
 
             //if defender
-            if (response.gameMode === "1") {
+            if (response.gameMode == "1" || response.gameMode == "2") {
                 await dispatch(setWhiteScore(response.whiteScore));
                 await dispatch(setBlackScore(response.blackScore));
             }
@@ -171,7 +171,7 @@ function PlayGameScreen({
         <FooterHeaderLayout>
             <div className="PlayGameScreenContainer">
                 <div
-                    className={Number(gameMode) === 1 ? "PlayGameScreen chessDefenderGameScreen" : "PlayGameScreen"}
+                    className={Number(gameMode) === 1||2 ? "PlayGameScreen chessDefenderGameScreen" : "PlayGameScreen"}
                     id="PLAY_GAME_SCREEN"
                 >
 

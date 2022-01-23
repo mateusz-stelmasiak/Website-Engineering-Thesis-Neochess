@@ -70,10 +70,10 @@ export default function sketch(p5) {
         if (props.placeDefenderPiece) {
             placeDefenderPiece = props.placeDefenderPiece;
         }
-        if (props.whiteScore!==undefined) {
+        if (props.whiteScore !== undefined) {
             whiteScore = props.whiteScore;
         }
-        if (props.blackScore!==undefined) {
+        if (props.blackScore !== undefined) {
             blackScore = props.blackScore;
         }
         if (props.currentTurn) {
@@ -101,7 +101,7 @@ export default function sketch(p5) {
         }
 
 
-        if (gameMode === '1' && board.SetupState > -1) {
+        if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
             for (let i = 0; i < board.gameMode2_grid.length; i++) {
                 let piece = board.gameMode2_grid[i];
                 if (piece.isIntersecting()) {
@@ -112,7 +112,7 @@ export default function sketch(p5) {
 
     }
     p5.mouseReleased = function () {
-        if (gameMode === '1' && board.SetupState > -1) {
+        if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
             add_piece();
         }
         make_a_move();
@@ -144,7 +144,7 @@ export default function sketch(p5) {
         board = new Board(p5);
         generate_pos_to_stocknot_dict();
 
-        if (gameMode === "1") {
+        if (gameMode === "1" || gameMode == "2") {
             canvas_width = game_mode_defender_width;
         }
         console.log(canvas_width)
@@ -163,11 +163,10 @@ export default function sketch(p5) {
                 board.FEN = default_FEN_Gamemode_2;
             }
 
-            if(blackScore!==undefined && whiteScore!==undefined){
-                playingAs==='w' ? board.SetupState=whiteScore : board.SetupState=blackScore;
-            }
-            else{
-                board.SetupState=50;
+            if (blackScore !== undefined && whiteScore !== undefined) {
+                playingAs === 'w' ? board.SetupState = whiteScore : board.SetupState = blackScore;
+            } else {
+                board.SetupState = 50;
             }
         }
 
@@ -189,8 +188,8 @@ export default function sketch(p5) {
 
 
         canvas_width = resizeTo;
-        if (gameMode === "1") {
-                canvas_width = canvas_width + shelf_size;
+        if (gameMode == "1" || gameMode == "2") {
+            canvas_width = canvas_width + shelf_size;
         }
 
         canvas_height = resizeTo;

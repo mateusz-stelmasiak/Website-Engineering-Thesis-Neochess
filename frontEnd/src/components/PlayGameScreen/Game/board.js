@@ -364,15 +364,15 @@ export default class Board {
 
         let storeVars = store.getState().game;
         let gameMode = storeVars.gameMode;
-        if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
+        if ((gameMode == 1 || gameMode == 2)&& (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
             this.color_to_move = 'w';
-        } else if(gameMode==1 && storeVars.whiteScore <0) {
+        } else if((gameMode == 1 || gameMode == 2) && storeVars.whiteScore <0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-        }else if(gameMode==1 && storeVars.blackScore <0){
+        }else if((gameMode == 1 || gameMode == 2) && storeVars.blackScore <0){
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-        } else if (gameMode == 1 && (storeVars.blackScore == 0)) {
+        } else if ((gameMode == 1 || gameMode == 2) && (storeVars.blackScore == 0)) {
             this.color_to_move = 'w'
-        } else if (gameMode == 1 && (storeVars.whiteScore == 0)) {
+        } else if ((gameMode == 1 || gameMode == 2) && (storeVars.whiteScore == 0)) {
             this.color_to_move = 'b'
         } else {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';

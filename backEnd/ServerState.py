@@ -148,13 +148,15 @@ defender_desc = "Chess defender desc"
 defender_starting_score = 20
 
 # Positions? (vs computer)
-positions_FEN = "8/3PP3/3PP3/3PP3/3PP3/3PP3/1PPPPPP1/1PPPPPP1 w - - 0 1"
+starting_FENS = ["rkbq4/pppp4/8/8/8/8/8/8 w q - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
+                 "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1"]
+positions_FEN = "rkbq4/pppp4/8/8/8/8/8/8 w q - 0 1"
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
     GameMode(0, "Classic", default_desc, 600, default_FEN, 'chess'),  # classic mode, time in S
     GameMode(1, "Defender", defender_desc, 600, defender_FEN, 'chess'),  # defender mode, time in S
-    GameMode(2, "Positions", positions_desc, 600, positions_FEN, 'chess-pawn', game_mode_multiplayer=False)
+    GameMode(2, "Positions", positions_desc, 600, starting_FENS, 'chess-pawn', game_mode_multiplayer=False)
     # defender mode, time in S
 ]
 

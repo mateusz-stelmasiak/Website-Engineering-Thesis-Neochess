@@ -697,7 +697,7 @@ def get_game_info():
             'drawProposedColor': game.draw_proposed
             }
 
-    if str(game.game_mode_id) == '1':
+    if str(game.game_mode_id) == '1' or str(game.game_mode_id) == '2':
         data = {"inGame": True,
                 "gameId": game.game_room_id,
                 "gameMode": game.game_mode_id,

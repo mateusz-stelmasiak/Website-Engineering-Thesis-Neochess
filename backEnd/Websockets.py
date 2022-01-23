@@ -186,12 +186,18 @@ def join_queue(data):
             join_room(game_room_id)
 
             # notify the players of their positions and opponents socket status
-            emit("game_found", {'gameId': game_room_id, 'playingAs': 'w', 'gameMode': game_mode_id})
 
             # TODO here generate starting fen and computer player stats
-            computer_player = Player(-1, 'Computer', 5000, 'b')  # id, name,ELO, playing as #TODO change ELO?
 
-            starting_FEN = game_mode.game_mode_starting_FEN
+            starting_FEN = random.choice(game_mode.game_mode_starting_FEN)
+            colorToMoveFromFen = starting_FEN.split(" ")[1]
+            if colorToMoveFromFen == 'w':
+                computer_color = 'b'
+            else:
+                computer_color = 'w'
+            computer_player = Player(-1, 'Computer', 5000, computer_color)  # id, name,ELO, playing as #TODO change ELO?
+            print(colorToMoveFromFen)
+            emit("game_found", {'gameId': game_room_id, 'playingAs': colorToMoveFromFen, 'gameMode': game_mode_id})
             # example starting FEN
             # starting_FEN="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
@@ -200,8 +206,15 @@ def join_queue(data):
             # timer = TImer(5000) #in ms
 
             # create game in server storage
-            games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player, 'w',
-                                       starting_FEN, 0, timer)
+            if colorToMoveFromFen == 'w':
+                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player,
+                                           colorToMoveFromFen,
+                                           starting_FEN, 0, timer)
+            else:
+                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, computer_player, player,
+                                           colorToMoveFromFen,
+                                           starting_FEN, 0, timer)
+            print( games[game_room_id])
         except Exception as ex:
             print("DB ERROR " + str(ex))
 
@@ -545,7 +558,7 @@ def place_defender_piece(data):
 
     # get opposite turn
     opp_turn = 'w'
-    if str(games[game_room_id].game_mode_id) == "1":
+    if str(games[game_room_id].game_mode_id) == "1" or str(games[game_room_id].game_mode_id) == "2":
         if int(games[game_room_id].defender_state.white_score) == 0 and int(
                 games[game_room_id].defender_state.black_score) == 0:
             opp_turn = 'w'
