@@ -371,9 +371,12 @@ def get_available_game_modes():
                 "gameModeName": game_mode.game_mode_name,
                 "gameModeDesc": game_mode.game_mode_desc,
                 "gameModeTime": game_mode.game_mode_time,
-                "gameModeIcon": game_mode.game_mode_icon
+                "gameModeIcon": game_mode.game_mode_icon,
+                'gameModeMultiplayer': game_mode.game_mode_multiplayer
             }
         )
+    print("game modes!")
+    print(data)
 
     return generate_response(request, data, 200)
 
