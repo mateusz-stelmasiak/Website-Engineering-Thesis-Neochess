@@ -3,12 +3,11 @@ import "./GameResult.css"
 import SectionTitle from "../../Layout/Section/SectionTitle";
 import Reel from "react-reel";
 import {connect} from "react-redux";
+import {useEffect, useState} from "react";
 
-function GameResult({gameStatus, userId, sessionToken}) {
-
+function GameResult({gameResult,eloChange}) {
     const history = useHistory();
     const returnToMain = () => history.push('/');
-
 
     //used for reel (the elo spinning up)
     const theme = {
@@ -43,15 +42,15 @@ function GameResult({gameStatus, userId, sessionToken}) {
             <h4>GAME ENDED</h4>
 
             <SectionTitle>
-                {gameStatus.result.toUpperCase() !== "DRAW" && "YOU"}&nbsp;{gameStatus}
+                {gameResult.toUpperCase() !== "DRAW" && "YOU"}&nbsp;{gameResult}
             </SectionTitle>
             <div className="GameResult-eloChange">
-                <h3 style={gameStatus.eloChange >= 0 ? gainEloStyle : lossEloStyle}>
-                    {gameStatus.eloChange > 0 && "+"}
-                    <Reel theme={theme} text={gameStatus.eloChange.toString()}/>
+                <h3 style={eloChange >= 0 ? gainEloStyle : lossEloStyle}>
+                    {eloChange > 0 && "+"}
+                    <Reel theme={theme} text={eloChange.toString()}/>
                     <span>&nbsp;ELO</span>
                 </h3>
-                <span>{gameStatus.eloChange >= 0 ? "WAS GAINED" : "WAS LOST"}</span>
+                <span>{eloChange >= 0 ? "WAS GAINED" : "WAS LOST"}</span>
             </div>
 
 

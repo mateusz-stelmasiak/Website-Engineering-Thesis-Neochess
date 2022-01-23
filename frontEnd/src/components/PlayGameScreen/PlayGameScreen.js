@@ -1,4 +1,4 @@
-import { useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import GameContainer from "./Components/GameContainer"
 import Chat from "./Components/Chat"
 import P5Wrapper from "react-p5-wrapper"
@@ -48,9 +48,9 @@ function PlayGameScreen({
                             whiteScore,
                             blackScore,
                             loadingGameInfo,
-                        })
-{
-    let [gameResult, setGameResult] = useState({'result':'DRAW','eloChange':0});
+                        }) {
+    let [gameResult, setGameResult] = useState('DRAW');
+    let [eloChange, setEloChange] = useState(0);
     let [gameEnded, setGameEnded] = useState(false);
 
 
@@ -64,13 +64,12 @@ function PlayGameScreen({
         fetchGameData();
 
         socket.on("game_ended", data => {
-            console.log("DATA")
-            console.log(data)
             if (data === undefined) return;
-            setGameEnded(true);
-            setGameResult(data);
+            setGameResult(data.result);
+            setEloChange(data.eloChange)
             dispatch(setIsInGame(false));
             dispatch(setGameId(""));
+            setGameEnded(true);
         });
 
     }, [])
@@ -152,9 +151,9 @@ function PlayGameScreen({
         let socketStatus = storeState.socket.status;
 
         //if socket is not connected, don't allow the move to be made locally
-        if (socketStatus!==SocketStatus.authorized){
-            store.dispatch(authorizeSocket(playerId,storeState.user.sessionToken))
-            board.set_FEN_by_rejected_move(move.startingSquare,move.targetSquare)
+        if (socketStatus !== SocketStatus.authorized) {
+            store.dispatch(authorizeSocket(playerId, storeState.user.sessionToken))
+            board.set_FEN_by_rejected_move(move.startingSquare, move.targetSquare)
             return;
         }
 
@@ -177,29 +176,32 @@ function PlayGameScreen({
                 >
 
                     {gameEnded &&
-                    <GameResult gameStatus={gameResult}/>
+                    <GameResult
+                        gameResult={gameResult}
+                        eloChange={eloChange}
+                    />
                     }
 
                     <PlayersInfo/>
 
 
                     {!loadingGameInfo &&
-                        <>
-                            <Chat/>
-                            <GameContainer>
-                                <P5Wrapper
-                                    sketch={sketch}
-                                    sendMoveToServer={sendMove}
-                                    placeDefenderPiece={placeDefenderPiece}
-                                    playingAs={playingAs}
-                                    startingFEN={currentFEN}
-                                    currentTurn={currentTurn}
-                                    gameMode={gameMode}
-                                    whiteScore={whiteScore}
-                                    blackScore={blackScore}
-                                />
-                            </GameContainer>
-                        </>
+                    <>
+                        <Chat/>
+                        <GameContainer>
+                            <P5Wrapper
+                                sketch={sketch}
+                                sendMoveToServer={sendMove}
+                                placeDefenderPiece={placeDefenderPiece}
+                                playingAs={playingAs}
+                                startingFEN={currentFEN}
+                                currentTurn={currentTurn}
+                                gameMode={gameMode}
+                                whiteScore={whiteScore}
+                                blackScore={blackScore}
+                            />
+                        </GameContainer>
+                    </>
 
                     }
 

@@ -329,13 +329,15 @@ def finish_game(game_info, win_color):
     # delete game
     if str(game_info.game_room_id) in games:
         games.pop(str(game_info.game_room_id), None)
+        
+    win_color_upper_letter=str(win_color).upper()
 
     # update in database
     try:
         db = ChessDB.ChessDB()
 
         # add match result to db
-        db.update_scores(str(win_color).upper(), game_id)
+        db.update_scores(win_color_upper_letter, game_id)
 
         # update players' rankings
         white_id = game_info.white_player.id
@@ -350,14 +352,16 @@ def finish_game(game_info, win_color):
         black_dv = black_user_info[6]
         black_v = black_user_info[7]
 
-        white_result = int(str(win_color) == 'w')
+        white_result = int(win_color_upper_letter == 'W')
         white_ELO, white_dv, white_v, black_ELO, black_dv, black_v = RatingSystem.calculate_glicko(white_ELO, white_dv,
                                                                                                    white_v, black_ELO,
                                                                                                    black_dv, black_v,
                                                                                                    white_result)
 
         white_elo_change = db.update_elo(white_id, white_ELO, white_dv, white_v)
-        black_elo_change = db.update_elo(black_id, black_ELO, black_dv, black_v)
+        white_elo_change_int = int(white_elo_change)
+        black_elo_change = int(db.update_elo(black_id, black_ELO, black_dv, black_v))
+        black_elo_change_int = int(black_elo_change)
 
     except Exception as ex:
         print("DB ERROR" + str(ex))
@@ -365,15 +369,15 @@ def finish_game(game_info, win_color):
     # notify players of their respective results
     white_sid = authorized_sockets[game_info.white_player.id]
     black_sid = authorized_sockets[game_info.black_player.id]
-    if win_color == 'w' or win_color == "W":
-        emit("game_ended", {'result': 'win', 'eloChange': white_elo_change}, to=white_sid)
-        emit("game_ended", {'result': 'lost', 'eloChange': black_elo_change}, to=black_sid)
-    elif win_color == 'b' or win_color == "B":
-        emit("game_ended", {'result': 'lost', 'eloChange': white_elo_change}, to=white_sid)
-        emit("game_ended", {'result': 'win', 'eloChange': black_elo_change}, to=black_sid)
+    if win_color_upper_letter == "W":
+        emit("game_ended", {'result': 'win', 'eloChange': white_elo_change_int}, to=white_sid)
+        emit("game_ended", {'result': 'lost', 'eloChange': black_elo_change_int}, to=black_sid)
+    elif win_color_upper_letter == "B":
+        emit("game_ended", {'result': 'lost', 'eloChange': white_elo_change_int}, to=white_sid)
+        emit("game_ended", {'result': 'win', 'eloChange': black_elo_change_int}, to=black_sid)
     else:
-        emit("game_ended", {'result': 'draw', 'eloChange': white_elo_change}, to=white_sid)
-        emit("game_ended", {'result': 'draw', 'eloChange': black_elo_change}, to=black_sid)
+        emit("game_ended", {'result': 'draw', 'eloChange': white_elo_change_int}, to=white_sid)
+        emit("game_ended", {'result': 'draw', 'eloChange': black_elo_change_int}, to=black_sid)
 
 
 @socketio.on('surrender')

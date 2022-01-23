@@ -141,7 +141,7 @@ class ChessDB:
         data_find = (user_id,)
         mycursor.execute(sql_find, data_find)
         ELO_before = mycursor.fetchone()[0]
-        ELO_change = ELO_before - new_ELO
+        ELO_change = new_ELO - ELO_before
 
         sql_update = ("""UPDATE Users SET ELO = %s,ELODeviation = %s,ELOVolatility =%s WHERE UserID = %s""")
         data_update = (new_ELO, new_ELO_dv, new_ELO_v, user_id)
@@ -279,13 +279,19 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def count_games(self, user_id, game_mode=0):
+    def count_games(self, user_id, game_mode=-1):
         mycursor = self.mydb.cursor()
 
-        sql_count = (
-            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
+        # default count for all games
+        if game_mode == -1:
+            sql_count = (
+                "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameID = Participants.GameID")
+            data_count = (self.get_user_by_id(user_id)[0],)
+        else:
+            sql_count = (
+                "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
+            data_count = (self.get_user_by_id(user_id)[0], game_mode)
 
-        data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
