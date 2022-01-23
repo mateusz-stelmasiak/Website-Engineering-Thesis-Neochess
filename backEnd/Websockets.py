@@ -387,12 +387,12 @@ def finish_game(game_info, win_color):
         white_user_info = db.get_user_by_id(white_id)
         black_user_info = db.get_user_by_id(black_id)
 
-        white_ELO = white_user_info[5]
-        white_dv = white_user_info[6]
-        white_v = white_user_info[7]
-        black_ELO = black_user_info[5]
-        black_dv = black_user_info[6]
-        black_v = black_user_info[7]
+        white_ELO = white_user_info['ELO']
+        white_dv = white_user_info['ELODeviation']
+        white_v = white_user_info['ELOVolatility']
+        black_ELO = black_user_info['ELO']
+        black_dv = black_user_info['ELODeviation']
+        black_v = black_user_info['ELOVolatility']
         white_result = int(win_color_upper_letter == 'W')
         white_ELO, white_dv, white_v, black_ELO, black_dv, black_v = RatingSystem.calculate_glicko(white_ELO, white_dv,
                                                                                                    white_v, black_ELO,
