@@ -157,8 +157,8 @@ def join_queue(data):
     try:
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(player_id)
-        player_elo = user[5]
-        username = user[1]
+        player_elo = user['ELO']
+        username = user['Username']
     except Exception as ex:
         print("DB ERROR" + str(ex))
         return
