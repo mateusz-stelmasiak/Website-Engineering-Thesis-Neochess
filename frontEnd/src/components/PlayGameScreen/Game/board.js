@@ -335,12 +335,19 @@ export default class Board {
         //making pieces for gamemode2 purposes they only appear above the image for setupstate
         if (this.SetupState > -1) {
 
+            let storeVars = store.getState().game;
+            // this.p5.fill(255,255,255)        white rectangle to show scores
+            // this.p5.rect( Checkboard_size + shelf_size / 2 - textsize * 1.63-5, size - 40,60,50)
+            // this.p5.pop()
             this.p5.push();
             this.p5.textFont(Font);
             this.p5.textSize(textsize);
             this.p5.fill(0, 0, 0);
-            this.p5.text(this.SetupState.toString(), Checkboard_size + shelf_size / 2 - textsize * 0.666, size);
+            let scores = this.SetupState.toString()  //storeVars.whiteScore.toString() + " | " + storeVars.blackScore.toString() <--- show both scores
+            this.p5.text(scores, Checkboard_size + shelf_size / 2 - textsize * 0.666, size); // -> scalar if both scores 1.63
             this.p5.pop();
+            this.p5.push();
+
             this.GameMode2_checkState()
             for (let z = 0; z < this.gameMode2_grid.length; z++) {
 

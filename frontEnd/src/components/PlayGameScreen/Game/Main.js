@@ -30,7 +30,7 @@ export const cols = Math.floor(Checkboard_size / size);
 export var board;
 export var canvas;
 export var gameMode2_Margin = 1.1
-export var textsize = size / 1.5;
+export var textsize = size / 2.5;
 
 function importAll(r) {
     let images = {};
@@ -210,7 +210,7 @@ export default function sketch(p5) {
                 piece.old_y = gameMode2_Margin * size * i
             }
         )
-        textsize = size / 1.5
+        textsize = size / 2.5
 
         canvas.resize(canvas_width, canvas_height);
         calculatePixelPositions();
