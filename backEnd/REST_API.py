@@ -132,7 +132,7 @@ def login():
     user_id = str(user['userID'])
     user_pass = str(user['Password'])
     user_2fa = True if str(user['2FA']) == '1' else False
-    user_elo = str(user['Elo'])
+    user_elo = str(user['ELO'])
     user_account_activated = True if str(user['AccountConfirmed']) == "1" else False
 
     # actual user's password doesn't match given

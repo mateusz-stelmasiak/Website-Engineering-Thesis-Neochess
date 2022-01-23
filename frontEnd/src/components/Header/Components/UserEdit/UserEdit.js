@@ -7,13 +7,10 @@ import Button from "react-bootstrap/Button";
 import "../../../CommonComponents/CircleWidget/CircleWidget.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
-import {get2FaCode} from "../../../../serverLogic/DataFetcher";
-import {
-    logout,
-    updateUser
-} from "../../../../serverLogic/LogRegService";
 import DeleteAccount from "./DeleteAccount/DeleteAccount";
 import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
+import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
+import {logout, updateUser} from "../../../../serverCommunication/LogRegService";
 
 function UserEditForm(props) {
     //fields in form
@@ -59,7 +56,7 @@ function UserEditForm(props) {
     const failColor = 'var(--fail-color)';
 
     useEffect(async () => {
-        setQrCode((await get2FaCode(email))['qr_code']);
+        setQrCode((await get2FaCode(props.email))['qr_code']);
     }, [])
 
     //checks for all errors in data
@@ -204,7 +201,6 @@ function UserEditForm(props) {
 
     return <>
         <div className="UserEditForm">
-            <SectionTitle>MANAGE ACCOUNT</SectionTitle>
             <h1 className="UserAccountDetailsLabel">USER: {props.username}</h1>
             <Form>
                 <div className="EditFormContainer">
@@ -312,6 +308,7 @@ function UserEditForm(props) {
                                     <img
                                         className="twoFaImg"
                                         src={`data:image/jpeg;base64,${qrCode}`}
+                                        alt="qr_code"
                                     />
                                 </> : null}
                             <Button

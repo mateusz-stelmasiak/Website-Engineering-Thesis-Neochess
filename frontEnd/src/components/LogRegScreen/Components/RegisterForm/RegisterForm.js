@@ -10,6 +10,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
 import {check2FaCode, login, reSentActivationEmail, register} from "../../../../serverCommunication/LogRegService";
 import validator from 'validator';
+import "./RegisterForm.css";
+import "../LoadingComponent.css";
 
 
 function RegisterForm({dispatch}) {
@@ -61,6 +63,17 @@ function RegisterForm({dispatch}) {
     const history = useHistory();
     const routeToNext = () => history.push('/');
 
+    const catptcha = <ReCAPTCHA
+        style={{
+            marginLeft: "25px",
+            marginTop: "20px"
+        }}
+        sitekey={process.env.REACT_APP_CAPTCHA_KEY}
+        onChange={captchaChange}
+        size="normal"
+        theme='dark'
+    />
+
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
 
@@ -82,7 +95,6 @@ function RegisterForm({dispatch}) {
 
         return errors;
     }
-
 
     function hasNumber(string) {
         return /\d/.test(string);
@@ -117,7 +129,6 @@ function RegisterForm({dispatch}) {
         confPassword === password ? setArePasswordsEqual(true) : setArePasswordsEqual(false);
     }
 
-
     function checkUsername(username) {
         setUserName(username);
         hasWhiteSpace(username) ? setUsernameContainsWhitespace(true) : setUsernameContainsWhitespace(false);
@@ -129,11 +140,11 @@ function RegisterForm({dispatch}) {
 
     function checkEmail(email) {
         setEmail(email);
+        setIs2FaEnabled(false);
+        setIsEmailValid(false);
 
         if (validator.isEmail(email)) {
-            setIsEmailValid(true)
-        } else {
-            setIsEmailValid(false)
+            setIsEmailValid(true);
         }
     }
 
@@ -170,7 +181,7 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        const resp = await register(username, password, email, is2FaEnabled, captchaValue);
+        const resp = await register(username, password, captchaValue, email, is2FaEnabled);
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
@@ -229,7 +240,6 @@ function RegisterForm({dispatch}) {
         setCaptchaValue(value);
     }
 
-
     return (
         <div className="LogRegForm">
             <Form>
@@ -287,14 +297,6 @@ function RegisterForm({dispatch}) {
                     value={email}
                     onChange={(e) => checkEmail(e.target.value)}
                 />
-                <ReCAPTCHA
-                    sitekey={process.env.REACT_APP_CAPTCHA_KEY}
-                    onChange={captchaChange}
-                    size="normal"
-                    theme='dark'
-                />
-
-
 
                 {isEmailValid ?
                     <div className="infoContainer">
@@ -316,10 +318,16 @@ function RegisterForm({dispatch}) {
                                     onChange={(e) => AssignTwoFaCode(e.target.value)}
                                 />
 
-                                <img
-                                    className="twoFaImg"
-                                    src={`data:image/jpeg;base64,${qrCode}`}
-                                />
+                                <div style={{
+                                    display: "flex",
+                                    alignItems: "center"
+                                }}>
+                                    <img
+                                        className="twoFaImg"
+                                        src={`data:image/jpeg;base64,${qrCode}`}
+                                    />
+                                    {catptcha}
+                                </div>
                             </> : null}
                     </div> : null}
 
@@ -328,10 +336,11 @@ function RegisterForm({dispatch}) {
                 </div>
 
                 <div>
+                    {!is2FaEnabled ? catptcha : null}
                     {errorMessage === "" && isLoadingShown ?
                         <div className="registerLoadingContainer">
                             <p className="registeringProgress">
-                                REGISTERING
+                                Creating new account...
                             </p>
                             <div className="loader"/>
                         </div> : null}
@@ -339,8 +348,10 @@ function RegisterForm({dispatch}) {
                         <div className="infoContainer">
                             <p>Please activate your account and then login</p>
                             <p>You can do it by clicking on link sent in given email</p>
-                            <Button onClick={() => history.push("/")}>Go back</Button>
-                            <Button onClick={reSentEmail}>Resent activation email</Button>
+                            <div style={{display: "inline-block"}}>
+                                <Button onClick={() => history.push("/")}>Go back</Button>
+                                <Button onClick={reSentEmail}>Resent activation email</Button>
+                            </div>
                             {reSentResult !== "" ? <p>{reSentResult}</p> : null}
                         </div> :
                         <Button onClick={handleSubmit} type="submit">REGISTER</Button>}

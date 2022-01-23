@@ -157,7 +157,10 @@ function LoginForm({dispatch}) {
                         <div className="notActivatedAccountContainer">
                             <p>Account has not been activated</p>
                             <p>You can activate your account by clicking on link sent in email while registration</p>
-                            <Button onClick={reSentEmail}>Resent activation email</Button>
+                            <Button
+                                className="resetEmailButton"
+                                onClick={reSentEmail}
+                            >Resent activation email</Button>
                             {reSentResult !== "" ? <p>{reSentResult}</p> : null}
                         </div>}
                 </Form>

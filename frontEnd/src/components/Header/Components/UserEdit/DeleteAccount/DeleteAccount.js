@@ -5,11 +5,11 @@ import {connect} from "react-redux";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import Button from "react-bootstrap/Button";
-import {deleteUserAccount} from "../../../../../serverLogic/LogRegService";
 import {store} from "../../../../../index";
 import {disconnectSocket, setSocketStatus} from "../../../../../redux/actions/socketActions";
-import {SocketStatus} from "../../../../../serverLogic/WebSocket";
 import {useHistory} from "react-router-dom";
+import {deleteUserAccount} from "../../../../../serverCommunication/LogRegService";
+import {SocketStatus} from "../../../../../serverCommunication/WebSocket";
 
 
 function DeleteAccount(props) {
