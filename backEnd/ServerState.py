@@ -147,7 +147,7 @@ defender_desc = "Chess defender desc"
 defender_starting_score = 20
 
 #Positions? (vs computer)
-positions_FEN = "8/8/8/8/8/8/8/8 w - - 0 1"
+positions_FEN = "8/3PP3/3PP3/3PP3/3PP3/3PP3/1PPPPPP1/1PPPPPP1 w - - 0 1"
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
