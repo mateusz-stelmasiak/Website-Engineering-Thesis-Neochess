@@ -84,10 +84,11 @@ export default function sketch(p5) {
 
     p5.preload = function () {
         Font = p5.loadFont(myFont);
+        console.log(images);
         for (let key in pieces_dict) {
             let value = pieces_dict[key];
-            textures[value.toUpperCase()] = p5.loadImage(images['w' + value + ".png"]['default']);
-            textures[value] = p5.loadImage(images[value + ".png"]['default']);
+            textures[value.toUpperCase()] = p5.loadImage(images['w' + value + ".png"]);
+            textures[value] = p5.loadImage(images[value + ".png"]);
         }
     }
 

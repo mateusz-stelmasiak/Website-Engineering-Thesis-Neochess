@@ -11,3 +11,5 @@ backEnd/venv/
 .idea/inspectionProfiles/Project_Default.xml
 backEnd/.idea/inspectionProfiles/Project_Default.xml
 
+mailTemplate.html
+mailTemplate.html
