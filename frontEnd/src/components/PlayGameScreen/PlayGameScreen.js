@@ -50,7 +50,7 @@ function PlayGameScreen({
                             loadingGameInfo,
                         })
 {
-    let [gameResult, setGameResult] = useState("Draw");
+    let [gameResult, setGameResult] = useState({'result':'DRAW','eloChange':0});
     let [gameEnded, setGameEnded] = useState(false);
 
 
@@ -64,9 +64,11 @@ function PlayGameScreen({
         fetchGameData();
 
         socket.on("game_ended", data => {
+            console.log("DATA")
+            console.log(data)
             if (data === undefined) return;
             setGameEnded(true);
-            setGameResult(data.result);
+            setGameResult(data);
             dispatch(setIsInGame(false));
             dispatch(setGameId(""));
         });

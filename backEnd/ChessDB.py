@@ -132,15 +132,24 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
+    # returns elo change (old-new)
     def update_elo(self, user_id, new_ELO, new_ELO_dv, new_ELO_v):
         mycursor = self.mydb.cursor()
 
-        sql_update = ("""UPDATE Users SET ELO = %s,ELODeviation = %s,ELOVolatility =%s WHERE UserID = %s""")
+        # calculate ELO change
+        sql_find = ("""SELECT ELO FROM Users WHERE UserID = %s""")
+        data_find = (user_id,)
+        mycursor.execute(sql_find, data_find)
+        ELO_before = mycursor.fetchone()[0]
+        ELO_change = ELO_before - new_ELO
 
+        sql_update = ("""UPDATE Users SET ELO = %s,ELODeviation = %s,ELOVolatility =%s WHERE UserID = %s""")
         data_update = (new_ELO, new_ELO_dv, new_ELO_v, user_id)
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
+
+        return ELO_change
 
     def update_password(self, new_password, Username):
         mycursor = self.mydb.cursor()

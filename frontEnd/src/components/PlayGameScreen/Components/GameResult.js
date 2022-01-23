@@ -2,29 +2,13 @@ import {useHistory} from "react-router-dom";
 import "./GameResult.css"
 import SectionTitle from "../../Layout/Section/SectionTitle";
 import Reel from "react-reel";
-import {useEffect, useState} from "react";
-import {getEloChangeInLastGames} from "../../../serverCommunication/DataFetcher";
 import {connect} from "react-redux";
 
 function GameResult({gameStatus, userId, sessionToken}) {
-    const [eloChange, setEloChange] = useState(0);
-    const [loading, setLoading] = useState(true)
 
     const history = useHistory();
     const returnToMain = () => history.push('/');
 
-    useEffect(() => {
-        fetchEloChanged();
-    }, [])
-
-
-    let fetchEloChanged = async () => {
-        let resp = await getEloChangeInLastGames(userId, sessionToken);
-        if (resp === undefined) return
-        console.log(resp)
-        await setEloChange(resp.eloChange);
-        setLoading(false)
-    }
 
     //used for reel (the elo spinning up)
     const theme = {
@@ -46,11 +30,11 @@ function GameResult({gameStatus, userId, sessionToken}) {
         }
     };
 
-    let gainEloStyle={
-        color:'var(--success-color)'
+    let gainEloStyle = {
+        color: 'var(--success-color)'
     }
-    let lossEloStyle={
-        color:'var(--fail-color)'
+    let lossEloStyle = {
+        color: 'var(--fail-color)'
     }
 
 
@@ -59,21 +43,20 @@ function GameResult({gameStatus, userId, sessionToken}) {
             <h4>GAME ENDED</h4>
 
             <SectionTitle>
-                {gameStatus.toUpperCase() !== "DRAW" && "YOU"}&nbsp;{gameStatus}
+                {gameStatus.result.toUpperCase() !== "DRAW" && "YOU"}&nbsp;{gameStatus}
             </SectionTitle>
-            {!loading &&
             <div className="GameResult-eloChange">
-                <h3 style={eloChange>=0? gainEloStyle:lossEloStyle}>
-                    {eloChange>0 && "+"}
-                    <Reel theme={theme} text={eloChange.toString()}/>
+                <h3 style={gameStatus.eloChange >= 0 ? gainEloStyle : lossEloStyle}>
+                    {gameStatus.eloChange > 0 && "+"}
+                    <Reel theme={theme} text={gameStatus.eloChange.toString()}/>
                     <span>&nbsp;ELO</span>
-                    </h3>
-                    <span>{eloChange>=0 ? "WAS GAINED":"WAS LOST"}</span>
-                    </div>
-                }
-
-                <button onClick={returnToMain}>MAIN MENU</button>
+                </h3>
+                <span>{gameStatus.eloChange >= 0 ? "WAS GAINED" : "WAS LOST"}</span>
             </div>
+
+
+            <button onClick={returnToMain}>MAIN MENU</button>
+        </div>
     );
 }
 

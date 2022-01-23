@@ -85,7 +85,8 @@ def authorize(data):
         emit("game_found",
              {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
 
-              'gameMode': game.game_mode_id,'whiteScore':game.defender_state.white_score,'blackScore':game.defender_state.black_score},
+              'gameMode': game.game_mode_id, 'whiteScore': game.defender_state.white_score,
+              'blackScore': game.defender_state.black_score},
 
              to=request.sid)
 
@@ -324,19 +325,6 @@ def find_match(game_mode_id, player):
 
 
 def finish_game(game_info, win_color):
-    # notify players of their respective results
-    white_sid = authorized_sockets[game_info.white_player.id]
-    black_sid = authorized_sockets[game_info.black_player.id]
-    if win_color == 'w' or win_color == "W":
-        emit("game_ended", {'result': 'win'}, to=white_sid)
-        emit("game_ended", {'result': 'lost'}, to=black_sid)
-    elif win_color == 'b' or win_color == "B":
-        emit("game_ended", {'result': 'lost'}, to=white_sid)
-        emit("game_ended", {'result': 'win'}, to=black_sid)
-    else:
-        emit("game_ended", {'result': 'draw'}, to=white_sid)
-        emit("game_ended", {'result': 'draw'}, to=black_sid)
-
     game_id = game_info.game_id
     # delete game
     if str(game_info.game_room_id) in games:
@@ -347,7 +335,6 @@ def finish_game(game_info, win_color):
         db = ChessDB.ChessDB()
 
         # add match result to db
-        curr_turn = game_info.curr_turn
         db.update_scores(str(win_color).upper(), game_id)
 
         # update players' rankings
@@ -363,18 +350,30 @@ def finish_game(game_info, win_color):
         black_dv = black_user_info[6]
         black_v = black_user_info[7]
 
-        # game ended by white,ergo he won, else he didn't
-        white_result = int(curr_turn == 'w')
+        white_result = int(str(win_color) == 'w')
         white_ELO, white_dv, white_v, black_ELO, black_dv, black_v = RatingSystem.calculate_glicko(white_ELO, white_dv,
                                                                                                    white_v, black_ELO,
                                                                                                    black_dv, black_v,
                                                                                                    white_result)
 
-        db.update_elo(white_id, white_ELO, white_dv, white_v)
-        db.update_elo(black_id, black_ELO, black_dv, black_v)
+        white_elo_change = db.update_elo(white_id, white_ELO, white_dv, white_v)
+        black_elo_change = db.update_elo(black_id, black_ELO, black_dv, black_v)
 
     except Exception as ex:
         print("DB ERROR" + str(ex))
+
+    # notify players of their respective results
+    white_sid = authorized_sockets[game_info.white_player.id]
+    black_sid = authorized_sockets[game_info.black_player.id]
+    if win_color == 'w' or win_color == "W":
+        emit("game_ended", {'result': 'win', 'eloChange': white_elo_change}, to=white_sid)
+        emit("game_ended", {'result': 'lost', 'eloChange': black_elo_change}, to=black_sid)
+    elif win_color == 'b' or win_color == "B":
+        emit("game_ended", {'result': 'lost', 'eloChange': white_elo_change}, to=white_sid)
+        emit("game_ended", {'result': 'win', 'eloChange': black_elo_change}, to=black_sid)
+    else:
+        emit("game_ended", {'result': 'draw', 'eloChange': white_elo_change}, to=white_sid)
+        emit("game_ended", {'result': 'draw', 'eloChange': black_elo_change}, to=black_sid)
 
 
 @socketio.on('surrender')
@@ -486,7 +485,8 @@ def place_defender_piece(data):
     # get opposite turn
     opp_turn = 'w'
     if str(games[game_room_id].game_mode_id) == "1":
-        if int(games[game_room_id].defender_state.white_score) == 0 and int(games[game_room_id].defender_state.black_score) == 0:
+        if int(games[game_room_id].defender_state.white_score) == 0 and int(
+                games[game_room_id].defender_state.black_score) == 0:
             opp_turn = 'w'
         elif int(games[game_room_id].defender_state.white_score) < 0:
             if curr_turn == 'b':
@@ -815,6 +815,3 @@ def send_chat_to_server(data):
 
     # send to everyone in the room except sender
     emit('receive_message', {'text': text, 'playerName': player_name}, room=game_info.game_room_id, include_self=False)
-
-
-socketio.run(app, host='127.0.0.1', port=5000, debug=True, log_output='False')
