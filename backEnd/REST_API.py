@@ -467,14 +467,15 @@ def update_user():
 
         request_data = request.get_json()
 
-        if db.user_exists(request_data['email']) and user['Email'] != request_data['email']:
-            return generate_response(request, {
-                "response": "Email address already taken"
-            }, 403)
-        else:
-            token = account_serializer.dumps(request_data['email'], salt=app.config['SECRET_KEY'])
-            link = url_for('confirm_email', token=token, _external=True)
-            mail.send_welcome_message(user['Username'], request_data['email'], link)
+        if request_data['email'] != "":
+            if db.user_exists(request_data['email']) and user['Email'] != request_data['email']:
+                return generate_response(request, {
+                    "response": "Email address already taken"
+                }, 403)
+            else:
+                token = account_serializer.dumps(request_data['email'], salt=app.config['SECRET_KEY'])
+                link = url_for('confirm_email', token=token, _external=True)
+                mail.send_welcome_message(user['Username'], request_data['email'], link)
 
         if user['Password'] != sha256(str.encode(f"{request_data['hashedCurrentPassword']}{user['Salt']}")).hexdigest():
             return generate_response(request, {

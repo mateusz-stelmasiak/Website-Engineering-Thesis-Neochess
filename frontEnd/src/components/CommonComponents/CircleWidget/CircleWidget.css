@@ -17,27 +17,24 @@
 
 }
 .CircleWidget-container button{
-    all:unset;
-    background-color: var(--section-bg-color);
-    color:var(--primary-color-dark);
-    width: 4rem;
-    height: 4rem;
-    border-radius: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 400ms smooth;
+    all: unset;
+    padding: 0.7rem 4.5rem;
+    background-color: var(--sec-color);
+    color: var(--section-bg-color);
+    margin-top: 1rem;
 }
 
 .CircleWidget-container button:hover{
+    transition: 200ms;
+    transform: scale(1.1);
+    background-color: var(--sec-color-dark);
+    color: var(--section-bg-color);
     cursor: pointer;
 }
 .CircleWidget-container button:hover svg{
     transform: scale(1.2);
 
 }
-
-
 
 .CircleStatus{
     display: flex;

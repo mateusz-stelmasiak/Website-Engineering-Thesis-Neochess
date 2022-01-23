@@ -187,9 +187,10 @@ function UserEditForm(props) {
             setErrorMessage("Current password cannot be empty");
         }
 
+        setIsLoadingShown(false);
+
         setTimeout(() => {
             setErrorMessage("");
-            setIsLoadingShown(false);
         }, 3750);
     }
 
@@ -314,7 +315,7 @@ function UserEditForm(props) {
                             <Button
                                 onClick={handleSubmit} type="submit"
                                 style={{marginLeft: "20px"}}
-                            >Submit</Button>
+                            >Change 2FA</Button>
                         </div>
                         <DeleteAccount
                             is2FaEnabled={props.is2FaEnabled}
