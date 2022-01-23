@@ -12,13 +12,13 @@ server_time_difference = '02:00:00'
 class ChessDB:
     def __init__(self):
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
-        # self.mydb = mysql.connector.connect(host="localhost", user="user",
-        #                                     password="Serek123",
-        #                                     database="neo-chess-database")
+        self.mydb = mysql.connector.connect(host="localhost", user="user",
+                                            password="Serek123",
+                                            database="neo-chess-database")
 
-        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-                                            password="YhuuFd6Z",
-                                            database="13748919_neochess")
+        # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
+        #                                     password="YhuuFd6Z",
+        #                                     database="13748919_neochess")
 
         self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -155,14 +155,15 @@ class ChessDB:
         white_user = self.get_user_by_id(w_id)
         black_user = self.get_user_by_id(b_id)
 
-        data_participant = (game_id, white_user[0], w_score, "White", white_user[5])
+        data_participant = (game_id, white_user['userID'], w_score, "White", white_user['ELO'])
         mycursor.execute(sql_participant, data_participant)
-        data_participant = (game_id, black_user[0], b_score, "Black", black_user[5])
+        data_participant = (game_id, black_user['userID'], b_score, "Black", black_user['ELO'])
         mycursor.execute(sql_participant, data_participant)
 
         sql_move = ("INSERT INTO Moves"
                     "(GameID, ParticipantID, move_order, Move)"
                     "VALUES (%s, %s, %s, %s)")
+
         for move in moves:
             data_move = (game_id, self.get_participant(move[0], game_id)[0], move[1], move[2])
             mycursor.execute(sql_move, data_move)
@@ -314,36 +315,36 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def get_participant(self, Color, GameID):
+    def get_participant(self, color, game_id):
         mycursor = self.mydb.cursor()
 
-        if Color == 'w' or Color == "W":
-            Color = "White"
+        if color == 'w' or color == "W":
+            color = "White"
 
-        if Color == 'b' or Color == 'B':
-            Color = "Black"
+        if color == 'b' or color == 'B':
+            color = "Black"
 
         sql_find = ("""SELECT t1.*, Users.Username FROM (SELECT * FROM Participants WHERE Color = %s AND GameID = %s)t1, Users
                                WHERE t1.UserID = Users.UserID""")
 
-        data_find = (Color, GameID)
+        data_find = (color, game_id)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchone()
         mycursor.close()
         return result
 
-    def get_moves(self, GameID):
+    def get_moves(self, game_id):
         mycursor = self.mydb.cursor()
 
         sql_find = ("SELECT * FROM Moves WHERE Moves.GameID = %s")
 
-        data_find = (GameID,)
+        data_find = (game_id,)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
         return result
 
-    def get_games_two(self, Username1, Username2):
+    def get_games_two(self, username1, username2):
         mycursor = self.mydb.cursor()
 
         sql_find = ("""SELECT t1.* FROM (SELECT Games.*,participants.UserID FROM Games,participants
@@ -352,7 +353,7 @@ class ChessDB:
                        WHERE Participants.UserID = %s  AND Games.GameID = participants.GameID)t2
                        ON (t1.GameID = t2.GameID);""")
 
-        data_find = (self.get_user(Username1)[0], self.get_user(Username2)[0])
+        data_find = (self.get_user(username1)['userID'], self.get_user(username2)['userID'])
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
@@ -390,11 +391,11 @@ class ChessDB:
         if game_mode == -1:
             sql_count = (
                 "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameID = Participants.GameID")
-            data_count = (self.get_user_by_id(user_id)[0],)
+            data_count = (self.get_user_by_id(user_id)['userID'],)
         else:
             sql_count = (
                 "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
-            data_count = (self.get_user_by_id(user_id)[0], game_mode)
+            data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
