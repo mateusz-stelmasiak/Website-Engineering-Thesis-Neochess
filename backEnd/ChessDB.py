@@ -43,7 +43,6 @@ class ChessDB:
                             2FA boolean not null DEFAULT false,
                             OTPSecret varchar(64) not null,
                             AccountConfirmed boolean not null DEFAULT false,
-                            Country varchar(64), 
                             Joined DATE not null,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
@@ -52,17 +51,17 @@ class ChessDB:
 
         mycursor.execute('''CREATE table if not exists Participants
                             (ParticipantID integer primary key AUTO_INCREMENT, 
-                            GameID INTEGER  not null,
-                            UserID Integer not null,
+                            GameID INTEGER not null,
+                            userID Integer not null,
                             Foreign key (GameID) references  Games(GameID) on delete cascade,
-                            Foreign key (UserID) references  Users(UserID) on delete cascade, 
+                            Foreign key (userID) references Users(userID) on delete cascade, 
                             Score FLOAT not null, 
                             Color varchar(32) not null,
                             currELO int not null);''')
 
         mycursor.execute('''create table if not exists Moves
                             (MoveID integer primary key AUTO_INCREMENT,
-                            GameID INTEGER  not null,
+                            GameID INTEGER not null,
                             ParticipantID INTEGER  not null,
                             Foreign key (GameID) references  Games(GameID) on delete cascade,
                             Foreign key (ParticipantID) references Participants(ParticipantID) on delete cascade, 
@@ -100,17 +99,17 @@ class ChessDB:
 
         return True if user is not None else False
 
-    def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
+    def add_user(self, username, password, email, is2FaEnabled, otp_secret, elo, elo_dv, elo_v):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Salt, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
+                    "(Username, Password, Salt, Email, 2FA, OTPSecret, Joined, Elo, EloDeviation, EloVolatility)"
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
         salt = self.get_salt()
         data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
-                     otp_secret, country, date, elo, elo_dv, elo_v)
+                     otp_secret, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()

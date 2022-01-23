@@ -225,8 +225,8 @@ function RegisterForm({dispatch}) {
 
     async function reSentEmail() {
         const response = await reSentActivationEmail(email);
-        setReSentResult(response['result'] === "ok" ? "Activation email has been successfully resent" :
-            `Error occurred while trying to resent activation email: ${response['result']}`);
+        setReSentResult(response['response'] === "OK" ? "Activation email has been successfully resent" :
+            `Error occurred while trying to resent activation email: ${response['response']}`);
 
         setTimeout(() => {
             setReSentResult("")

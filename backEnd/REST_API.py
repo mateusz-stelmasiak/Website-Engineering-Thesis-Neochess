@@ -323,7 +323,7 @@ def register():
         otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
 
         # add to database
-        db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, 'PL', RatingSystem.starting_ELO,
+        db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
                     RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
 
         token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
@@ -364,7 +364,7 @@ def delete_user():
             print('Authorization failed')
 
         return generate_response(request, {
-            "error": "Authorisation failed."
+            "error": "Authorization failed."
         }, 401)
 
     request_data = request.get_json()
@@ -518,7 +518,7 @@ def resent_activation_email():
         mail.send_welcome_message(login, data, link)
 
         return generate_response(request, {
-            "result": "ok"
+            "response": "OK"
         }, 200)
     except Exception as ex:
         return generate_response(request, {
@@ -745,17 +745,21 @@ def get_2fa_code():
     
 
 @app.route('/get_ELO_change_in_last_game', methods=['GET', 'OPTIONS'])
-def get_ELO_change_in_last_game():
+def get_elo_change_in_last_game():
     if request.method == "OPTIONS":
         return generate_response(request, {}, 200)
 
-    if debug_mode: print("PLAYER_ELO CHANGE REQUEST " + str(request.args))
+    if debug_mode:
+        print("PLAYER_ELO CHANGE REQUEST " + str(request.args))
+
     user_id = request.args['userId']
 
     # handle user not having a session at all or invalid authorization
     session_token = request.headers['Authorization']
     if not authorize_user(user_id, session_token):
-        if debug_mode: print('Authorization failed')
+        if debug_mode:
+            print('Authorization failed')
+
         return generate_response(request, {"error": "Authorisation failed."}, 401)
 
     try:
@@ -773,7 +777,9 @@ def get_ELO_change_in_last_game():
         if debug_mode:
             ("DB ERROR " + str(ex))
 
-        return generate_response(request, {"error": "Database error"}, 503)
+        return generate_response(request, {
+            "error": "Database error"
+        }, 503)
 
     data = {
         'eloChange': elo_change,
