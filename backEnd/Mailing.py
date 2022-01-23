@@ -30,6 +30,7 @@ class Mailing:
             server.sendmail(self.address, receiver_mail, msg.as_string())
 
     def send_welcome_message(self, username, receiver_mail, confirmation_url):
+        cid = make_msgid()
         msg = EmailMessage()
         msg['Subject'] = 'Witaj na NeoChess'
         msg['From'] = 'NeoChess <' + self.address + '>'
@@ -39,19 +40,21 @@ class Mailing:
         )
         msg.add_alternative("""\
             <html>
+            <head></head>
                 <body>
                     <p>
                         <h1>Zarejestrowałeś się na NeoChess.</h1><br>
                         W celu potwierdzenia konta udaj się w poniższy link
-                        <p><a href="{{ confirmation_url }}">{{ """ + confirmation_url + """ }}</a></p>
+                        <p><a href=""" + confirmation_url + """>""" + confirmation_url + """</a></p>
                     </p>
                 </body>
             </html>
-            """.format(subtype='html'))
+            """.format(cid=cid[1:-1]), subtype='html')
 
         self.__send_email(receiver_mail, msg)
 
     def send_reset_password_token(self, username, receiver_mail, url):
+        cid = make_msgid()
         msg = EmailMessage()
         msg['Subject'] = 'Resetowanie hasła do konta'
         msg['From'] = 'NeoChess <' + self.address + '>'
@@ -65,11 +68,11 @@ class Mailing:
                     <p>
                         <h1>Zarejestrowałeś się na NeoChess.</h1><br>
                         W celu ustawienia nowego hasła do konta, kliknij w poniższy link
-                        <p><a href="{{ confirmation_url }}">{{ """ + url + """ }}</a></p>
+                        <p><a href=""" + url + """>""" + url + """</a></p>
                     </p>
                 </body>
             </html>
-            """.format(subtype='html'))
+            """.format(cid=cid[1:-1]), subtype='html')
 
         self.__send_email(receiver_mail, msg)
 
