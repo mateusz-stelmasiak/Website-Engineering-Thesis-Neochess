@@ -160,8 +160,11 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                 }}
                                 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
                             >
-                                {gameMode.gameModeIcon === 'chess' ? <FontAwesomeIcon icon={faChess}
-                                                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/> :
+                                {console.log(gameMode.gameModeMultiplayer)}
+                                {gameMode.gameModeMultiplayer == true ?
+                                    <FontAwesomeIcon icon={faChess}
+                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
+                                    :
                                     <FontAwesomeIcon icon={faChessPawn}
                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>}
                                 <h1 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>

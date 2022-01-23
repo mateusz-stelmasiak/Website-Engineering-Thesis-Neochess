@@ -2,9 +2,11 @@ import chess
 import chess.engine
 
 board = chess.Board()
-#engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_win.exe")
-#LINUX VESION
-engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")
+
+engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_win.exe")
+# LINUX VESION
+# engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")
+
 limit = chess.engine.Limit(time=2.0)
 
 
@@ -48,7 +50,15 @@ def is_valid_move(FEN, startSquare, targetSquare):
     board.set_fen(FEN)
     stockfish_move = convert_pos_to_stockfish_notation(startSquare) + convert_pos_to_stockfish_notation(targetSquare)
     board_move = chess.Move.from_uci(stockfish_move)
-    return chess.Move.from_uci(stockfish_move) in board.legal_moves, board_move
+    is_legal = False
+
+    for move in board.legal_moves:
+        move = str(move)[:4]
+        if str(board_move) == str(move):
+            is_legal = True
+            break
+
+    return is_legal, board_move
 
 
 def is_checkmate(FEN):
@@ -95,5 +105,3 @@ def get_best_move(FEN):
     }
 
     return board.fen(), move
-
-

@@ -32,10 +32,11 @@ export default class Board {
 
         for (var key in pieces_dict) {
             i += 1;
+            console.log("XDDDDDDDDDDDDDDDDDDDDDDDDDD")
             if (playingAs === 'b') {
-                this.gameMode2_grid.push(new Piece(pieces_dict[key], this.p5, Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * i));
+                this.gameMode2_grid.push(new Piece(pieces_dict[key], this.p5, Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * i));
             } else {
-                this.gameMode2_grid.push(new Piece(pieces_dict[key].toUpperCase(), this.p5, Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * i));//dont ask why 0.666
+                this.gameMode2_grid.push(new Piece(pieces_dict[key].toUpperCase(), this.p5, Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * i));//dont ask why 0.666
                 this.gameMode2_grid[this.gameMode2_grid.length - 1].color = 'w'; //TODO w konstrukotrze koloru nie da sie podac XD
             }
 
@@ -146,6 +147,7 @@ export default class Board {
         let split_FEN = this.FEN.split(' ')
         console.log("WITAM OTO TEST 2" + this.FEN)
         this.color_to_move = split_FEN[1];   //setting color to move from fen
+        this.enPassant = split_FEN[3];
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
         }
@@ -315,13 +317,13 @@ export default class Board {
                 this.p5.push()
                 this.p5.translate(scalar / 2, scalar / 2);
                 this.p5.tint(255, 127);
-                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * (rew + 1) / 2, size - scalar, size - scalar);
+                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * (rew + 1) / 2, size - scalar, size - scalar);
                 this.p5.pop()
             } else if (playingAs === 'b' && rew % 2 === 0) {
                 this.p5.push()
                 this.p5.translate(scalar / 2, scalar / 2);
                 this.p5.tint(200, 127);
-                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
+                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
                 this.p5.pop()
 
             }
@@ -337,7 +339,7 @@ export default class Board {
             this.p5.textFont(Font);
             this.p5.textSize(textsize);
             this.p5.fill(0, 0, 0);
-            this.p5.text(this.SetupState.toString(), Checkboard_size + shelf_size / 2 - textsize * 0.833, size);
+            this.p5.text(this.SetupState.toString(), Checkboard_size + shelf_size / 2 - textsize * 0.666, size);
             this.p5.pop();
             this.GameMode2_checkState()
             for (let z = 0; z < this.gameMode2_grid.length; z++) {

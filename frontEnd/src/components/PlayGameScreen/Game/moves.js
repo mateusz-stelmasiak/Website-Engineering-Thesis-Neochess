@@ -16,7 +16,7 @@ class move {
         this.EndSquare = ending_square;
         this.type = arguments.length === 3 ? type : "n";
         // typy ruchow R - roszada dluga, r - roszada krotka , C - capture, P - pion wysuniety do en passant
-        //CP - zbicie przez en passant
+        //CP - zbicie przez en passant  PR - promocja
     }
 }
 
@@ -162,9 +162,15 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
 
 //5 i 7
     //EN PASSEANT
-    if (board.lastmove.type === 'P') {
-        let Target = board.lastmove.EndSquare;
-        let numbers_to_edge;        //TODO napraw zeby nie dalo sie bić z rogów planszy XD
+
+
+    if (board.enPassant !==undefined && board.enPassant!== '-') {
+        let letterCodeToNubmer = board.enPassant.charCodeAt(0)-97 + (8-board.enPassant[1])*8;
+        console.log("FEN CO TAM W SRODKU MASZ " + letterCodeToNubmer)
+        console.log("BOARD CO TAM W SRODKU MASZ " + board.lastmove.EndSquare)
+        let Target
+        piece.color === 'w' ? Target = letterCodeToNubmer + 8 : Target = letterCodeToNubmer - 8 ;
+        let numbers_to_edge;
         piece.color === 'w' ? numbers_to_edge = Numbers_of_squares_to_edge[startSquare][2] : numbers_to_edge = Numbers_of_squares_to_edge[startSquare][3];
         if (Math.abs(startSquare - Target) === 1) {
             piece.color === 'w' ? Target = Target + Directions[1] : Target = Target + Directions[0];
@@ -249,9 +255,7 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
         if (Piece_on_Target !== undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
             //roszada krótka
             if (grid[startSquare + Directions[3] * 2].type_letter === 'e' && grid[startSquare + Directions[3]].type_letter === 'e')
-
                 t_moves.push(new move(startSquare, target - 1, 'r'));
-
         }
 
         //roszada dluga
@@ -644,6 +648,8 @@ export function make_a_move() {
                     opponent_moves = [];
 
                     if (gameMode !== 1 || board.SetupState === -1) {
+                        console.log("XDDDDDFSDAFSDFWASDF " + StartingSquare)
+                        console.log("ASDFASDFASDFASDFASF" + TargetSquare)
                         let data = {
                             'startingSquare': StartingSquare,
                             'targetSquare': TargetSquare,

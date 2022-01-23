@@ -16,7 +16,7 @@ export var pos_to_stocknot_dict = [];
 export const max_canvas_size = 720;
 export var canvas_width = 720;
 export var canvas_height = canvas_width;
-export var shelf_size = canvas_width / 3;
+export var shelf_size = canvas_width / 6;
 export var game_mode_defender_width = canvas_width + shelf_size;
 export var Checkboard_size = canvas_height
 export var size = Checkboard_size / 8
@@ -146,6 +146,7 @@ export default function sketch(p5) {
         if (gameMode === "1") {
             canvas_width = game_mode_defender_width;
         }
+        console.log(canvas_width)
         canvas = p5.createCanvas(canvas_width, canvas_height, p5.WEBGL);
         if (gameMode === '0') {
             if (startingFEN !== undefined) {
@@ -179,7 +180,7 @@ export default function sketch(p5) {
     };
 
     function readjustCanvas() {
-        shelf_size = canvas_width / 3;
+        shelf_size = canvas_width / 6;
         //full screen mode
         let resizeTo = p5.windowWidth;
         //for screen widths bigger then max size, set to max size
@@ -188,7 +189,7 @@ export default function sketch(p5) {
 
         canvas_width = resizeTo;
         if (gameMode === "1") {
-            canvas_width = canvas_width + 50 + canvas_width / 3;
+                canvas_width = canvas_width + shelf_size;
         }
 
         canvas_height = resizeTo;
@@ -203,9 +204,9 @@ export default function sketch(p5) {
         board.gameMode2_grid.forEach((piece) => {
                 i += 1
                 piece.scaled_size = size - scalar;
-                piece.x = Checkboard_size + shelf_size / 2 - size * 0.666
+                piece.x = Checkboard_size + shelf_size / 2 - size * 0.500
                 piece.y = gameMode2_Margin * size * i
-                piece.old_x = Checkboard_size + shelf_size / 2 - size * 0.666
+                piece.old_x = Checkboard_size + shelf_size / 2 - size * 0.500
                 piece.old_y = gameMode2_Margin * size * i
             }
         )
@@ -223,7 +224,7 @@ export default function sketch(p5) {
     }
 
     p5.draw = function () {
-        p5.background(255);
+        p5.background("#343434");
         p5.translate(-canvas_width / 2, -canvas_height / 2);
 
         for (let i = 0; i < Checkboard.length; i++) {

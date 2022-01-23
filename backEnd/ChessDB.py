@@ -182,15 +182,23 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
+    # returns elo change (old-new)
     def update_elo(self, user_id, new_ELO, new_ELO_dv, new_ELO_v):
         mycursor = self.mydb.cursor()
 
-        sql_update = ("""UPDATE Users SET ELO = %s,ELODeviation = %s,ELOVolatility =%s WHERE UserID = %s""")
+        # calculate ELO change
+        sql_find = ("""SELECT ELO FROM Users WHERE UserID = %s""")
+        data_find = (user_id,)
+        mycursor.execute(sql_find, data_find)
+        ELO_before = mycursor.fetchone()[0]
+        ELO_change = new_ELO - ELO_before
 
+        sql_update = ("""UPDATE Users SET ELO = %s,ELODeviation = %s,ELOVolatility =%s WHERE UserID = %s""")
         data_update = (new_ELO, new_ELO_dv, new_ELO_v, user_id)
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
+        return ELO_change
 
     def update_user(self, user, new_user_data_json):
         mycursor = self.mydb.cursor(dictionary=True)
@@ -376,17 +384,21 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def count_games(self, user_id, game_mode=0):
+    def count_games(self, user_id, game_mode=-1):
         mycursor = self.mydb.cursor()
-
-        sql_count = (
-            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s "
-            "AND Games.GameID = Participants.GameID")
-
-        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
+        # default count for all games
+        if game_mode == -1:
+            sql_count = (
+                "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameID = Participants.GameID")
+            data_count = (self.get_user_by_id(user_id)[0],)
+        else:
+            sql_count = (
+                "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
+            data_count = (self.get_user_by_id(user_id)[0], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
+        
         return result
 
     def count_wins(self, user_id, game_mode=0):
