@@ -1,4 +1,4 @@
-:root{
+:root {
     --textfield-bg-color: #0b0b0b;
 }
 
@@ -6,16 +6,49 @@
     width: 55%;
 }
 
-.LogRegForm form{
-    margin-top:1.5rem;
+.twoFaField {
+    margin-top: 25px !important;
+}
+
+.loginContainer {
+    display: grid !important;
+}
+
+.resetEmailButton {
+    display: inline-block !important;
+    margin-top: 100px !important;
+}
+
+.forgotPassword {
+    margin-top: 10px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.notActivatedAccountContainer {
+    display: flow-root !important;
+}
+
+.LogRegForm form {
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
 }
 
 
-.LogRegForm .form-control{
-    all:unset;
+.LogRegForm .form-control {
+    all: unset;
     padding: 0.7rem 1rem;
     width: 90%;
 
@@ -26,7 +59,7 @@
     border-radius: 10rem;
 }
 
-.LogRegForm p{
+.LogRegForm p {
     font-size: 0.9rem;
     color: var(--text-color);
     margin: 0.4rem 0rem;
@@ -44,12 +77,13 @@
     top: 38%;
     right: 10%;
 }
-.LogRegForm i:hover{
+
+.LogRegForm i:hover {
     color: var(--primary-color-dark);
     cursor: pointer;
 }
 
-.response{
+.response {
     display: flex;
     flex-wrap: wrap;
     color: var(--text-color);
@@ -58,17 +92,25 @@
     align-items: center;
 }
 
+.emailField {
+    margin-top: 25px !important;
+}
+
+.twoFactorAuth {
+    margin-top: 25px !important;
+}
+
 .errorMessage {
     margin-top: 1rem;
 }
 
-.errorMessage:before{
+.errorMessage:before {
     content: "Operation failed: ";
     color: var(--fail-color);
     margin-right: 0.2rem;
 }
 
-.feedbackMessage:before{
+.feedbackMessage:before {
     content: "Operation status: ";
     color: var(--success-color);
     margin-right: 0.2rem;
@@ -80,22 +122,21 @@
 }
 
 .LogRegForm Button{
-    all:unset;
-
+    all: unset;
     padding: 0.7rem 4.5rem;
-
     background-color: var(--sec-color);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
     margin-top: 1rem;
 }
-.LogRegForm Button:hover{
-    transition:200ms;
+
+.LogRegForm Button:hover {
+    transition: 200ms;
     transform: scale(1.1);
     background-color: var(--sec-color-dark);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
 }
 
-.rc-anchor-container{
+.rc-anchor-container {
     margin-top: 1rem;
 }
 

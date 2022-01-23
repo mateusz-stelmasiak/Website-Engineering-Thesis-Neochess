@@ -8,14 +8,12 @@ import React, {useEffect, useState,} from "react";
 import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
-
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
 import {toast, Toaster} from "react-hot-toast";
-import CookiesConsent from "./components/Cookies/CookiesConsent";
-import RejoinGameWidget from "./components/MainPageScreen/Components/RejoinGameWidget";
 import CookiesPreferences from "./components/Cookies/CookiesPreferences";
 import CookiesPage from "./components/Cookies/CookiesPage";
+import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
 
 
 export const GAME_DEBUGING_MODE = false;
@@ -27,7 +25,6 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
 
     //try to regenerate the session on reload
     useEffect(() => {
-
         //try to regenerate the session on reload
         if (sessionToken === 'none' && userId) {
             getSessionToken().then((resp) => {
@@ -38,10 +35,8 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
         } else {
             setLoading(false);
         }
-
         //connect the socket on startup
         socket.connect();
-
     }, []);
 
     return (
@@ -54,10 +49,10 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
                         {<PrivateRoute path="/play" component={PlayGameScreen}/>}
                         {<PrivateRoute path="/profile" component={UserProfileScreen}/>}
                         <Route path="/login" component={LogRegScreen}/>
+                        <Route path="/forgotPassword" component={SetNewPasswordScreen}/>
                         <Route path="/cookies" component={CookiesPage}/>
                         <Redirect from="*" to="/"/>
                     </Switch>
-
                 <CookiesPreferences/>
                 <Toaster
                     position="top-right"
@@ -66,9 +61,7 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
             </div>
             }
         </div>
-
     );
-
 }
 
 export default connect(mapAllStateToProps)(App);

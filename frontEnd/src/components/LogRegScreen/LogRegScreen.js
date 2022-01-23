@@ -1,9 +1,9 @@
 import React from "react";
-import CircleWidget from "./Components/OrbitContainer/CircleWidget";
 import "./LogRegScreen.css"
 import OrbitContainer from "./Components/OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm";
+import RegisterForm from "./Components/RegisterForm/RegisterForm";
+import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
 
 
 export default function LogRegScreen() {
@@ -26,6 +26,7 @@ export default function LogRegScreen() {
         secColor={"var(--sec-color)"}
         size={'large'}
         views = {centerViews}
+        renderWithContent = {false}
     >
     </CircleWidget>;
 
@@ -38,12 +39,10 @@ export default function LogRegScreen() {
 
     return (
         <div className="LogRegScreen">
-
             <OrbitContainer
                 center={centerContainer}
                 outer={outerContainer}
             />
-
         </div>
     );
 }

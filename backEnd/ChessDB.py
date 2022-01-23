@@ -1,18 +1,26 @@
 from datetime import date
 import mysql.connector
 import RatingSystem
+import random
+
+from hashlib import sha256
 
 # to account for time difference due to timezones (in hh:mm:ss)
 server_time_difference = '02:00:00'
 
 
 class ChessDB:
-
     def __init__(self):
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
-        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-                                            password="YhuuFd6Z",
-                                            database="13748919_neochess")
+        self.mydb = mysql.connector.connect(host="localhost", user="user",
+                                            password="Serek123",
+                                            database="neo-chess-database")
+
+        # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
+        #                                     password="YhuuFd6Z",
+        #                                     database="13748919_neochess")
+
+        self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __del__(self):
         self.mydb.close()
@@ -30,6 +38,11 @@ class ChessDB:
                             (userID integer primary key AUTO_INCREMENT,
                             Username varchar(64) unique not null, 
                             Password varchar(64) not null, 
+                            Salt varchar(12) not null,
+                            Email varchar(64) not null,
+                            2FA boolean not null DEFAULT false,
+                            OTPSecret varchar(64) not null,
+                            AccountConfirmed boolean not null DEFAULT false,
                             Country varchar(64), 
                             Joined DATE not null,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
@@ -58,6 +71,9 @@ class ChessDB:
 
         mycursor.close()
 
+    def get_salt(self):
+        return ''.join(random.choice(self.alphabet) for _ in range(12))
+
     def get_curr_date_time(self):
         mycursor = self.mydb.cursor()
         date = "SELECT ADDTIME(CURRENT_TIMESTAMP(), '" + server_time_difference + "') AS Today"
@@ -72,16 +88,50 @@ class ChessDB:
 
         return mycursor.fetchone()[0]
 
-    def add_user(self, Username, Password, Country, Elo, ELO_dv, ELO_v):
-        mycursor = self.mydb.cursor()
+    def user_exists(self, data):
+        mycursor = self.mydb.cursor(dictionary=True)
+
+        sql_user = ("""SELECT * FROM Users WHERE Username = %s or Email = %s""")
+
+        data_user = (data, data)
+
+        mycursor.execute(sql_user, data_user)
+        user = mycursor.fetchone()
+
+        return True if user is not None else False
+
+    def add_user(self, username, password, email, is2FaEnabled, otp_secret, country, elo, elo_dv, elo_v):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Country, Joined, ELO,ELODeviation,ELOVolatility) "
-                    "VALUES (%s, %s, %s, %s, %s,%s,%s)")
+                    "(Username, Password, Salt, Email, 2FA, OTPSecret, Country, Joined, Elo, EloDeviation, EloVolatility)"
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
-        data_user = (Username, Password, Country, date, Elo, ELO_dv, ELO_v)
+        salt = self.get_salt()
+        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
+                     otp_secret, country, date, elo, elo_dv, elo_v)
         mycursor.execute(sql_user, data_user)
+        self.mydb.commit()
+        mycursor.close()
+
+    def remove_user(self, user_id):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
+
+        sql_delete = ("""DELETE FROM Users WHERE userID = %s""")
+
+        data_delete = (user_id,)
+        mycursor.execute(sql_delete, data_delete)
+        self.mydb.commit()
+        mycursor.close()
+
+    def activate_user_account(self, email):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
+
+        sql_update = ("""UPDATE Users SET AccountConfirmed = true WHERE Email = %s""")
+
+        data_update = (email,)
+        mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
 
@@ -142,12 +192,39 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def update_password(self, new_password, Username):
-        mycursor = self.mydb.cursor()
+    def update_user(self, user, new_user_data_json):
+        mycursor = self.mydb.cursor(dictionary=True)
+        is_account_activated = True
+
+        new_password = sha256(str.encode(new_user_data_json['hashedNewPassword'])).hexdigest() \
+            if new_user_data_json['hashedNewPassword'] is not None\
+            else user['Password']
+
+        email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
+        is_2_fa_enabled = new_user_data_json['is2FaEnabled']
+
+        if user['Email'] != email and email != "":
+            is_account_activated = False
+
+        sql_update_query = ("""UPDATE Users SET
+                                Password = %s,
+                                Email = %s,
+                                2FA = %s,
+                                AccountConfirmed = %s""")
+
+        data_update = (new_password, email, is_2_fa_enabled, is_account_activated)
+        mycursor.execute(sql_update_query, data_update)
+
+        self.mydb.commit()
+
+        mycursor.close()
+
+    def update_password(self, new_password, email):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_update = ("""UPDATE Users SET Password = %s WHERE UserID = %s""")
 
-        data_update = (new_password, self.get_user(Username)[0])
+        data_update = (sha256(str.encode(new_password)).hexdigest(), self.get_user_by_email(email)['userID'])
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
@@ -178,19 +255,48 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def get_user(self, Username):
-        mycursor = self.mydb.cursor()
+    def get_user_by_email(self, email):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
+
+        sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
+
+        data_find = (email,)
+        mycursor.execute(sql_find, data_find)
+        user_data = mycursor.fetchone()
+
+        mycursor.close()
+        return user_data
+
+    def get_user(self, username, email=None):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.Username = %s")
 
-        data_find = (Username,)
+        data_find = (username,)
         mycursor.execute(sql_find, data_find)
-        result = mycursor.fetchone()
+        user_data = mycursor.fetchone()
+
+        if email is None:
+            return user_data
+
+        result = {
+            "username": True if user_data is not None else False
+        }
+
+        if not result['username']:
+            sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
+
+            data_find = (email,)
+            mycursor.execute(sql_find, data_find)
+            result = {
+                "email": True if mycursor.fetchone() is not None else False
+            }
+
         mycursor.close()
         return result
 
     def get_user_by_id(self, userId):
-        mycursor = self.mydb.cursor()
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.userID = %s")
 
@@ -244,27 +350,27 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def get_games(self, UserID, Start, End):
-        mycursor = self.mydb.cursor()
+    def get_games(self, user_id, start, end):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("""SELECT Games.* FROM Games, Participants
                        WHERE Participants.UserID = %s AND Games.GameID = Participants.GameID
                        ORDER BY Games.GameID DESC
                        LIMIT %s,%s""")
 
-        data_find = (UserID, Start, End)
+        data_find = (user_id, start, end)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
         return result
 
-    def get_EloHistory(self, Username):
-        mycursor = self.mydb.cursor()
+    def get_elo_history(self, user_id):
+        mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("""SELECT Games.played, Participants.currELO FROM Games,Participants
                        WHERE Participants.UserID = %s AND Particpants.GameID = Games.GameID""")
 
-        data_find = (self.get_user(Username)[0],)
+        data_find = (self.get_user(user_id)['userID'],)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
@@ -274,9 +380,10 @@ class ChessDB:
         mycursor = self.mydb.cursor()
 
         sql_count = (
-            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
+            "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s "
+            "AND Games.GameID = Participants.GameID")
 
-        data_count = (self.get_user_by_id(user_id)[0], game_mode)
+        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -289,7 +396,7 @@ class ChessDB:
                         WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                         WHERE Score = 1;""")
 
-        data_count = (self.get_user_by_id(user_id)[0], game_mode)
+        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -302,7 +409,7 @@ class ChessDB:
                      WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
                      WHERE Score = 0.5""")
 
-        data_count = (self.get_user_by_id(user_id)[0], game_mode)
+        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -315,7 +422,7 @@ class ChessDB:
                          WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID)t1
                          WHERE Score = 0""")
 
-        data_count = (self.get_user_by_id(user_id)[0], game_mode)
+        data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
@@ -333,7 +440,7 @@ class ChessDB:
         mycursor.close()
         return result
 
-    def get_ELO_change_in_two_last_games(self, userId):
+    def get_elo_change_in_two_last_games(self, user_id):
         mycursor = self.mydb.cursor()
 
         sql_find = ("""SELECT Participants.currELO FROM Games,Participants
@@ -341,7 +448,7 @@ class ChessDB:
                          ORDER BY Games.GameID DESC
                          LIMIT 2""")
 
-        data_find = (userId,)
+        data_find = (user_id,)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchall()
         mycursor.close()
@@ -350,4 +457,3 @@ class ChessDB:
 
 tempDB = ChessDB()
 tempDB.create_db()
-# print(tempDB.count_losses("PainTrain"))

@@ -1,0 +1,26 @@
+.DeleteAccountContainer {
+    align-items: center;
+}
+
+.errorMessage {
+    flex: 1 1 100%;
+    margin-top: 1rem;
+    color: var(--sec-color);
+}
+
+.errorMessage:before {
+    content: "Operation failed: ";
+    color: var(--fail-color);
+    margin-right: 0.2rem;
+}
+
+.errorMessage ul {
+    margin: 0;
+    text-align: left;
+}
+
+@media (max-width: 1050px) {
+    .DeleteAccountContainer {
+        width: 50%;
+    }
+}

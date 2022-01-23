@@ -1,0 +1,12 @@
+.SocketStatus{
+    border-radius: 100%;
+    width: 1.3rem;
+    height: 1.3rem;
+    display: inline-block;
+    background-color: white;
+}
+
+.SocketStatus:hover{
+    filter:saturate(60%);
+    transform: scale(1.05);
+}

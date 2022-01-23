@@ -163,6 +163,22 @@ export async function getPlayerStats(userId,sessionToken) {
     }
 }
 
+export async function get2FaCode(email) {
+    try {
+        const requestOptions = {
+            method: 'GET',
+            mode: 'cors',
+            timeout: 600000
+        };
+
+        const response = await fetchWithTimeout(API_URL + '/get_qr_code?email=' + email, requestOptions);
+        const responseObj = await handleResponse(response);
+        if (FETCH_DEBUGGING_MODE) console.log(response);
+        return responseObj;
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 export async function getAvailableGameModes(sessionToken){
     try {
@@ -186,6 +202,8 @@ export async function getAvailableGameModes(sessionToken){
 //prevent networkerrors from crashing fetch requests
 export async function fetchWithTimeout(resource, options) {
     const {timeout = 8000} = options;
+
+    console.log(resource)
 
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);

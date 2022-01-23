@@ -1,0 +1,262 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.twoFaImg {
+    height: 100px !important;
+    margin-top: 25px;
+}
+
+.UserEditForm {
+    width: 90%;
+    display: table;
+    margin: 0 auto;
+}
+
+.updateProgress {
+    margin-right: 10px !important;
+    margin-top: 18px !important;
+}
+
+.ButtonStyle {
+    margin-top: 40px !important;
+    float: right !important;
+}
+
+.PasswordContainer {
+    margin-right: 75px;
+}
+
+.EditFormContainer {
+    display: flex !important;
+    justify-content: space-around;
+}
+
+.PasswordEmailContainer {
+    display: flex;
+    width: 50%;
+}
+
+.FormContainer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    margin-top: 25px;
+    justify-content: center;
+}
+
+.TwoFaDeleteContainer {
+    display: flex;
+    align-items: center;
+}
+
+.TwoFaContainer {
+    align-items: center;
+    margin-right: 75px;
+}
+
+.updateLoadingContainer {
+    display: flex;
+    margin-left: 65px;
+    margin-top: 30px;
+}
+
+:root {
+    --textfield-bg-color: #0b0b0b;
+}
+
+.AccountDelete {
+    margin-top: 25px;
+}
+
+.AccountDeletePasswordContainer {
+    width: 50%;
+    margin-left: 20px;
+}
+
+.twoFaForm {
+    margin-top: 30px !important;
+    display: flow-root !important;
+}
+
+.UserEditButtons {
+    display: grid !important;
+    text-align: center !important;
+}
+
+.loginContainer {
+    display: grid !important;
+}
+
+.forgotPassword {
+    margin-top: 10px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.twoFaImg {
+    display: block !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.notActivatedAccountContainer {
+    display: flow-root !important;
+}
+
+.UserEditForm form {
+    margin-top: 1.5rem;
+}
+
+.UserEditForm h1 {
+    all: unset;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: min(3em, 5vw);
+    animation: text_glow 5s infinite;
+    color: var(--sec-color);
+    margin-top: 50px;
+}
+
+.UserEditForm .form-control {
+    all: unset;
+    padding: 0.7rem 1rem;
+    width: 90%;
+
+    margin-top: 0.5rem;
+    color: var(--text-color);
+    background-color: var(--textfield-bg-color);
+    text-align: left;
+    border-radius: 10rem;
+}
+
+.UserEditForm .form-check {
+    color: var(--text-color);
+}
+
+.UserEditForm p {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin: 0.4rem 0rem;
+    align-self: flex-start;
+}
+
+.UserEditForm .pass-wrapper {
+    position: relative;
+    /*width: 100%;*/
+    display: flex;
+}
+
+.UserEditForm i {
+    position: absolute;
+    top: 38%;
+    right: 10%;
+}
+
+.UserEditForm i:hover {
+    color: var(--primary-color-dark);
+    cursor: pointer;
+}
+
+.response {
+    display: flex;
+    flex-wrap: wrap;
+    color: var(--text-color);
+    height: 4rem;
+    width: 100%;
+    align-items: center;
+}
+
+.emailField {
+    margin-top: 25px !important;
+}
+
+.errorMessage {
+    flex: 1 1 100%;
+    margin-top: 1rem;
+    color: var(--sec-color);
+}
+
+.errorMessage:before {
+    content: "Operation failed: ";
+    color: var(--fail-color);
+    margin-right: 0.2rem;
+}
+
+.feedbackMessage:before {
+    content: "Operation status: ";
+    color: var(--success-color);
+    margin-right: 0.2rem;
+}
+
+.errorMessage ul {
+    margin: 0;
+    text-align: left;
+}
+
+.UserEditForm Button {
+    all: unset;
+
+    padding: 0.7rem 4.5rem;
+
+    background-color: var(--sec-color);
+    color: var(--section-bg-color);
+    margin-top: 1rem;
+}
+
+.UserEditForm Button:hover {
+    transition: 200ms;
+    transform: scale(1.1);
+    background-color: var(--sec-color-dark);
+    color: var(--section-bg-color);
+}
+
+/* Animate the color text glow */
+@keyframes text_glow {
+    from {
+        text-shadow: 2px 2px 15px
+    }
+    50% {
+        text-shadow: 2px 2px 20px
+    }
+    to {
+        text-shadow: 2px 2px 15px
+    }
+}
+
+@media (max-width: 1050px) {
+    .EditFormContainer {
+        margin-top: 50px;
+        display: flow-root !important;
+    }
+
+    .PasswordEmailContainer {
+        align-items: center;
+        width: 100%;
+    }
+
+    .TwoFaDeleteContainer {
+        margin-top: 75px;
+        width: 100%;
+        justify-content: space-around;
+    }
+}

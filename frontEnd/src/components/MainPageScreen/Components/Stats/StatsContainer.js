@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import "./StatsContainer.css"
 import SectionTitle from "../../../Layout/Section/SectionTitle";
-import Dots from "../../../CommonComponents/Dots";
 import {FETCH_DEBUGGING_MODE, getPlayerStats, getSessionToken} from "../../../../serverCommunication/DataFetcher";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import {setUserElo} from "../../../../redux/actions/userActions";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChartLine, faGamepad,faChess,faSync} from "@fortawesome/free-solid-svg-icons";
+import {faChartLine, faGamepad, faChess, faSync} from "@fortawesome/free-solid-svg-icons";
+import Dots from "../../../CommonComponents/Dots/Dots";
 
 function StatsContainer({userId, sessionToken, dispatch}) {
     const [currentElo, setCurrentElo] = useState("");
@@ -63,6 +63,8 @@ function StatsContainer({userId, sessionToken, dispatch}) {
             setCurrentElo("Can't connect :(");
             return;
         }
+
+        console.log(resp)
 
         dispatch(setUserElo(resp.elo))
         await setCurrentElo(resp.elo);
@@ -123,18 +125,21 @@ function StatsContainer({userId, sessionToken, dispatch}) {
                     <h1>{iconGames}&nbsp;GAMES STATS</h1>
                     <p>Games Played: <span>&nbsp;{gamesPlayed} {isLoading && <Dots>loading</Dots>} </span></p>
                     <p>Games Won: <span className="succText">&nbsp;{gamesWon} {isLoading &&
-                    <Dots>loading</Dots>} </span></p>
+                        <Dots>loading</Dots>} </span></p>
                     <p>Games Lost: <span className="failText">&nbsp;{gamesLost} {isLoading &&
-                    <Dots>loading</Dots>} </span></p>
+                        <Dots>loading</Dots>} </span></p>
                     <p>Draws: <span className="neutralText">&nbsp;{draws} {isLoading && <Dots>loading</Dots>}</span></p>
                 </div>
 
                 <div className="StatsContainer-categorie">
                     <h1>{iconDefender}&nbsp;DEFENDER STATS</h1>
                     <p>Games Played: <span>&nbsp;{defGamesPlayed}{isLoading && <Dots>loading</Dots>}</span></p>
-                    <p>Games Won: <span className="succText">&nbsp;{defGamesWon}{isLoading && <Dots>loading</Dots>}</span></p>
-                    <p>Games Lost: <span className="failText">&nbsp;{defGamesLost}{isLoading && <Dots>loading</Dots>}</span></p>
-                    <p>Draws: <span className="neutralText">&nbsp;{defDraws}{isLoading && <Dots>loading</Dots>}</span></p>
+                    <p>Games Won: <span className="succText">&nbsp;{defGamesWon}{isLoading &&
+                        <Dots>loading</Dots>}</span></p>
+                    <p>Games Lost: <span className="failText">&nbsp;{defGamesLost}{isLoading &&
+                        <Dots>loading</Dots>}</span></p>
+                    <p>Draws: <span className="neutralText">&nbsp;{defDraws}{isLoading && <Dots>loading</Dots>}</span>
+                    </p>
                 </div>
             </div>
 
