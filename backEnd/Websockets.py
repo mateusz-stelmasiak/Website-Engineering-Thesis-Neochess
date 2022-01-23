@@ -109,6 +109,113 @@ def authorize(data):
     emit('authorized', )
 
 
+@socketio.on('get_positions_info')
+def get_positions_info(data):
+    data_obj = json.loads(data)
+    player_id = data_obj['playerId']
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    result = positions_FENS
+    emit('positions_info', result, to=request.sid)
+
+
+@socketio.on('join_single_player')
+def join_single_player(data):
+    data_obj = json.loads(data)
+    player_id = data_obj['playerId']
+    game_mode_id = data_obj['gameModeId']
+    game_mode = game_modes[game_mode_id]
+
+
+    # authorize player
+    if not check_auth(request.sid, player_id):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    players_game = get_is_player_in_game(player_id)
+    if players_game:
+        print("PLAYER ALREADY IN GAME")
+        return
+
+    print("Player with id " + str(player_id) + " joined single player game mode " + str(game_mode_id))
+
+    # get player elo from db
+    try:
+        db = ChessDB.ChessDB()
+        user = db.get_user_by_id(player_id)
+        player_elo = user['ELO']
+        username = user['Username']
+    except Exception as ex:
+        print("DB ERROR " + str(ex))
+        return
+
+    # check if player isn't in this queue already
+    if get_player_from_queue(player_id, game_mode_id) is not False:
+        emit('already_in_queue', {'playerId': player_id}, to=request.sid)
+        return
+
+    player = Player(player_id, username, player_elo, 'u')
+
+    print("Creating a new single player game")
+
+    game_id = random.randint(0, 9999999999999)
+    game_id_hash = hashlib.sha256(str(game_id).encode())
+    game_room_id = str(game_id_hash.hexdigest())
+
+    # create gameroom and add player
+    join_room(game_room_id)
+
+    #positions setup
+    # TODO here generate starting fen and computer player stats
+    if str(game_mode_id) =="2":
+        chosen_postion= int(data_obj['positionId'])
+        chosen_starting_score = int(data_obj['posStartingScore'])
+
+        starting_FEN = game_mode.game_mode_starting_FEN[chosen_postion]
+        player_color = starting_FEN.split(" ")[1]
+
+        if player_color == 'w':
+            computer_color = 'b'
+        else:
+            computer_color = 'w'
+
+        #make defender scores
+        if player_color == 'w':
+            defender_state = DefenderState(chosen_starting_score,0,0)
+        else:
+            defender_state = DefenderState(0,chosen_starting_score,0)
+
+        computer_player = Player(-1, 'Computer', 5000, computer_color)  # id, name,ELO, playing as #TODO change ELO?
+        print(player_color)
+
+        timer = Timer(game_mode.game_mode_time)
+        # example timer
+        # timer = TImer(5000) #in ms
+
+        # create game in server storage
+        try:
+            if player_color == 'w':
+                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player,
+                                           player_color,
+                                           starting_FEN, 0, timer,defender_state=defender_state)
+            else:
+                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, computer_player, player,
+                                           player_color,
+                                           starting_FEN, 0, timer,defender_state=defender_state)
+        except Exception as ex:
+            print("Creating game error " + str(ex))
+            return
+
+        print(games[game_room_id])
+        emit("game_found", {'gameId': game_room_id, 'playingAs': player_color, 'gameMode': game_mode_id})
+
+
 # MATCHMAKING
 @socketio.on('join_queue')
 def join_queue(data):
@@ -153,8 +260,11 @@ def join_queue(data):
 
     print("Player with id " + str(player_id) + " joined the queue for game mode" + str(game_mode_id))
 
-    if game_multiplayer:
-        join_room('queue' + str(game_mode_id), request.sid)
+    if not game_multiplayer:
+        print("Tried to join multiplayer in single")
+        return
+
+    join_room('queue' + str(game_mode_id), request.sid)
 
     # get player elo from db
     try:
@@ -172,53 +282,6 @@ def join_queue(data):
         return
 
     player = Player(player_id, username, player_elo, 'u')
-
-    # if player joined a singleplayer queue
-    if not game_multiplayer:
-        print("Creating a new single player game")
-
-        try:
-            game_id = random.randint(0, 9999999999999)
-            game_id_hash = hashlib.sha256(str(game_id).encode())
-            game_room_id = str(game_id_hash.hexdigest())
-
-            # create gameroom for the two players and add both of them
-            join_room(game_room_id)
-
-            # notify the players of their positions and opponents socket status
-
-            # TODO here generate starting fen and computer player stats
-
-            starting_FEN = random.choice(game_mode.game_mode_starting_FEN)
-            colorToMoveFromFen = starting_FEN.split(" ")[1]
-            if colorToMoveFromFen == 'w':
-                computer_color = 'b'
-            else:
-                computer_color = 'w'
-            computer_player = Player(-1, 'Computer', 5000, computer_color)  # id, name,ELO, playing as #TODO change ELO?
-            print(colorToMoveFromFen)
-            emit("game_found", {'gameId': game_room_id, 'playingAs': colorToMoveFromFen, 'gameMode': game_mode_id})
-            # example starting FEN
-            # starting_FEN="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-
-            timer = Timer(game_mode.game_mode_time)
-            # example timer
-            # timer = TImer(5000) #in ms
-
-            # create game in server storage
-            if colorToMoveFromFen == 'w':
-                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player,
-                                           colorToMoveFromFen,
-                                           starting_FEN, 0, timer)
-            else:
-                games[game_room_id] = Game(game_id, game_room_id, game_mode_id, computer_player, player,
-                                           colorToMoveFromFen,
-                                           starting_FEN, 0, timer)
-            print( games[game_room_id])
-        except Exception as ex:
-            print("DB ERROR " + str(ex))
-
-        return
 
     # as array playerObject,waitTime (in ms), currentScope
     queues.setdefault(str(game_mode_id), []).append([player, 0, initial_scope])

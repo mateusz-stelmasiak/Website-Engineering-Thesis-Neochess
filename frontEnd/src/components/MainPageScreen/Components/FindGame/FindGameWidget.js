@@ -12,22 +12,29 @@ import {setIsInGame} from "../../../../redux/actions/userActions";
 import {getAvailableGameModes} from "../../../../serverCommunication/DataFetcher";
 import {emit} from "../../../../redux/actions/socketActions";
 import {formatTime} from "../../../../serverCommunication/Utils";
+import Form from "react-bootstrap/Form";
 
 
 function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     //main button text
-    const buttonTexts = ["choose a game mode", <>in queue<Dots/></>];
+    const buttonTexts = ["choose a game mode", <>in queue<Dots/></>, "choose a position"];
     const [selectedText, setSelectedText] = useState(0);
 
     //game mode handling
     const [currGameMode, setCurrGameMode] = useState(-1);
     const [gameModeButtons, setGameModeButtons] = useState(undefined);
 
+    //positions vars
+    const [positions, setPositions] = useState([]);
+    const [posStartingScore, setPosStartingScore] = useState(30)
+
     //queue info
     const [isInQ, setIsInQ] = useState(false);
     const [playersInQ, setPlayersInQ] = useState(<Dots>loading</Dots>);
     const [scope, setScope] = useState(<Dots>loading</Dots>);
     const {timer, timerRestart} = useTimer(0);
+
+    //single player defender
 
     //routing after having succesfully found a game
     const history = useHistory();
@@ -60,6 +67,10 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             leaveQ(currGameMode);
             routeToNext(data.gameId);
         });
+
+        socket.on("positions_info", data => {
+            setPositions(data);
+        })
 
         // Anything in here is fired on component unmount.
         return () => {
@@ -105,16 +116,42 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         //reselecting the same mode
         if (isInQ === true && (gameModeId === currGameMode)) {
-
             return;
         }
 
         leaveQ(currGameMode);
         setCurrGameMode(gameModeId);
+
+        //Positions game mode
+        if (gameModeId === 2) {
+            setSelectedText(2);
+            getPositionsInfo();
+            return;
+        }
+
         setSelectedText(1);
         timerRestart();
         joinQ(gameModeId);
     }
+
+    let getPositionsInfo = () => {
+        let getPositionsEvent = {
+            event: 'get_positions_info',
+            msg: JSON.stringify({playerId})
+        }
+        dispatch(emit(getPositionsEvent));
+        setIsInQ(false);
+    }
+
+
+    let joinSinglePlayerGame = (gameModeId, positionId) => {
+        let joinSingleEvent = {
+            event: 'join_single_player',
+            msg: JSON.stringify({playerId, gameModeId, positionId, posStartingScore})
+        }
+        dispatch(emit(joinSingleEvent));
+    }
+
 
     let joinQ = async (gameModeId) => {
         let joinQEvent = {
@@ -174,19 +211,46 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                 }
             </div>
 
+            {currGameMode === 2 &&
+            <>
+                <Form.Control
+                    required
+                    placeholder="starting score"
+                    type="number"
+                    value={posStartingScore}
+                    onChange={(e) => setPosStartingScore(e.target.value)}
+                />
+                <ul className="PositionList">
+                    {positions.map(
+                        (position, index) => {
+                            return (
+                                <li
+                                    key={"position" + index}
+                                    onClick={() => joinSinglePlayerGame(currGameMode, index)}
+                                >
+                                    {position}
+                                </li>
+                            )
+                        }
+                    )
+                    }
+                </ul>
+            </>
+            }
+
             {isInQ &&
-                <div className="QInfo">
-                    <ul>
-                        <li key="QInfo-wait-time"><span>Wait time:</span> {formatTime(timer)}</li>
-                        <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
-                        <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
-                    </ul>
-                    <button className="QInfo-leave" onClick={() => {
-                        findGame(-1)
-                    }}>
-                        LEAVE QUEUE
-                    </button>
-                </div>
+            <div className="QInfo">
+                <ul>
+                    <li key="QInfo-wait-time"><span>Wait time:</span> {formatTime(timer)}</li>
+                    <li key="QInfo-players-inQ"><span>Players in queue:</span> {playersInQ}</li>
+                    <li key="QInfo-scope"><span>Scope:</span> +-{scope}</li>
+                </ul>
+                <button className="QInfo-leave" onClick={() => {
+                    findGame(-1)
+                }}>
+                    LEAVE QUEUE
+                </button>
+            </div>
             }
         </section>
     );

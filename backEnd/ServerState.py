@@ -17,7 +17,7 @@ class Player:
 class Game:
 
     def __init__(self, game_id, game_room_id, game_mode_id, white_player, black_player, curr_turn, curr_FEN,
-                 num_of_moves, timer):
+                 num_of_moves, timer, draw_proposed='null',defender_state = False):
         self.game_id = game_id
         self.game_room_id = game_room_id
         self.game_mode_id = game_mode_id
@@ -27,8 +27,12 @@ class Game:
         self.curr_FEN = curr_FEN
         self.num_of_moves = num_of_moves
         self.timer = timer
-        self.defender_state = DefenderState()
-        self.draw_proposed = 'null'
+        self.draw_proposed = draw_proposed
+
+        if not defender_state:
+            self.defender_state =DefenderState()
+        else:
+            self.defender_state = defender_state
 
 
 class GameMode:
@@ -42,43 +46,6 @@ class GameMode:
         self.game_mode_starting_FEN = game_mode_starting_FEN
         self.game_mode_icon = game_mode_icon  # font awesome icon name (omit fa/fas, just name)
         self.game_mode_multiplayer = game_mode_multiplayer
-
-
-# state 0- placing pieces stage, 1- making them movesss
-class DefenderState:
-
-    def __init__(self):
-        self.black_score = defender_starting_score
-        self.white_score = defender_starting_score
-        self.phase = 0
-
-    # returns false on illegal place
-    def update_score(self, player_color, spent_points):
-        if player_color == 'w':
-            new_score = self.white_score - spent_points
-            if new_score < 0:
-                return False
-            self.white_score = new_score
-
-        if player_color == 'b':
-            new_score = self.black_score - spent_points
-            if new_score < 0:
-                return False
-            self.black_score = new_score
-
-        return True
-
-    # ends puting down phase for given color
-    def end_phase(self, player_color):
-        if player_color == 'w':
-            self.white_score = -1
-
-        if player_color == 'b':
-            self.black_score = -1
-
-    def check_change_phase(self):
-        if self.black_score == -1 and self.white_score == -1:
-            self.phase = 1
 
 
 class Timer:
@@ -147,18 +114,55 @@ defender_FEN = "8/8/8/8/8/8/8/8 w - - 0 1"
 defender_desc = "Chess defender desc"
 defender_starting_score = 20
 
+# state 0- placing pieces stage, 1- making them movesss
+class DefenderState:
+
+    def __init__(self,white_score=defender_starting_score,black_score=defender_starting_score,phase=0):
+        self.white_score = white_score
+        self.black_score = black_score
+        self.phase = phase
+
+    # returns false on illegal place
+    def update_score(self, player_color, spent_points):
+        if player_color == 'w':
+            new_score = self.white_score - spent_points
+            if new_score < 0:
+                return False
+            self.white_score = new_score
+
+        if player_color == 'b':
+            new_score = self.black_score - spent_points
+            if new_score < 0:
+                return False
+            self.black_score = new_score
+
+        return True
+
+    # ends puting down phase for given color
+    def end_phase(self, player_color):
+        if player_color == 'w':
+            self.white_score = -1
+
+        if player_color == 'b':
+            self.black_score = -1
+
+    def check_change_phase(self):
+        if self.black_score == -1 and self.white_score == -1:
+            self.phase = 1
+
+
 # Positions? (vs computer)
-starting_FENS = ["rkbq4/pppp4/8/8/8/8/8/8 w q - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
-                 "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1"]
-positions_FEN = "rkbq4/pppp4/8/8/8/8/8/8 w q - 0 1"
+positions_FENS = ["rkbq4/pppp4/8/8/8/8/8/8 w q - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
+                  "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1"]
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
     GameMode(0, "Classic", default_desc, 600, default_FEN, 'chess'),  # classic mode, time in S
     GameMode(1, "Defender", defender_desc, 600, defender_FEN, 'chess'),  # defender mode, time in S
-    GameMode(2, "Positions", positions_desc, 600, starting_FENS, 'chess-pawn', game_mode_multiplayer=False)
+    GameMode(2, "Positions", positions_desc, 600, positions_FENS, 'chess-pawn', game_mode_multiplayer=False)
     # defender mode, time in S
 ]
+
 
 
 #################
