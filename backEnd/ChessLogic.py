@@ -2,7 +2,6 @@ import chess
 import chess.engine
 
 board = chess.Board()
-
 engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_win.exe")
 # LINUX VESION
 # engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")

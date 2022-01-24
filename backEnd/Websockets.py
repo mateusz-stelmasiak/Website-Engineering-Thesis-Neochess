@@ -779,10 +779,11 @@ def make_move(data):
         emit('unauthorized', {'error': 'Unauthorized access'})
         return
 
+    print(data)
     game_room_id = data_obj['gameroomId']
     move = data_obj['move']
     player_id = data_obj['playerId']
-    is_promotion = data_obj['isPromotion']
+    is_promotion = data_obj['move']['isPromotion']
 
     # check if the game exists at all
     if game_room_id not in games:
@@ -818,7 +819,7 @@ def make_move(data):
 
     # append promotion move suffix to promotion moves
     if str(is_promotion) == "1":
-        move_AN_notation = move_AN_notation + "=Q"
+        move_AN_notation.promotion = 5
 
     # send move to opponent
     if white_id in authorized_sockets and black_id in authorized_sockets:
