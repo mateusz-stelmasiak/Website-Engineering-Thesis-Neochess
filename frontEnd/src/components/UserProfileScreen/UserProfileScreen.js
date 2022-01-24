@@ -14,20 +14,23 @@ import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDispla
 function UserProfileScreen(props) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
+    const [accountCreatedTime, setAccountCreatedTime] = useState("");
+    const [accountUpdatedTime, setAccountUpdatedTime] = useState("");
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
 
     useEffect(async () => {
-        const response = (await getUserData())
-        console.log('curr data')
-        console.log(response)
+        const response = await getUserData()
         setUsername(response['Username'])
         setEmail(response['Email'])
+        setAccountCreatedTime(response['CreatedAt'])
+        setAccountUpdatedTime(response['UpdatedAt'])
         setIs2FaEnabled(response['2FA'])
     }, [])
 
     const are_fields_correct = () => {
         return username !== ""
             && email !== ""
+            && accountCreatedTime !== ""
             && is2FaEnabled !== undefined
     }
 
@@ -67,9 +70,10 @@ function UserProfileScreen(props) {
                 <div style={sectionStyle} className="CurrentInfo-container">
                     <div style={containerStyle}>
                         <h1 style={glowingStyle}>CURRENT INFO</h1>
-                        <span className="container"><h3>Username</h3><span>{props.username}</span></span>
-                        <span className="container"><h3>Acc created</h3><span><Dots>loading</Dots></span></span>
-                        <span className="container"><h3>Email address</h3><span><Dots>loading</Dots></span></span>
+                        <span className="container"><h3>Username</h3><span>{username}</span></span>
+                        <span className="container"><h3>Account created</h3><span>{accountCreatedTime}</span></span>
+                        <span className="container"><h3>Account updated</h3><span>{accountUpdatedTime}</span></span>
+                        <span className="container"><h3>Email address</h3><span>{email}</span></span>
                     </div>
                     <FenDisplayingBoard/>
                 </div>
