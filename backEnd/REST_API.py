@@ -14,12 +14,12 @@ import pyotp
 import base64
 from Mailing import Mailing
 
-domain = '34.118.14.151'
-dns_domain = 'chess-defence.ddns.net'
+domain = '217.182.75.59'
+dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
-allowed_domains = [domain, dns_domain, local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
+allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True

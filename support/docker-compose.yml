@@ -3,6 +3,7 @@ services:
   db:
     image: mysql:latest
     container_name: neo-chess
+    restart: always
     environment:
       MYSQL_DATABASE: 'neo-chess-database'
       MYSQL_USER: 'user'
