@@ -17,7 +17,7 @@ function UserProfileScreen(props) {
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
 
     useEffect(async () => {
-        const response = (await getUserData())['response']
+        const response = (await getUserData())
         console.log('curr data')
         console.log(response)
         setUsername(response['Username'])
