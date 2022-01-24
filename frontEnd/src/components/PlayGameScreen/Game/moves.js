@@ -212,7 +212,9 @@ function check_if_promotion(piece, targetsquare) {
             piece.type = 'q';
             piece.type_letter = 'q';
         }
+        return true
     }
+    return false
 }
 
 function is_square_save(targetSquare) {
@@ -580,7 +582,7 @@ export function make_a_move() {
         if (piece.dragging === 1 && piece.type_letter !== 'e') {
             let Target_Square_position = piece.get_closest_position();
             let Starting_Square_position = [piece.old_x, piece.old_y]
-
+            let isPromotion = 0;
             let StartingSquare = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array(Starting_Square_position)); //TODO optymalizacja robie to drugi raz w set fen by move!!!
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
 
@@ -629,7 +631,9 @@ export function make_a_move() {
                         }
 
                         if (piece.type_letter === 'p' || piece.type_letter === 'P') {
-                            check_if_promotion(piece, TargetSquare);
+                            if(check_if_promotion(piece, TargetSquare)){
+                                isPromotion = 1
+                            }
                             board.lastPawnMoveOrCapture = 0;
                         }
                         //kolejnosc wazna
@@ -648,7 +652,8 @@ export function make_a_move() {
                         let data = {
                             'startingSquare': StartingSquare,
                             'targetSquare': TargetSquare,
-                            'mtype': move.type
+                            'mtype': move.type,
+                            'isPromotion':isPromotion
                         }
                         sendMoveToServer(data, board.FEN);
                     }
