@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./LogRegForm.css";
@@ -10,6 +10,8 @@ import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serve
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
 import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
+import {toast} from "react-hot-toast";
+import "./ActivateAccountPopup.css"
 
 
 function LoginForm({dispatch}) {
@@ -19,7 +21,6 @@ function LoginForm({dispatch}) {
     const [twoFaCode, setTwoFaCode] = useState("");
     const [isTwoFaUsed, setIsTwoFaUsed] = useState(false);
     const [isAccountActivated, setIsAccountActivated] = useState(true);
-    const [reSentResult, setReSentResult] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
     const [forgotPassword, setForgotPassword] = useState(false);
@@ -89,15 +90,6 @@ function LoginForm({dispatch}) {
         return response['result'];
     }
 
-    async function reSentEmail() {
-        const response = await reSentActivationEmail(username);
-        setReSentResult(response['response'] === "OK" ? "Activation email has been successfully resent" :
-            `Error occurred while trying to resent activation email: ${response['response']}`);
-
-        setTimeout(() => {
-            setReSentResult("")
-        }, 2500)
-    }
 
     function AssignTwoFaCode(value) {
         if (value.length <= 6) {
@@ -105,19 +97,62 @@ function LoginForm({dispatch}) {
         }
     }
 
+    let dismissToast = (toastId)=>{
+        toast.dismiss(toastId)
+        setIsAccountActivated(true)
+    }
+
+    let resentEmail = (username,toastId)=>{
+        dismissToast(toastId)
+        reSentActivationEmail(username)
+    }
+
+    useEffect(() => {
+        //toast activate account popup
+
+        if (isAccountActivated === false) {
+            let toastDuration = 4000;
+
+
+
+            toast.custom((t) => (
+                <div className="ActivateAccountPopup">
+                    <div className="ActivateAccountPopup-text">
+                        <span>Account has not been activated!</span>
+                        <span id="secText">click the link in email to activate</span>
+                    </div>
+
+                    <div className="ActivateAccountPopup-buttons">
+                        <button id="resend" onClick={()=>resentEmail(username,t.id)}>RESEND EMAIL</button>
+                        <button id="dismiss" onClick={() => dismissToast(t.id)}>DISMISS</button>
+                    </div>
+                </div>),
+                {
+                duration: 4000
+            });
+
+            //set account activated to false after disapears
+            setTimeout(()=>setIsAccountActivated(true),toastDuration)
+        }
+
+
+    }, [isAccountActivated])
+
     return <>
         {!forgotPassword ?
             <div className="LogRegForm">
                 <Form>
-                    <Form.Control
-                        required
-                        placeholder="Username..."
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUserName(e.target.value)}
-                    />
+                    <div className="input-wrapper">
+                        <Form.Control
+                            required
+                            placeholder="Username..."
+                            type="text"
+                            value={username}
+                            onChange={(e) => setUserName(e.target.value)}
+                        />
+                    </div>
 
-                    <div className="pass-wrapper">
+                    <div className="input-wrapper">
                         <Form.Control
                             required
                             placeholder="Password..."
@@ -131,7 +166,8 @@ function LoginForm({dispatch}) {
                         >{eye}</i>
                     </div>
 
-                    {isTwoFaUsed ?
+                    {isTwoFaUsed &&
+                    <div className="input-wrapper">
                         <Form.Control
                             className="twoFaField"
                             required
@@ -139,32 +175,30 @@ function LoginForm({dispatch}) {
                             type="number"
                             value={twoFaCode}
                             onChange={(e) => AssignTwoFaCode(e.target.value)}
-                        /> : null}
+                        />
+                    </div>
+                    }
 
                     <div className="response">
                         {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
                             feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
                     </div>
 
-                    {isAccountActivated ?
-                        <div className="loginContainer">
-                            <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
-                            <a
-                                className="forgotPassword"
-                                onClick={() => setForgotPassword(true)}
-                            >Forgot password?</a>
-                        </div> :
-                        <div className="notActivatedAccountContainer">
-                            <p>Account has not been activated</p>
-                            <p>You can activate your account by clicking on link sent in email while registration</p>
-                            <Button
-                                className="resetEmailButton"
-                                onClick={reSentEmail}
-                            >Resent activation email</Button>
-                            {reSentResult !== "" ? <p>{reSentResult}</p> : null}
-                        </div>}
+                    <div className="loginContainer">
+                        <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
+                        <a
+                            className="forgotPassword"
+                            onClick={() => setForgotPassword(true)}
+                        >
+                            Forgot password?
+                        </a>
+                    </div>
+
+
                 </Form>
-            </div> : <ForgotPasswordForm/>
+            </div>
+            :
+            <ForgotPasswordForm/>
         }
     </>;
 }

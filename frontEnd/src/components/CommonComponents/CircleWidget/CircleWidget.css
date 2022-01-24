@@ -65,7 +65,7 @@
     display: block;
     text-align: center;
     font-weight: bold;
-    font-size: min(3em,5vw);
+    font-size: min(2em,3vw);
     animation: text_glow 5s infinite;
 }
 

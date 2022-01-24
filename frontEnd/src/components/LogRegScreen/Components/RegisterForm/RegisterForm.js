@@ -243,13 +243,16 @@ function RegisterForm({dispatch}) {
     return (
         <div className="LogRegForm">
             <Form>
-                <Form.Control
-                    required
-                    placeholder="Username..."
-                    type="text"
-                    value={username}
-                    onChange={(e) => checkUsername(e.target.value)}
-                />
+                <div className="input-wrapper">
+                    <Form.Control
+                        required
+                        placeholder="Username..."
+                        type="text"
+                        value={username}
+                        onChange={(e) => checkUsername(e.target.value)}
+                    />
+                </div>
+
                 <p>Must be at least
                     <span
                         style={{color: isUsernameLongEnough ? successColor : failColor}}> {minUsernameLength} characters </span>
@@ -257,7 +260,7 @@ function RegisterForm({dispatch}) {
                     <span style={{color: !usernameContainsWhitespace ? successColor : failColor}}> not contain whitespace</span> characters.
                 </p>
 
-                <div className="pass-wrapper mt2">
+                <div className="input-wrapper">
                     <Form.Control
                         required
                         placeholder="Password..."
@@ -272,6 +275,7 @@ function RegisterForm({dispatch}) {
                         {eye}
                     </i>
                 </div>
+
                 <p>Must be at least
                     <span
                         style={{color: isPasswordLongEnough ? successColor : failColor}}> {minPassLength} characters </span> long,
@@ -279,57 +283,62 @@ function RegisterForm({dispatch}) {
                     <span style={{color: passwordContainsNumber ? successColor : failColor}}> a number</span> and an
                     <span style={{color: passwordContainsUppercase ? successColor : failColor}}> uppercase letter</span>.
                 </p>
+                <div className="input-wrapper"
+                     style={{background: arePasswordsEqual ? successColor : failColor}}
+                >
+                    <Form.Control
+                        required
+                        placeholder="Confirm password..."
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => checkPasswordConfirm(e.target.value)}
 
-                <Form.Control
-                    required
-                    placeholder="Confirm password..."
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => checkPasswordConfirm(e.target.value)}
-                    style={{background: arePasswordsEqual ? successColor : failColor}}
-                />
+                    />
+                </div>
 
-                <Form.Control
-                    className="emailField"
-                    required
-                    placeholder="e-mail address..."
-                    type="text"
-                    value={email}
-                    onChange={(e) => checkEmail(e.target.value)}
-                />
+                <div className="input-wrapper emailField">
+                    <Form.Control
+                        required
+                        placeholder="e-mail address..."
+                        type="text"
+                        value={email}
+                        onChange={(e) => checkEmail(e.target.value)}
+                    />
+                </div>
 
-                {isEmailValid ?
-                    <div className="infoContainer">
-                        <Form.Check
-                            className="twoFactorAuth"
-                            type="checkbox"
-                            label="Use 2-Factor authentication"
-                            onChange={(_) => enable2FA()}
+                <div className="infoContainer">
+                    <Form.Check
+                        className="twoFactorAuth"
+                        type="checkbox"
+                        label="Use 2-Factor authentication"
+                        onChange={(_) => enable2FA()}
+                    />
+
+                    {catptcha}
+
+
+                    {(is2FaEnabled && isEmailValid) &&
+                    <>
+                        <Form.Control
+                            className="twoFaField"
+                            required
+                            placeholder="2FA code..."
+                            type="number"
+                            value={twoFaCode}
+                            onChange={(e) => AssignTwoFaCode(e.target.value)}
                         />
 
-                        {is2FaEnabled ?
-                            <>
-                                <Form.Control
-                                    className="twoFaField"
-                                    required
-                                    placeholder="2FA code..."
-                                    type="number"
-                                    value={twoFaCode}
-                                    onChange={(e) => AssignTwoFaCode(e.target.value)}
-                                />
-
-                                <div style={{
-                                    display: "flex",
-                                    alignItems: "center"
-                                }}>
-                                    <img
-                                        className="twoFaImg"
-                                        src={`data:image/jpeg;base64,${qrCode}`}
-                                    />
-                                    {catptcha}
-                                </div>
-                            </> : null}
-                    </div> : null}
+                        <div style={{
+                            display: "flex",
+                            alignItems: "center"
+                        }}>
+                            <img
+                                className="twoFaImg"
+                                src={`data:image/jpeg;base64,${qrCode}`}
+                            />
+                        </div>
+                    </>}
+                </div>
 
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                     <ul>{errorMessage}</ul>
