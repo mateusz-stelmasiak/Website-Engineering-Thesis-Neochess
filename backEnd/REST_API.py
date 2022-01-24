@@ -742,7 +742,7 @@ def get_2fa_code():
     }
 
     return generate_response(request, data, 200)
-    
+
 
 @app.route('/get_ELO_change_in_last_game', methods=['GET', 'OPTIONS'])
 def get_ELO_change_in_last_game():
@@ -934,9 +934,15 @@ def get_history():
     possible_results = {'0.0': 'loss', '0.5': 'draw', '1.0': 'win'}
     for game in game_history:
         try:
-            white = db.get_participant('White', game[0])
-            black = db.get_participant('Black', game[0])
-            numOfMoves = db.count_moves(game[0])
+            white = db.get_participant('White', game['GameID'])
+            black = db.get_participant('Black', game['GameID'])
+            numOfMoves = db.count_moves(game['GameID'])
+
+            # detect computer player
+            if black is None:
+                black = (0, 0, 0, 0.0, 'Black', '----', 'COMPUTER')
+            if white is None:
+                white = (0, 0, 0, 0.0, 'White', '---', 'COMPUTER')
 
             black_score = str(black[3])
             white_score = str(white[3])
@@ -947,12 +953,10 @@ def get_history():
             if str(white[2]) == user_id:
                 result = possible_results[white_score]
 
-            if str(white[2]) == user_id:
-                result = possible_results[white_score]
 
             # extract date info from given string
-            day_mont_year = str(game[2])[:10]
-            hour = str(game[2])[11:16]
+            day_mont_year = str(game['played'])[:10]
+            hour = str(game['played'])[11:16]
 
             match = {"matchResult": result,
                      'p1Username': str(white[6]), 'p1PlayedAs': 'White', 'p1ELO': str(white[5]),

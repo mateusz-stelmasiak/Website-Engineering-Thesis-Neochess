@@ -403,6 +403,7 @@ class ChessDB:
             sql_count = (
                 "SELECT COUNT(Games.GameID) FROM Games, Participants WHERE UserID = %s AND Games.GameMode = %s  AND Games.GameID = Participants.GameID")
             data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
+
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()

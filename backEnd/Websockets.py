@@ -131,7 +131,6 @@ def join_single_player(data):
     game_mode_id = data_obj['gameModeId']
     game_mode = game_modes[game_mode_id]
 
-
     # authorize player
     if not check_auth(request.sid, player_id):
         print("Unathorized!! ")
@@ -171,10 +170,10 @@ def join_single_player(data):
     # create gameroom and add player
     join_room(game_room_id)
 
-    #positions setup
+    # positions setup
     # TODO here generate starting fen and computer player stats
-    if str(game_mode_id) =="2":
-        chosen_postion= int(data_obj['positionId'])
+    if str(game_mode_id) == "2":
+        chosen_postion = int(data_obj['positionId'])
         chosen_starting_score = int(data_obj['posStartingScore'])
 
         starting_FEN = game_mode.game_mode_starting_FEN[chosen_postion]
@@ -185,11 +184,11 @@ def join_single_player(data):
         else:
             computer_color = 'w'
 
-        #make defender scores
+        # make defender scores
         if player_color == 'w':
-            defender_state = DefenderState(chosen_starting_score,0,0)
+            defender_state = DefenderState(chosen_starting_score, -1, 0)
         else:
-            defender_state = DefenderState(0,chosen_starting_score,0)
+            defender_state = DefenderState(-1, chosen_starting_score, 0)
 
         computer_player = Player(-1, 'Computer', 5000, computer_color)  # id, name,ELO, playing as #TODO change ELO?
         print(player_color)
@@ -203,11 +202,11 @@ def join_single_player(data):
             if player_color == 'w':
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, player, computer_player,
                                            player_color,
-                                           starting_FEN, 0, timer,defender_state=defender_state)
+                                           starting_FEN, 0, timer, defender_state=defender_state)
             else:
                 games[game_room_id] = Game(game_id, game_room_id, game_mode_id, computer_player, player,
                                            player_color,
-                                           starting_FEN, 0, timer,defender_state=defender_state)
+                                           starting_FEN, 0, timer, defender_state=defender_state)
         except Exception as ex:
             print("Creating game error " + str(ex))
             return
@@ -584,7 +583,7 @@ def place_defender_piece(data):
     spent_points = data_obj['spentPoints']
 
     # check if it's even a defender game
-    if game_info.game_mode_id != '1':
+    if str(game_info.game_mode_id) == '0':
         print("Not a defender game")
         return
 
@@ -609,11 +608,6 @@ def place_defender_piece(data):
         print("AIN't GOT THAT MANY POINTS TO SPENT BUCKO")
         return
 
-    # send move to opponent
-    opponent_sid = authorized_sockets[white_id]
-    if player_color == 'w':
-        opponent_sid = authorized_sockets[black_id]
-
     if spent_points == 0:
         games[game_room_id].defender_state.end_phase(player_color)
         games[game_room_id].defender_state.check_change_phase()
@@ -621,7 +615,7 @@ def place_defender_piece(data):
 
     # get opposite turn
     opp_turn = 'w'
-    if str(games[game_room_id].game_mode_id) == "1" or str(games[game_room_id].game_mode_id) == "2":
+    if str(games[game_room_id].game_mode_id) == "1":
         if int(games[game_room_id].defender_state.white_score) == 0 and int(
                 games[game_room_id].defender_state.black_score) == 0:
             opp_turn = 'w'
@@ -649,15 +643,35 @@ def place_defender_piece(data):
         #     opp_turn = 'b'
         # elif curr_turn == 'w':
         #     opp_turn = 'b'
-    print(curr_turn)
-    print(int(games[game_room_id].defender_state.black_score))
-    print(games[game_room_id].defender_state.white_score)
-    print("opp turn to :" + opp_turn)
+
+    # TODO MAKE GOOD @wojtek
+    if str(games[game_room_id].game_mode_id) == "2":
+
+        your_score = games[game_room_id].defender_state.white_score
+        if curr_turn == 'b':
+            your_score = games[game_room_id].defender_state.black_score
+
+        opp_turn = curr_turn
+
+        if your_score < 0:
+            if curr_turn == 'b':
+                opp_turn = 'w'
+            else:
+                opp_turn = 'b'
 
     games[game_room_id].curr_turn = opp_turn
     # update FEN with turn info
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
+
+    # only notify opponent if multiplayer,
+    if not game_modes[game_info.game_mode_id].game_mode_multiplayer:
+        return
+
+    # send move to opponent
+    opponent_sid = authorized_sockets[white_id]
+    if player_color == 'w':
+        opponent_sid = authorized_sockets[black_id]
 
     emit('place_defender_piece_local',
          {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,

@@ -162,7 +162,7 @@
 .FindGameWidget-positionsContainer .positionList span:hover{
     cursor: pointer;
     color:var(--sec-color-dark);
-    transform: scale(1.1);
+    transform: scale(1.1    );
 }
 
 /*resize play game text to fit screen*/
