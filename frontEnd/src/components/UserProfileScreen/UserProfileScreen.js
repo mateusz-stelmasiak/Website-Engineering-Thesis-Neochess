@@ -34,29 +34,29 @@ function UserProfileScreen(props) {
     let glowingStyle = {
         'all': 'unset',
         'display': 'block',
-        'text-align': 'center',
-        'font-weight': 'bold',
-        'font-size': 'min(3em, 5vw)',
+        'textAlign': 'center',
+        'fontWeight': 'bold',
+        'fontSize': 'min(3em, 5vw)',
         'animation': 'text_glow 5s infinite',
         'color': 'var(--sec-color)'
     }
 
     let sectionStyle = {
         'display': 'flex',
-        'aligin-items': 'flex-start',
-        'flex-direction': 'row',
-        'column-gap': '3rem',
-        'justify-content': 'space-between',
-        'align-content': 'space-between',
+        'alignItems': 'flex-start',
+        'flexDirection': 'row',
+        'columnGap': '3rem',
+        'justifyContent': 'space-between',
+        'alignContent': 'space-between',
         'width': '70%'
     }
 
     let containerStyle = {
         'display': 'flex',
-        'aligin-items': 'flex-start',
-        'flex-direction': 'column',
-        'row-gap': '2rem',
-        'flex-wrap': 'wrap',
+        'alignItems': 'flex-start',
+        'flexDirection': 'column',
+        'rowGap': '2rem',
+        'flexWrap': 'wrap',
         'color': 'var(--text-color)',
     }
 

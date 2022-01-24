@@ -8,7 +8,6 @@ export default function FenDisplayingBoard({props}) {
     const [squareArray, setSquareArray] = useState(undefined)
     const [FEN, setFEN] = useState("")
 
-
     let boardSize = board_width * board_height
     let squareBoard = board_width === board_height
     let percent = (100 / board_width)
@@ -20,15 +19,13 @@ export default function FenDisplayingBoard({props}) {
         'height': squareSize,
     }
 
-
     let boardStyle = {
         'width': '22rem',
         'height': '22rem',
         'backgroundColor': 'var(--body-color)'
-
     }
 
-    let clickSquare = (i)=>{
+    let clickSquare = (i) => {
     }
 
     let generateBoard = () => {
@@ -39,9 +36,9 @@ export default function FenDisplayingBoard({props}) {
 
             let squareClass = "";
             //TODO change to black
-            (j%2)=== 0 ? squareClass = "FenDisplayingBoard-square white" : squareClass = "FenDisplayingBoard-square white"
+            (j % 2) === 0 ? squareClass = "FenDisplayingBoard-square white" : squareClass = "FenDisplayingBoard-square white"
 
-            square = <div className={squareClass} style={squareStyle} onClick={()=>clickSquare(i)}/>
+            square = <div key={i} className={squareClass} style={squareStyle} onClick={() => clickSquare(i)}/>
             sqrArray.push(square);
         }
         setSquareArray(sqrArray)
@@ -50,7 +47,6 @@ export default function FenDisplayingBoard({props}) {
     useEffect(() => {
         generateBoard();
     }, [])
-
 
     return (
         <div className="FenDisplayingBoard">
@@ -61,5 +57,4 @@ export default function FenDisplayingBoard({props}) {
             </div>
         </div>
     );
-
 }
