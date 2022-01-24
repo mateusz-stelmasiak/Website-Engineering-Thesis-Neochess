@@ -69,7 +69,6 @@ function PlayGameScreen({
             setEloChange(data.eloChange)
             dispatch(setIsInGame(false));
             dispatch(setGameId(""));
-            dispatch(setCurrentPhase(0))
             setGameEnded(true);
         });
 

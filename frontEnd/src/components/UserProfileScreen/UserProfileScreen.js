@@ -17,13 +17,7 @@ function UserProfileScreen(props) {
     const [accCreated, setAccCreted] = useState(undefined);
 
     useEffect(async () => {
-<<<<<<< Updated upstream
-        const response = (await getUserData())['response']
-
-        setUsername(response['Username'])
-=======
         const response = (await getUserData())
->>>>>>> Stashed changes
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
         setAccCreted(response['Joined'])
