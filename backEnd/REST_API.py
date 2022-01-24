@@ -717,7 +717,8 @@ def get_game_info():
                 'whiteTime': game.timer.white_time,
                 'whiteScore': game.defender_state.white_score,
                 'blackScore': game.defender_state.black_score,
-                'drawProposedColor': game.draw_proposed
+                'drawProposedColor': game.draw_proposed,
+                'currentPhase': game.defender_state.phase
                 }
 
     return generate_response(request, data, 200)

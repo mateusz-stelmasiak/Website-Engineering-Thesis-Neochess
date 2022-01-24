@@ -19,7 +19,7 @@ import {
     setBlackTime,
     setWhiteTime,
     setLoadingGameInfo,
-    setWhiteScore, setBlackScore, setDrawProposedColor
+    setWhiteScore, setBlackScore, setDrawProposedColor, setCurrentPhase
 } from "../../redux/actions/gameActions";
 import {setIsInGame} from "../../redux/actions/userActions";
 import {useHistory} from "react-router-dom"
@@ -48,6 +48,7 @@ function PlayGameScreen({
                             whiteScore,
                             blackScore,
                             loadingGameInfo,
+                            currentPhase,
                         }) {
     let [gameResult, setGameResult] = useState('DRAW');
     let [eloChange, setEloChange] = useState(0);
@@ -102,6 +103,7 @@ function PlayGameScreen({
 
             await dispatch(setGameMode(response.gameMode));
             await dispatch(setCurrentFEN(response.FEN));
+            await dispatch(setCurrentPhase(response.currentPhase));
             await dispatch(setCurrentTurn(response.currentTurn));
             await dispatch(setBlackTime(response.blackTime));
             await dispatch(setWhiteTime(response.whiteTime));
@@ -198,6 +200,7 @@ function PlayGameScreen({
                                 gameMode={gameMode}
                                 whiteScore={whiteScore}
                                 blackScore={blackScore}
+                                currentPhase={currentPhase}
                             />
                         </GameContainer>
                     </>

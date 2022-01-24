@@ -50,6 +50,7 @@ export let placeDefenderPiece;
 export let whiteScore;
 export let blackScore;
 export let currentTurn;
+export let currentPhaseFromServer;
 
 
 export default function sketch(p5) {
@@ -79,12 +80,14 @@ export default function sketch(p5) {
         if (props.currentTurn) {
             currentTurn = props.currentTurn;
         }
+        if(props.currentPhase){
+            currentPhaseFromServer = props.currentPhase
+        }
     }
 
 
     p5.preload = function () {
         Font = p5.loadFont(myFont);
-        console.log(images);
         for (let key in pieces_dict) {
             let value = pieces_dict[key];
             textures[value.toUpperCase()] = p5.loadImage(images['w' + value + ".png"]);
@@ -144,10 +147,14 @@ export default function sketch(p5) {
         board = new Board(p5);
         generate_pos_to_stocknot_dict();
 
-        if (gameMode === "1" || gameMode == "2") {
+        if (gameMode === "1" || gameMode == "2" !== undefined) {
             canvas_width = game_mode_defender_width;
         }
-        console.log(canvas_width)
+
+        if(gameMode=="2" && currentPhaseFromServer){
+            board.phase = currentPhaseFromServer;
+        }
+
         canvas = p5.createCanvas(canvas_width, canvas_height, p5.WEBGL);
         if (gameMode === '0') {
             if (startingFEN !== undefined) {

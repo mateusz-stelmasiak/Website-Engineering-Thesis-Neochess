@@ -53,7 +53,6 @@ function StatsContainer({userId, sessionToken, dispatch}) {
 
 
         const resp = await getPlayerStats(userId, sessionToken);
-        if (FETCH_DEBUGGING_MODE) console.log(resp);
 
         setIsLoading(false);
 
@@ -63,8 +62,6 @@ function StatsContainer({userId, sessionToken, dispatch}) {
             setCurrentElo("Can't connect :(");
             return;
         }
-
-        console.log(resp)
 
         dispatch(setUserElo(resp.elo))
         await setCurrentElo(resp.elo);

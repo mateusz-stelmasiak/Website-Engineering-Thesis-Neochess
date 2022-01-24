@@ -64,8 +64,6 @@ function MatchHistoryItem(props) {
 
     let matchResultStyle = {'backgroundColor': matchResult.color}
 
-    console.log(matchResult.color)
-
     return (
         <>
             <MatchHistoryItemResponsive

@@ -11,7 +11,7 @@ import {
     shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn,
 } from "./Main";
 import Piece from "./Piece";
-import {Generate_moves, Generate_opponent_moves, moves} from "./moves";
+import {Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
 import {store} from "../../../index";
 
 
@@ -32,7 +32,6 @@ export default class Board {
 
         for (var key in pieces_dict) {
             i += 1;
-            console.log("XDDDDDDDDDDDDDDDDDDDDDDDDDD")
             if (playingAs === 'b') {
                 this.gameMode2_grid.push(new Piece(pieces_dict[key], this.p5, Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * i));
             } else {
@@ -50,6 +49,7 @@ export default class Board {
         this.check = 0;
         this.enPassant = "-";
         this.SetupState = 0;
+        this.phase = 0;
         this.waveFunction = 0; //used for calculating wave animation timing
     }
 
@@ -105,7 +105,6 @@ export default class Board {
         //split 3 - en passant
         temp_fen += " " + this.color_to_move + " " + this.FEN.split(' ')[2] + " " + this.enPassant + " " + this.lastPawnMoveOrCapture + " " + this.numOfMoves;
         this.FEN = temp_fen;
-        console.log("AAAAA " + temp_fen);
         this.load_FEN();
     }
 
@@ -135,7 +134,6 @@ export default class Board {
         board.grid[TargetSquare].old_x = pixel_positions[TargetSquare][0];
         board.grid[TargetSquare].old_y = pixel_positions[TargetSquare][1];
 
-        console.log(board.color_to_move)
         board.change_Turn();
         Generate_opponent_moves(board.grid);
         Generate_moves(board.grid, board.check, "after_opponent");
@@ -145,7 +143,7 @@ export default class Board {
 
     load_FEN() {
         let split_FEN = this.FEN.split(' ')
-        console.log("WITAM OTO TEST 2" + this.FEN)
+
         this.color_to_move = split_FEN[1];   //setting color to move from fen
         this.enPassant = split_FEN[3];
         for (let i = 0; i < 64; i++) {
@@ -181,7 +179,7 @@ export default class Board {
                 }
             }
         }
-        console.log("WITAM OTO TEST" + this.color_to_move)
+
 
     }
 
@@ -381,7 +379,7 @@ export default class Board {
             this.color_to_move = 'w'
         } else if (gameMode == 1  && (storeVars.whiteScore == 0)) {
             this.color_to_move = 'b'
-        } else {
+        } else if(gameMode==1){
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }
 
@@ -389,6 +387,15 @@ export default class Board {
             this.color_to_move=playingAs
         }
         else if(gameMode == 2)
+        {
+            if(this.phase !== 0){
+                this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            }else{
+                this.phase=1;
+            }
+
+        }
+        if(gameMode == 0)
         {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }

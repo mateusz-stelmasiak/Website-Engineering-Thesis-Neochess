@@ -611,12 +611,8 @@ def place_defender_piece(data):
     if not games[game_room_id].defender_state.update_score(player_color, spent_points):
         print("AIN't GOT THAT MANY POINTS TO SPENT BUCKO")
         return
-
     if spent_points == 0:
         games[game_room_id].defender_state.end_phase(player_color)
-        games[game_room_id].defender_state.check_change_phase()
-        spent_points = 1
-
     # get opposite turn
     opp_turn = 'w'
     if str(games[game_room_id].game_mode_id) == "1":
@@ -658,19 +654,29 @@ def place_defender_piece(data):
         opp_turn = curr_turn
 
         if your_score < 0:
-            if curr_turn == 'b':
-                opp_turn = 'w'
+            if games[game_room_id].defender_state.phase == 0:
+                opp_turn = curr_turn
             else:
-                opp_turn = 'b'
+                if curr_turn == 'b':
+                    opp_turn = 'w'
+                else:
+                    opp_turn = 'b'
+
+    if spent_points == 0:
+        games[game_room_id].defender_state.end_phase(player_color)
+        games[game_room_id].defender_state.check_change_phase()
+        spent_points = 1
+        print(games[game_room_id].defender_state.phase)
 
     games[game_room_id].curr_turn = opp_turn
     # update FEN with turn info
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
 
+
     # only notify opponent if multiplayer,
     if not game_modes[game_info.game_mode_id].game_mode_multiplayer:
-        return
+       return
 
     # send move to opponent
     opponent_sid = authorized_sockets[white_id]
@@ -682,88 +688,87 @@ def place_defender_piece(data):
           'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
 
 
-@socketio.on('make_AI_move')
-def make_AI_move(data):
-    data_obj = json.loads(data)
-    print(data_obj)
 
-    # authorize player
-    if not check_auth(request.sid, data_obj['playerId']):
-        print("Unathorized!! ")
-        emit('unauthorized', {'error': 'Unauthorized access'})
-        return
 
-    game_room_id = data_obj['gameroomId']
-    player_id = data_obj['playerId']
-
-    # check if the game exists at all
-    if game_room_id not in games:
-        print("NO_SUCH_GAME_EXISTS")
-        return
-
-    # check if is in the game
-    players_game = get_is_player_in_game(player_id)
-    if not players_game or players_game[0].game_room_id != game_room_id:
-        print("Player doesn't play in this game!! ")
-        emit('unauthorized', {'error': 'Unauthorized access'})
-        return
-
-    player_color = players_game[1]
-    game_info = games[game_room_id]
-    white_id = game_info.white_player.id
-    black_id = game_info.black_player.id
-    curr_turn = game_info.curr_turn
-
-    # if game_info.game_mode_id != '1':
-    #     print("Not a defender game")
+def make_AI_move(req):
+    emit('make_move_local', {"StartSquare": "8", "TargetSquare": "16", "mType": "n"}, to=req.sid)
+    # # authorize player
+    # if not check_auth(request.sid, data_obj['playerId']):
+    #     print("Unathorized!! ")
+    #     emit('unauthorized', {'error': 'Unauthorized access'})
     #     return
-
-    # # # defender game already in making moves phase
-    # if game_info.defender_state.phase != 1:
-    #     print("Defender game not in making moves phase yet")
+    #
+    # game_room_id = data_obj['gameroomId']
+    # player_id = data_obj['playerId']
+    #
+    # # check if the game exists at all
+    # if game_room_id not in games:
+    #     print("NO_SUCH_GAME_EXISTS")
     #     return
-
-    # check if it's coming from the wrong player
-    if str(curr_turn) != str(player_color):
-        # send not ur turn packet
-        print("NOT UR TURN")
-        return
-
-    curr_FEN = data_obj['FEN']
-    try:
-        new_FEN, move = ChessLogic.get_best_move(curr_FEN)
-    except Exception as ex:
-        print("STOCKFISH DIED COZ " + str(ex))
-        return
-
-    print(move)
-    emit('make_AI_move_local', move, room=game_room_id)
-
-    # update local game object
-    if game_room_id not in games:
-        print("NO_SUCH_GAME_EXISTS")
-        return
-
-    games[game_room_id].curr_FEN = new_FEN
-    move_order = game_info.num_of_moves
-    games[game_room_id].num_of_moves = move_order + 1
-    # get opposite turn
-    opp_turn = 'w'
-    if curr_turn == 'w':
-        opp_turn = 'b'
-    games[game_room_id].curr_turn = opp_turn
-
+    #
+    # # check if is in the game
+    # players_game = get_is_player_in_game(player_id)
+    # if not players_game or players_game[0].game_room_id != game_room_id:
+    #     print("Player doesn't play in this game!! ")
+    #     emit('unauthorized', {'error': 'Unauthorized access'})
+    #     return
+    #
+    # player_color = players_game[1]
+    # game_info = games[game_room_id]
+    # white_id = game_info.white_player.id
+    # black_id = game_info.black_player.id
+    # curr_turn = game_info.curr_turn
+    #
+    # # if game_info.game_mode_id != '1':
+    # #     print("Not a defender game")
+    # #     return
+    #
+    # # # # defender game already in making moves phase
+    # # if game_info.defender_state.phase != 1:
+    # #     print("Defender game not in making moves phase yet")
+    # #     return
+    #
+    # # check if it's coming from the wrong player
+    # if str(curr_turn) != str(player_color):
+    #     # send not ur turn packet
+    #     print("NOT UR TURN")
+    #     return
+    #
+    # curr_FEN = data_obj['FEN']
     # try:
-    #     game_id = game_info.game_id
-    #     db = ChessDB.ChessDB()
-    #     db.add_move(game_id, str(curr_turn).upper(), move_order, move)
+    #     new_FEN, move = ChessLogic.get_best_move(curr_FEN)
     # except Exception as ex:
-    #     print("DB ERROR" + str(ex))
-
-    # check for checkmates
-    is_mate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
-    if is_mate:
-        finish_game(game_info, curr_turn)
+    #     print("STOCKFISH DIED COZ " + str(ex))
+    #     return
+    #
+    # print(move)
+    # emit('make_AI_move_local', move, room=game_room_id)
+    #
+    # # update local game object
+    # if game_room_id not in games:
+    #     print("NO_SUCH_GAME_EXISTS")
+    #     return
+    #
+    # games[game_room_id].curr_FEN = new_FEN
+    # move_order = game_info.num_of_moves
+    # games[game_room_id].num_of_moves = move_order + 1
+    # # get opposite turn
+    # opp_turn = 'w'
+    # if curr_turn == 'w':
+    #     opp_turn = 'b'
+    # games[game_room_id].curr_turn = opp_turn
+    #
+    # # try:
+    # #     game_id = game_info.game_id
+    # #     db = ChessDB.ChessDB()
+    # #     db.add_move(game_id, str(curr_turn).upper(), move_order, move)
+    # # except Exception as ex:
+    # #     print("DB ERROR" + str(ex))
+    #
+    # # check for checkmates
+    # is_mate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
+    # if is_mate:
+    #     finish_game(game_info, curr_turn)
 
 
 @socketio.on('make_move')

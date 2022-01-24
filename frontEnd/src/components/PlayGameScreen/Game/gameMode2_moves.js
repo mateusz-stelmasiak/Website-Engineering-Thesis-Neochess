@@ -27,7 +27,6 @@ export function add_piece() {
         if (piece.dragging === 1 && piece.type_letter !== 'e' && piece.type_letter !== 'k' && piece.type_letter !== 'K') {
             let Target_Square_position = piece.get_closest_position();
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
-            console.log(TargetSquare)
             if (Target_Square_position[0] !== -1 && playingAs === board.color_to_move&&Is_On_Good_Square(TargetSquare)) {
                 if (board.grid[TargetSquare].type_letter === 'e') {
                     board.SetupState -= parseInt(points_dict[piece.type_letter], 10);
@@ -43,9 +42,6 @@ export function add_piece() {
         if (piece.dragging === 1 && piece.type_letter !== 'e' && board.SetupState === 0) {
             let Target_Square_position = piece.get_closest_position();
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
-            console.log(playingAs);
-            console.log(board.color_to_move)
-            console.log(playingAs === board.color_to_move)
             if (Target_Square_position[0] !== -1 && playingAs === board.color_to_move&&Is_On_Good_Square(TargetSquare)) {
                 if (board.grid[TargetSquare].type_letter === 'e') {
                     let clonedPiece = new Piece(piece.type_letter, board.p5, 100, 100);

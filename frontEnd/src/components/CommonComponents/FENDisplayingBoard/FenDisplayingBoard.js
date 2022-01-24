@@ -29,7 +29,6 @@ export default function FenDisplayingBoard({props}) {
     }
 
     let clickSquare = (i)=>{
-        console.log("CLICKED "+i)
     }
 
     let generateBoard = () => {
@@ -41,7 +40,7 @@ export default function FenDisplayingBoard({props}) {
             let squareClass = "";
             //TODO change to black
             (j%2)=== 0 ? squareClass = "FenDisplayingBoard-square white" : squareClass = "FenDisplayingBoard-square white"
-            console.log(squareClass)
+
             square = <div className={squareClass} style={squareStyle} onClick={()=>clickSquare(i)}/>
             sqrArray.push(square);
         }

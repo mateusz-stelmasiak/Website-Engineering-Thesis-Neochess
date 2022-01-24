@@ -22,7 +22,7 @@ export async function getSessionToken() {
         const response = await fetchWithTimeout(API_URL + '/refresh_session?userId='+userId, requestOptions);
         const respBody= await response.text();
         const respObj = JSON.parse(respBody);
-        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+
 
         //save gotten session token to store
         if(response.status===200){
@@ -35,8 +35,7 @@ export async function getSessionToken() {
         return respObj;
 
     } catch (error) {
-        console.log(error);
-        console.log(error.name === 'AbortError');
+
         return undefined;
     }
 }
@@ -60,10 +59,8 @@ export async function getMatchHistory(userId,sessionToken,page,perPage) {
 
         const response = await fetchWithTimeout(API_URL + '/match_history?userId=' + userId +'&page='+page+'&perPage='+perPage, requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
     }
 }
 
@@ -84,10 +81,8 @@ export async function getGameIsInGame(userId,sessionToken){
 
         const response = await fetchWithTimeout(API_URL + '/is_in_game?userId=' + userId, requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
     }
 }
 
@@ -109,7 +104,7 @@ export async function getEloChangeInLastGames(userId, sessionToken) {
 
         const response = await fetchWithTimeout(API_URL + '/get_ELO_change_in_last_game?userId='+userId, requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
+
         return respObj;
     } catch (error) {
         console.log(error.name === 'AbortError');
@@ -135,7 +130,7 @@ export async function getGameInfo(gameRoomId, sessionToken) {
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
+
     }
 }
 
@@ -156,10 +151,10 @@ export async function getPlayerStats(userId,sessionToken) {
 
         const response = await fetchWithTimeout(API_URL + '/player_stats?userId=' + userId, requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
+
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
+
     }
 }
 
@@ -176,7 +171,7 @@ export async function get2FaCode(email) {
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return responseObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -195,7 +190,7 @@ export async function getAvailableGameModes(sessionToken){
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
+
     }
 }
 
@@ -203,7 +198,7 @@ export async function getAvailableGameModes(sessionToken){
 export async function fetchWithTimeout(resource, options) {
     const {timeout = 8000} = options;
 
-    console.log(resource)
+
 
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
