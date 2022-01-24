@@ -1,5 +1,8 @@
+import base64
 from datetime import date
 import mysql.connector
+import pyotp
+
 import RatingSystem
 import random
 
@@ -222,7 +225,7 @@ class ChessDB:
         mycursor.close()
         return ELO_change
 
-    def update_user(self, user, new_user_data_json):
+    def update_user(self, user, new_user_data_json, mail_service):
         mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
@@ -246,6 +249,9 @@ class ChessDB:
             mycursor.execute(sql_remove_codes, data_remove)
         elif not user['2FA'] and is_2_fa_enabled:
             self.add_recovery_codes(user_id, new_user_data_json['hashedRecoveryCodes'])
+            otp_secret = base64.b32encode(email.encode('ascii'))
+            otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+            mail_service.send_qr_code(user['Username'], email, otp_url, otp_secret.decode('utf-8'))
 
         sql_update_query = ("""UPDATE Users SET
                                 Password = %s,

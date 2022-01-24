@@ -494,7 +494,7 @@ def update_user():
                 "response": "Incorrect password"
             }, 403)
 
-        db.update_user(user, request_data)
+        db.update_user(user, request_data, mail)
 
         return generate_response(request, {
             "response": "OK"
