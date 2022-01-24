@@ -485,16 +485,20 @@ def finish_game(game_info, win_color):
     except Exception as ex:
         print("DB ERROR " + str(ex))
 
-    # if it was a single player game, player always white
+    # if it was a single player game
     if not game_multiplayer:
-        white_sid = authorized_sockets[game_info.white_player.id]
+
+        if game_info.white_player.id in authorized_sockets:
+            player_sid = authorized_sockets[game_info.white_player.id]
+        elif game_info.black_player.id in authorized_sockets:
+            player_sid = authorized_sockets[game_info.black_player.id]
 
         if win_color_upper_letter == "W":
-            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=white_sid)
+            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=player_sid)
         elif win_color_upper_letter == "B":
-            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=white_sid)
+            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=player_sid)
         else:
-            emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=white_sid)
+            emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=player_sid)
 
         return
 
