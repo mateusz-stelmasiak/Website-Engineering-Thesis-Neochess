@@ -6,6 +6,12 @@ import {GAME_DEBUGING_MODE} from "../App";
 import {disconnectSocket, setSocketStatus} from "../redux/actions/socketActions";
 import {SocketStatus} from "./WebSocket";
 
+function hashRecoveryCodes(recoveryCodes) {
+    let hashedRecoveryCodes = [];
+    recoveryCodes.forEach(c => hashedRecoveryCodes.push(sha256(c)))
+    return hashedRecoveryCodes
+}
+
 export async function login(username, password, two_fa_code) {
     try {
         let hashedPassword = sha256(password);
@@ -227,9 +233,11 @@ export async function setNewPassword(token, newPassword) {
     }
 }
 
-export async function register(username, password, captcha, email, is2FaEnabled) {
+export async function register(username, password, captcha, email, is2FaEnabled, recoveryCodes) {
     try {
-        let hashedPassword = sha256(password);
+        const hashedPassword = sha256(password);
+        const hashedRecoveryCodes = hashRecoveryCodes(recoveryCodes);
+
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
@@ -239,7 +247,8 @@ export async function register(username, password, captcha, email, is2FaEnabled)
                 hashedPassword,
                 email,
                 is2FaEnabled,
-                captcha
+                captcha,
+                hashedRecoveryCodes
             })
         };
 

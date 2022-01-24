@@ -27,6 +27,7 @@ function RegisterForm({dispatch}) {
     const [isLoadingShown, setIsLoadingShown] = useState(false);
     const [isActivateAccountInfoShown, setIsActivateAccountInfoShown] = useState(false);
     const [reSentResult, setReSentResult] = useState("");
+    const [recoveryCodes, _] = useState(generateRecoveryCodes());
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -76,6 +77,21 @@ function RegisterForm({dispatch}) {
 
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
+
+    function generateRecoveryCodes() {
+        const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?";
+        let recoveryCodes = [];
+
+        for (let i = 0; i < 16; i++) {
+            let code = ""
+
+            for (let j = 0; j < 16; j++) {
+                code += alphabet.charAt(Math.floor(Math.random() * alphabet.length))
+            }
+            recoveryCodes.push(code);
+        }
+        return recoveryCodes;
+    }
 
     //checks for all errors in data
     function validateData() {
@@ -181,46 +197,40 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        const resp = await register(username, password, captchaValue, email, is2FaEnabled);
+        const resp = await register(username, password, captchaValue, email, is2FaEnabled, recoveryCodes);
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
         }
 
-        //autologin after successful register
         if (is2FaEnabled) {
+            console.log(recoveryCodes);
+            //TODO show recovery codes
+
             if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                await ForwardAfterLogin(await login(username, password, twoFaCode));
+                await ForwardAfterRegister(await login(username, password, twoFaCode));
             }
         } else {
-            await ForwardAfterLogin(await login(username, password, ""));
+            await ForwardAfterRegister(await login(username, password, ""));
         }
     }
 
     async function CheckTwoFaCode() {
         const response = await check2FaCode(twoFaCode, username)
-
         if (!response['result']) {
             setErrorMessage("Two authentication code is incorrect. Go to login page and try again");
         }
-
         return response['result'];
     }
 
-    async function ForwardAfterLogin(resp) {
+    async function ForwardAfterRegister(resp) {
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
         }
         setIsActivateAccountInfoShown(true);
         setIsLoadingShown(false);
-    }
-
-    function AssignTwoFaCode(value) {
-        if (value.length <= 6) {
-            setTwoFaCode(value);
-        }
     }
 
     async function reSentEmail() {
@@ -313,9 +323,9 @@ function RegisterForm({dispatch}) {
                                     className="twoFaField"
                                     required
                                     placeholder="2FA code..."
-                                    type="number"
+                                    type="text"
                                     value={twoFaCode}
-                                    onChange={(e) => AssignTwoFaCode(e.target.value)}
+                                    onChange={(e) =>  setTwoFaCode(e.target.value)}
                                 />
 
                                 <div style={{

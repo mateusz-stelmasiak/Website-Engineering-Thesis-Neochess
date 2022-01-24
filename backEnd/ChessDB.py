@@ -20,7 +20,7 @@ class ChessDB:
                                             password="YhuuFd6Z",
                                             database="13748919_neochess")
 
-        self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?"
 
     def __del__(self):
         self.mydb.close()
@@ -48,6 +48,12 @@ class ChessDB:
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             ELOVolatility FLOAT not null DEFAULT ''' + str(
             RatingSystem.starting_ELO_volatility) + ''' );''')
+
+        mycursor.execute('''create table if not exists TwoFaRecoveryCodes
+                            (CodeID Integer primary key AUTO_INCREMENT,
+                            userID Integer not null,
+                            Code varchar(64) not null,
+                            Foreign key (userID) references Users(userID) on delete cascade);''')
 
         mycursor.execute('''CREATE table if not exists Participants
                             (ParticipantID integer primary key AUTO_INCREMENT, 
@@ -99,7 +105,19 @@ class ChessDB:
 
         return True if user is not None else False
 
-    def add_user(self, username, password, email, is2FaEnabled, otp_secret, elo, elo_dv, elo_v):
+    def add_recovery_codes(self, user_id, recovery_codes):
+        mycursor = self.mydb.cursor(dictionary=True)
+
+        for recovery_code in recovery_codes:
+            sql_codes = ("INSERT INTO TwoFaRecoveryCodes (Code, userID) VALUES (%s, %s)")
+            data_code = (recovery_code, user_id)
+
+            mycursor.execute(sql_codes, data_code)
+
+        self.mydb.commit()
+        mycursor.close()
+
+    def add_user(self, username, password, email, is2FaEnabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
@@ -110,9 +128,13 @@ class ChessDB:
         salt = self.get_salt()
         data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
                      otp_secret, date, elo, elo_dv, elo_v)
+
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()
+
+        if is2FaEnabled:
+            self.add_recovery_codes(mycursor.lastrowid, recovery_codes)
 
     def remove_user(self, user_id):
         mycursor = self.mydb.cursor(buffered=True, dictionary=True)
@@ -270,6 +292,17 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
+    def get_user_recovery_codes_by_id(self, user_id):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
+
+        sql_find = ("SELECT Code FROM TwoFaRecoveryCodes WHERE TwoFaRecoveryCodes.userID = %s")
+
+        data_find = (user_id,)
+        mycursor.execute(sql_find, data_find)
+        user_codes = mycursor.fetchall()
+        mycursor.close()
+        return user_codes
+
     def get_user_by_email(self, email):
         mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
@@ -282,40 +315,24 @@ class ChessDB:
         mycursor.close()
         return user_data
 
-    def get_user(self, username, email=None):
+    def get_user(self, data):
         mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
-        sql_find = ("SELECT * FROM Users WHERE Users.Username = %s")
+        sql_find = ("SELECT * FROM Users WHERE Users.Username = %s OR Users.Email = %s")
 
-        data_find = (username,)
+        data_find = (data, data)
         mycursor.execute(sql_find, data_find)
-        user_data = mycursor.fetchone()
-
-        if email is None:
-            return user_data
-
-        result = {
-            "username": True if user_data is not None else False
-        }
-
-        if not result['username']:
-            sql_find = ("SELECT * FROM Users WHERE Users.Email = %s")
-
-            data_find = (email,)
-            mycursor.execute(sql_find, data_find)
-            result = {
-                "email": True if mycursor.fetchone() is not None else False
-            }
-
+        result = mycursor.fetchone()
         mycursor.close()
+
         return result
 
-    def get_user_by_id(self, userId):
+    def get_user_by_id(self, user_id):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_find = ("SELECT * FROM Users WHERE Users.userID = %s")
 
-        data_find = (userId,)
+        data_find = (user_id,)
         mycursor.execute(sql_find, data_find)
         result = mycursor.fetchone()
         mycursor.close()
@@ -405,7 +422,7 @@ class ChessDB:
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
         mycursor.close()
-        
+
         return result
 
     def count_wins(self, user_id, game_mode=0):

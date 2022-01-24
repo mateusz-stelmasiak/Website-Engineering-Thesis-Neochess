@@ -99,12 +99,6 @@ function LoginForm({dispatch}) {
         }, 2500)
     }
 
-    function AssignTwoFaCode(value) {
-        if (value.length <= 6) {
-            setTwoFaCode(value);
-        }
-    }
-
     return <>
         {!forgotPassword ?
             <div className="LogRegForm">
@@ -136,9 +130,9 @@ function LoginForm({dispatch}) {
                             className="twoFaField"
                             required
                             placeholder="2FA code..."
-                            type="number"
+                            type="text"
                             value={twoFaCode}
-                            onChange={(e) => AssignTwoFaCode(e.target.value)}
+                            onChange={(e) => setTwoFaCode(e.target.value)}
                         /> : null}
 
                     <div className="response">
