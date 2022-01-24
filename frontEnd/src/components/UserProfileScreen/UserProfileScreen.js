@@ -84,11 +84,11 @@ function UserProfileScreen(props) {
             </Section>
             <Section id="UserProfileEdition">
                 {are_fields_correct() &&
-                    <UserEditForm
-                        username={props.username}
-                        email={email}
-                        is2FaEnabled={is2FaEnabled}
-                    />}
+                <UserEditForm
+                    username={props.username}
+                    email={email}
+                    is2FaEnabled={is2FaEnabled}
+                />}
             </Section>
         </FooterHeaderWithMarginsLayout>
     );
