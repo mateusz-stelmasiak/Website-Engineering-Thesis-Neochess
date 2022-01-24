@@ -41,6 +41,8 @@ function RegisterForm({dispatch}) {
     const [recoveryCodes, setRecoveryCodes] = useState([]);
     const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
     let checkBoxRef = React.createRef();
+    const successColor = 'var(--success-color)';
+    const failColor = 'var(--fail-color)';
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -377,7 +379,7 @@ function RegisterForm({dispatch}) {
                         onChange={(_) => enable2FA()}
                     />
 
-                    {catptcha}
+                    {!isActivateAccountInfoShown && catptcha}
 
 
                     {show2FaPopup &&
