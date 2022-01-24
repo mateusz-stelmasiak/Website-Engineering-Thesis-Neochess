@@ -8,8 +8,6 @@ function MatchHistoryItemResponsive(props) {;
         'backgroundColor': props.color,
         'filter': 'drop-shadow(0 0 0.4rem ' + props.color + ')'
     }
-    console.log("A TUTAJ ");
-    console.log(props.color);
 
     let toggleMoreData = () => {
         setShowMore(!showMore);

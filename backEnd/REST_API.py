@@ -443,9 +443,7 @@ def get_user_details():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
 
-        return generate_response(request, {
-            "response": user
-        }, 200)
+        return generate_response(request, user, 200)
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"
@@ -534,6 +532,7 @@ def resent_activation_email():
         return generate_response(request, {
             "result": ex
         }, 503)
+
 
 
 @app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
@@ -727,7 +726,8 @@ def get_game_info():
                 'whiteTime': game.timer.white_time,
                 'whiteScore': game.defender_state.white_score,
                 'blackScore': game.defender_state.black_score,
-                'drawProposedColor': game.draw_proposed
+                'drawProposedColor': game.draw_proposed,
+                'currentPhase': game.defender_state.phase
                 }
 
     return generate_response(request, data, 200)

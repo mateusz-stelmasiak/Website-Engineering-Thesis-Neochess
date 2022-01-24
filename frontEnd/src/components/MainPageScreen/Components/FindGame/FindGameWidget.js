@@ -85,7 +85,6 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         let cachedGames = sessionStorage.getItem('gameModes');
         if (cachedGames) {
             cachedGames = JSON.parse(cachedGames);
-            console.log(cachedGames);
             setGameModeButtons(cachedGames);
         }
 
@@ -202,7 +201,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                 }}
                                 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
                             >
-                                {console.log(gameMode.gameModeMultiplayer)}
+
                                 {gameMode.gameModeMultiplayer == true ?
                                     <FontAwesomeIcon icon={faChess}
                                                      style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>

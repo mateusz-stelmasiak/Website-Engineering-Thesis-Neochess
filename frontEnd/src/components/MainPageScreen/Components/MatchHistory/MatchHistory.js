@@ -68,8 +68,6 @@ function MatchHistory(props) {
         for (let i in cachedMatches)
             result.push([i, cachedMatches [i]]);
 
-        console.log(result);
-
         let keyGenerator = -1;
         let matchHistoryArray = [];
 

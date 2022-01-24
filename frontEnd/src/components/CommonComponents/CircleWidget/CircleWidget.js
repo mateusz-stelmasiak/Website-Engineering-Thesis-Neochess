@@ -63,8 +63,6 @@ export default function CircleWidget(props) {
     useEffect(() => {
         if (!props.renderWithContent) {
             if (!props.navigation) return;
-            console.log("VIEWS")
-            console.log(props.views)
             let tmp = props.navigation.map((navButton, index) => {
                     return (
                         <a key={index} onClick={() => changeView(index)}>

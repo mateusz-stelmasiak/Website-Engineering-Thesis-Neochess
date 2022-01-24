@@ -24,8 +24,6 @@ export default class Piece {
         this.p5 = p5;
         this.did_move = 0;
         this.color = "none";
-
-        // console.log(Object.keys(pieces_dict).find(key => pieces_dict[key] === type))
         this.type_letter = type;
         type = type.toLowerCase();
         this.type = Object.keys(pieces_dict).find(key => pieces_dict[key] === type);

@@ -45,8 +45,6 @@ export async function login(username, password, two_fa_code) {
         return respObj;
 
     } catch (error) {
-        console.log(error);
-        console.log(error.name === 'AbortError');
         return {error: 'Network connection error'};
     }
 }
@@ -76,7 +74,7 @@ export async function getUserData() {
         if (FETCH_DEBUGGING_MODE) console.log(response);
         return responseObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -115,7 +113,7 @@ export async function deleteUserAccount(password, twoFaCode, isTwoFaEnabled) {
         if (FETCH_DEBUGGING_MODE) console.log(respObj);
         return respObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -156,10 +154,10 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
 
         const response = await fetchWithTimeout(API_URL + '/update?id=' + userId, requestOptions);
         const respObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+
         return respObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -173,10 +171,10 @@ export async function reSentActivationEmail(data) {
 
         const response = await fetchWithTimeout(API_URL + '/resent?data=' + data, requestOptions);
         const responseObj = await handleResponse(response);
-        if (FETCH_DEBUGGING_MODE) console.log(response);
+
         return responseObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -195,12 +193,11 @@ export async function check2FaCode(code, username) {
         const response = await fetchWithTimeout(API_URL + '/check2Fa', requestOptions);
         const respObj = await handleResponse(response);
 
-        if (FETCH_DEBUGGING_MODE) console.log(respObj);
 
         return respObj;
 
     } catch (error) {
-        console.log(error);
+
     }
 }
 
@@ -219,7 +216,6 @@ export async function sendResetPassword(email) {
 
         return responseObj;
     } catch (error) {
-        console.log(error)
     }
 }
 
@@ -244,7 +240,7 @@ export async function setNewPassword(token, newPassword) {
 
         return respObj;
     } catch (error) {
-        console.log(error)
+
     }
 }
 
@@ -272,7 +268,7 @@ export async function register(username, password, captcha, email, is2FaEnabled,
         if (FETCH_DEBUGGING_MODE) console.log(respObj);
         return respObj;
     } catch (error) {
-        console.log(error.name === 'AbortError');
+
         return {error: 'Network connection error'};
     }
 }
@@ -301,9 +297,9 @@ export async function logout() {
         const response = await fetchWithTimeout(API_URL + '/logout?userId=' + userId, requestOptions);
         const respBody = await response.text();
         const respObj = JSON.parse(respBody);
-        if (FETCH_DEBUGGING_MODE) console.log(respObj);
+
     } catch (error) {
-        console.log(error);
+
     }
 
     localStorage.clear();

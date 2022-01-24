@@ -19,7 +19,8 @@ export const gameInitialState = {
     loadingGameInfo:true,
     whiteScore:'0',
     blackScore:'0',
-    drawProposedColor:null
+    drawProposedColor:null,
+    currentPhase:sessionStorage.getItem('currentPhase')
 };
 
 export default function gameInfoReducer(state = gameInitialState, action) {
@@ -46,6 +47,9 @@ export default function gameInfoReducer(state = gameInitialState, action) {
         case actions.SET_CURRENT_TURN:
             sessionStorage.setItem('currentTurn', action.payload)
             return {...state, currentTurn: action.payload}
+        case actions.SET_CURRENT_PHASE:
+            sessionStorage.setItem('currentPhase', action.payload)
+            return {...state, currentPhase: action.payload}
         case actions.FLIP_CURRENT_TURN:
             let nextTurn;
 
@@ -82,6 +86,7 @@ export default function gameInfoReducer(state = gameInitialState, action) {
             return {...state, loadingGameInfo:action.payload}
         case actions.SET_DRAW_PROPOSED_COLOR:
             return {...state, drawProposedColor:action.payload}
+
         default:
             return state
     }

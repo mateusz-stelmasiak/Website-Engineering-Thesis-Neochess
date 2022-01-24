@@ -18,7 +18,8 @@ function UserProfileScreen(props) {
 
     useEffect(async () => {
         const response = (await getUserData())['response']
-
+        console.log('curr data')
+        console.log(response)
         setUsername(response['Username'])
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
