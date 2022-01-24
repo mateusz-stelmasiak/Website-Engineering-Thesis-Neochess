@@ -255,7 +255,7 @@ function RegisterForm({dispatch}) {
 
     return <>
         <Modal
-            show={true}
+            show={showRecoveryCodes}
             backdrop="static"
             keyboard={false}
             centered={true}
@@ -289,7 +289,10 @@ function RegisterForm({dispatch}) {
                 </div>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary">Understood</Button>
+                <Button
+                    variant="primary"
+                    onClick={() => setShowRecoveryCodes(false)}
+                >Understood</Button>
             </Modal.Footer>
         </Modal>
 
