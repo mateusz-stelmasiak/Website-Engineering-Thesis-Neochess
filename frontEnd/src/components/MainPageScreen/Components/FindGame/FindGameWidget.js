@@ -246,6 +246,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                             }
                         )
                     }
+
                 </div>
             </div>
             }

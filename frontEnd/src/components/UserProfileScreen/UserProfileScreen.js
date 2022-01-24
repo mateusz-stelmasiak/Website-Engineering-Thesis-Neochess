@@ -7,6 +7,8 @@ import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayo
 import UserEditForm from "../Header/Components/UserEdit/UserEdit";
 import React, {useEffect, useState} from "react";
 import {getUserData} from "../../serverCommunication/LogRegService";
+import Dots from "../CommonComponents/Dots/Dots";
+import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
 
 
 function UserProfileScreen(props) {
@@ -28,17 +30,66 @@ function UserProfileScreen(props) {
             && is2FaEnabled !== undefined
     }
 
+    let glowingStyle = {
+        'all': 'unset',
+        'display': 'block',
+        'text-align': 'center',
+        'font-weight': 'bold',
+        'font-size': 'min(3em, 5vw)',
+        'animation': 'text_glow 5s infinite',
+        'color': 'var(--sec-color)'
+    }
+
+    let sectionStyle = {
+        'display': 'flex',
+        'aligin-items': 'flex-start',
+        'flex-direction': 'row',
+        'column-gap': '3rem',
+        'justify-content': 'space-between',
+        'align-content': 'space-between',
+        'width': '70%'
+    }
+
+    let containerStyle = {
+        'display': 'flex',
+        'aligin-items': 'flex-start',
+        'flex-direction': 'column',
+        'row-gap': '2rem',
+        'flex-wrap': 'wrap',
+        'color': 'var(--text-color)',
+    }
+
+
     return (
-        <FooterHeaderWithMarginsLayout>
-            <Section>
-                <SectionTitle>MANAGE ACCOUNT</SectionTitle>
+        <FooterHeaderWithMarginsLayout className="UserProfileScreen">
+            <SectionTitle>MANAGE ACCOUNT</SectionTitle>
+
+            <Section id="UserProfileScreen">
+                <div style={sectionStyle} className="CurrentInfo-container">
+
+                    <div style={containerStyle}>
+                        <h1 style={glowingStyle}>CURRENT INFO</h1>
+                        <span className="container"><h3>Username</h3><span>{props.username}</span></span>
+                        <span className="container"><h3>Acc created</h3><span><Dots>loading</Dots></span></span>
+                        <span className="container"><h3>Email address</h3><span><Dots>loading</Dots></span></span>
+                    </div>
+
+                    <FenDisplayingBoard/>
+                </div>
+
             </Section>
-            {are_fields_correct() ?
-                <UserEditForm
-                    username={username}
-                    email={email}
-                    is2FaEnabled={is2FaEnabled}
-                /> : null}
+
+            <Section id="UserProfileEdition">
+                {are_fields_correct() ?
+                    <UserEditForm
+                        username={username}
+                        email={email}
+                        is2FaEnabled={is2FaEnabled}
+                    /> : null}
+
+            </Section>
+
+
         </FooterHeaderWithMarginsLayout>
     );
 }

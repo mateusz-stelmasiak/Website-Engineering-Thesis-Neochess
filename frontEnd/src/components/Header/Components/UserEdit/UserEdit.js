@@ -202,125 +202,136 @@ function UserEditForm(props) {
 
     return <>
         <div className="UserEditForm">
-            <h1 className="UserAccountDetailsLabel">USER: {props.username}</h1>
+            <h1 className="UserAccountDetailsLabel">Edit Account</h1>
             <Form>
                 <div className="EditFormContainer">
-                    <div className="PasswordEmailContainer">
-                        <div className="PasswordContainer">
-                            <div className="pass-wrapper mt2">
-                                <Form.Control
-                                    style={{marginBottom: "25px"}}
-                                    required
-                                    placeholder="Current password..."
-                                    type={passwordShown ? "text" : "password"}
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                />
-                                <i
-                                    onClick={togglePasswordVisiblity}
-                                    style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
-                                >
-                                    {eye}
-                                </i>
-                            </div>
-                            <div className="pass-wrapper mt2">
-                                <Form.Control
-                                    required
-                                    placeholder="New password..."
-                                    type={passwordShown ? "text" : "password"}
-                                    value={newPassword}
-                                    onChange={(e) => checkNewPassword(e.target.value)}
-                                />
-                                <i
-                                    onClick={togglePasswordVisiblity}
-                                    style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
-                                >
-                                    {eye}
-                                </i>
-                            </div>
 
-                            <p>Must be at least
-                                <span
-                                    style={{color: isPasswordLongEnough ? successColor : failColor}}> {minPassLength} characters </span> long,
-                                include
-                                <span
-                                    style={{color: passwordContainsNumber ? successColor : failColor}}> a number</span> and
-                                an
-                                <span
-                                    style={{color: passwordContainsUppercase ? successColor : failColor}}> uppercase letter</span>.
-                            </p>
+                    <div className="EditContainer InfoContainer">
+                        <h2>Change Password</h2>
 
+                        <div className="pass-wrapper mt2">
                             <Form.Control
+                                style={{marginBottom: "25px"}}
                                 required
-                                placeholder="Confirm new password..."
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => checkPasswordConfirm(e.target.value)}
-                                style={{background: arePasswordsEqual ? successColor : failColor}}
+                                placeholder="Current password..."
+                                type={passwordShown ? "text" : "password"}
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
                             />
-                            <Button
-                                className="ButtonStyle"
-                                onClick={handlePasswordChange} type="submit"
-                            >Change password</Button>
+                            <i
+                                onClick={togglePasswordVisiblity}
+                                style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
+                            >
+                                {eye}
+                            </i>
                         </div>
-                        <div className="EmailAddressContainer">
+                        <div className="pass-wrapper mt2">
                             <Form.Control
-                                className="emailField"
                                 required
-                                placeholder="New e-mail address..."
-                                type="text"
-                                value={email}
-                                onChange={(e) => checkEmail(e.target.value)}
+                                placeholder="New password..."
+                                type={passwordShown ? "text" : "password"}
+                                value={newPassword}
+                                onChange={(e) => checkNewPassword(e.target.value)}
                             />
-                            <Form.Control
-                                className="emailField"
-                                required
-                                placeholder="Confirm new e-mail address..."
-                                type="text"
-                                value={confirmEmail}
-                                style={{background: areEmailsEqual ? successColor : failColor}}
-                                onChange={(e) => checkEmailConfirm(e.target.value)}
-                            />
-                            <Button
-                                className="ButtonStyle"
-                                onClick={handleEmailChange} type="submit"
-                            >Change email</Button>
+                            <i
+                                onClick={togglePasswordVisiblity}
+                                style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
+                            >
+                                {eye}
+                            </i>
                         </div>
+
+                        <p>Must be at least
+                            <span
+                                style={{color: isPasswordLongEnough ? successColor : failColor}}> {minPassLength} characters </span> long,
+                            include
+                            <span
+                                style={{color: passwordContainsNumber ? successColor : failColor}}> a number</span> and
+                            an
+                            <span
+                                style={{color: passwordContainsUppercase ? successColor : failColor}}> uppercase letter</span>.
+                        </p>
+
+                        <Form.Control
+                            required
+                            placeholder="Confirm new password..."
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => checkPasswordConfirm(e.target.value)}
+                            style={{background: arePasswordsEqual ? successColor : failColor}}
+                        />
+                        <Button
+                            className="ButtonStyle"
+                            onClick={handlePasswordChange} type="submit"
+                        >Change password</Button>
+
+
                     </div>
-                    <div className="TwoFaDeleteContainer">
-                        <div className="TwoFaContainer">
-                            <Form.Check
-                                type="checkbox"
-                                label="Use 2-Factor authentication"
-                                onChange={(_) => enable2FA()}
-                                checked={is2FaEnabled}
-                            />
-                            {is2FaEnabled ?
-                                <>
-                                    {!props.is2FaEnabled ?
-                                        <Form.Control
-                                            className="twoFaForm"
-                                            required
-                                            placeholder="2FA code..."
-                                            type="number"
-                                            value={twoFaCode}
-                                            onChange={(e) => AssignTwoFaCode(e.target.value)}
-                                        /> : null}
-                                    <img
-                                        className="twoFaImg"
-                                        src={`data:image/jpeg;base64,${qrCode}`}
-                                        alt="qr_code"
-                                    />
-                                </> : null}
-                            <Button
-                                onClick={handleSubmit} type="submit"
-                                style={{marginLeft: "20px"}}
-                            >Change 2FA</Button>
-                        </div>
+
+                    <div className="InfoContainer EmailAddressContainer">
+                        <h2>Change Email Adress</h2>
+                        <Form.Control
+                            className="emailField"
+                            required
+                            placeholder="New e-mail address..."
+                            type="text"
+                            value={email}
+                            onChange={(e) => checkEmail(e.target.value)}
+                        />
+                        <Form.Control
+                            className="emailField"
+                            required
+                            placeholder="Confirm new e-mail address..."
+                            type="text"
+                            value={confirmEmail}
+                            style={{background: areEmailsEqual ? successColor : failColor}}
+                            onChange={(e) => checkEmailConfirm(e.target.value)}
+                        />
+                        <Button
+                            className="ButtonStyle"
+                            onClick={handleEmailChange} type="submit"
+                        >Change email</Button>
+                    </div>
+
+                    <div className="InfoContainer TwoFaContainer">
+                        <h2>Change 2FA Settings</h2>
+                        <Form.Check
+                            type="checkbox"
+                            label="Use 2-Factor authentication"
+                            onChange={(_) => enable2FA()}
+                            checked={is2FaEnabled}
+                        />
+                        {is2FaEnabled ?
+                            <>
+                                {!props.is2FaEnabled ?
+                                    <Form.Control
+                                        className="twoFaForm"
+                                        required
+                                        placeholder="2FA code..."
+                                        type="number"
+                                        value={twoFaCode}
+                                        onChange={(e) => AssignTwoFaCode(e.target.value)}
+                                    /> : null}
+                                <img
+                                    className="twoFaImg"
+                                    src={`data:image/jpeg;base64,${qrCode}`}
+                                    alt="qr_code"
+                                />
+                            </> : null}
+                        <Button
+                            onClick={handleSubmit} type="submit"
+                            style={{marginLeft: "20px"}}
+                        >Change 2FA</Button>
+                    </div>
+
+                    <div className="InfoContainer DeleteContainer">
+                        <h2>Delete Account</h2>
                         <DeleteAccount
                             is2FaEnabled={props.is2FaEnabled}
                         />
                     </div>
+
+
                 </div>
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
                     <ul>{errorMessage}</ul>
