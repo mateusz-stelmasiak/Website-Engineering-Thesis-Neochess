@@ -673,10 +673,9 @@ def place_defender_piece(data):
     updated_FEN = ChessLogic.update_fen_with_turn_info(got_FEN, opp_turn)
     games[game_room_id].curr_FEN = updated_FEN
 
-
     # only notify opponent if multiplayer,
     if not game_modes[game_info.game_mode_id].game_mode_multiplayer:
-       return
+        return
 
     # send move to opponent
     opponent_sid = authorized_sockets[white_id]
@@ -686,8 +685,6 @@ def place_defender_piece(data):
     emit('place_defender_piece_local',
          {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,
           'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
-
-
 
 
 def make_AI_move(req):
@@ -785,6 +782,7 @@ def make_move(data):
     game_room_id = data_obj['gameroomId']
     move = data_obj['move']
     player_id = data_obj['playerId']
+    is_promotion = data_obj['isPromotion']
 
     # check if the game exists at all
     if game_room_id not in games:
@@ -810,12 +808,17 @@ def make_move(data):
         print("NOT UR TURN")
         return
 
-    valid_move = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'], move['targetSquare'])
-    is_move_legal, move_AN_notation = valid_move
+    is_move_legal, move_AN_notation = ChessLogic.is_valid_move(game_info.curr_FEN, move['startingSquare'],
+                                                               move['targetSquare'])
+
     if not is_move_legal:
         emit('illegal_move', move, to=request.sid)
         print("INVALID MOVE")
         return
+
+    # append promotion move suffix to promotion moves
+    if str(is_promotion) == "1":
+        move_AN_notation = move_AN_notation + "=Q"
 
     # send move to opponent
     if white_id in authorized_sockets and black_id in authorized_sockets:
