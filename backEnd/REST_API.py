@@ -338,7 +338,7 @@ def register():
         link = url_for('confirm_email', token=token, _external=True)
 
         if is2FaEnabled:
-            mail.send_qr_code(login, email, otp_url)
+            mail.send_qr_code(login, email, otp_url, otp_secret.decode('utf-8'))
 
         mail.send_welcome_message(login, email, link)
 

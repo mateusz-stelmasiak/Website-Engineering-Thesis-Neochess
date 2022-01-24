@@ -164,7 +164,6 @@ function RegisterForm({dispatch}) {
         } else {
             setIs2FaEnabled(true)
             setRecoveryCodes(generateRecoveryCodes());
-            console.log("TUTAJ");
             setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
         }
