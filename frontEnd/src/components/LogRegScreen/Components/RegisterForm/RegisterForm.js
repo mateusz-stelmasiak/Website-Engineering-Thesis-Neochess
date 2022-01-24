@@ -164,6 +164,7 @@ function RegisterForm({dispatch}) {
         } else {
             setIs2FaEnabled(true)
             setRecoveryCodes(generateRecoveryCodes());
+            console.log("TUTAJ");
             setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
         }
@@ -182,7 +183,7 @@ function RegisterForm({dispatch}) {
 
         if (errors.length !== 0) {
             setIsLoadingShown(false);
-            let errorList = errors.map(error => <li key={error}>{error}</li>);
+            let errorList = errors.map((error, index) => <li key={index}>{error}</li>);
             setErrorMessage(errorList);
 
             setTimeout(() => {
@@ -201,9 +202,6 @@ function RegisterForm({dispatch}) {
         }
 
         if (is2FaEnabled) {
-            console.log(recoveryCodes);
-            //TODO show recovery codes
-            setShowRecoveryCodes(true)
             if (twoFaCode !== "" && await CheckTwoFaCode()) {
                 await ForwardAfterRegister(await login(username, password, twoFaCode));
             }

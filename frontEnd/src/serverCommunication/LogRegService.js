@@ -119,7 +119,7 @@ export async function deleteUserAccount(password, twoFaCode, isTwoFaEnabled) {
     }
 }
 
-export async function updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email) {
+export async function updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email, recoveryCodes) {
     try {
         const storeState = store.getState();
         let userId = storeState.user.userId;
@@ -134,6 +134,7 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
 
         const hashedNewPassword = newPassword !== "" ? sha256(newPassword) : null;
         const hashedCurrentPassword = sha256(currentPassword);
+        const hashedRecoveryCodes = hashRecoveryCodes(recoveryCodes);
 
         const requestOptions = {
             method: 'POST',
@@ -149,6 +150,7 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
                 email,
                 is2FaEnabled,
                 twoFaCode,
+                hashedRecoveryCodes
             })
         }
 

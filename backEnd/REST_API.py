@@ -554,10 +554,10 @@ def confirm_email(token):
 
     if user is not None:
         if user['AccountConfirmed']:
-            return redirect(f"{local_domain}/")
+            return redirect(f"{origin_prefix}{local_domain}/")
         else:
             db.activate_user_account(email)
-            return redirect(f"{local_domain}/")
+            return redirect(f"{origin_prefix}{local_domain}/")
 
 
 @app.route('/reset', methods=['POST'])

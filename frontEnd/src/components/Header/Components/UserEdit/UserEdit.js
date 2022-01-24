@@ -9,7 +9,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import DeleteAccount from "./DeleteAccount/DeleteAccount";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {generateRecoveryCodes, logout, updateUser} from "../../../../serverCommunication/LogRegService";
+import {check2FaCode, generateRecoveryCodes, logout, updateUser} from "../../../../serverCommunication/LogRegService";
 import {Modal} from "react-bootstrap";
 
 
@@ -144,7 +144,6 @@ function UserEditForm(props) {
             }, 3000)
             return;
         }
-
         await handleSubmit(event);
     }
 
@@ -165,32 +164,39 @@ function UserEditForm(props) {
             }, 3000)
             return;
         }
-
         await handleSubmit(event)
     }
 
     async function handleSubmit(event) {
         event.preventDefault();
-
         if (currentPassword !== "") {
-            if ((is2FaEnabled && twoFaCode !== "") || props.is2FaEnabled && twoFaCode === "") {
-                setIsLoadingShown(true)
-                //if all data is correct, try to update user
-                const response = await updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email)
-                if (response === undefined) return;
-                if (response.error !== undefined) {
-                    setErrorMessage(response.error);
+            if (is2FaEnabled && !props.is2FaEnabled) {
+                if (!(await CheckTwoFaCode())) {
+                    setIsLoadingShown(false);
+
+                    setTimeout(() => {
+                        setErrorMessage("");
+                    }, 3000);
+
                     return;
                 }
-                if (response['response'] === "OK") {
-                    setTimeout(async () => {
-                        await logout();
-                    }, 2000)
-                } else {
-                    setErrorMessage(response['response']);
-                }
+            }
+
+            setIsLoadingShown(true)
+            //if all data is correct, try to update user
+            const response = await updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email,
+                recoveryCodes)
+            if (response === undefined) return;
+            if (response.error !== undefined) {
+                setErrorMessage(response.error);
+                return;
+            }
+            if (response['response'] === "OK") {
+                setTimeout(async () => {
+                    await logout();
+                }, 2000)
             } else {
-                setErrorMessage("2FA code cannot be empty");
+                setErrorMessage(response['response']);
             }
         } else {
             setErrorMessage("Current password cannot be empty");
@@ -201,6 +207,14 @@ function UserEditForm(props) {
         setTimeout(() => {
             setErrorMessage("");
         }, 3000);
+    }
+
+    async function CheckTwoFaCode() {
+        const response = await check2FaCode(twoFaCode, props.username)
+        if (!response['result']) {
+            setErrorMessage("Two authentication code is incorrect");
+        }
+        return response['result'];
     }
 
     function AssignTwoFaCode(value) {

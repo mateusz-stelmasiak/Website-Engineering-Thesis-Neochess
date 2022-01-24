@@ -12,13 +12,13 @@ server_time_difference = '02:00:00'
 class ChessDB:
     def __init__(self):
         # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
-        # self.mydb = mysql.connector.connect(host="localhost", user="user",
-        #                                     password="Serek123",
-        #                                     database="neo-chess-database")
+        self.mydb = mysql.connector.connect(host="localhost", user="user",
+                                            password="Serek123",
+                                            database="neo-chess-database")
 
-        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-                                            password="YhuuFd6Z",
-                                            database="13748919_neochess")
+        # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
+        #                                     password="YhuuFd6Z",
+        #                                     database="13748919_neochess")
 
         self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?"
 
@@ -226,7 +226,11 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
         is_account_activated = True
 
-        new_password = sha256(str.encode(new_user_data_json['hashedNewPassword'])).hexdigest() \
+        user_id = user['userID']
+
+        salt = self.get_salt() if new_user_data_json['hashedNewPassword'] is not None else user['Salt']
+
+        new_password = sha256(str.encode(f"{new_user_data_json['hashedNewPassword']}{salt}")).hexdigest() \
             if new_user_data_json['hashedNewPassword'] is not None\
             else user['Password']
 
@@ -236,13 +240,21 @@ class ChessDB:
         if user['Email'] != email and email != "":
             is_account_activated = False
 
+        if user['2FA'] and not is_2_fa_enabled:
+            sql_remove_codes = ("""DELETE FROM TwoFaRecoveryCodes WHERE userID = %s""")
+            data_remove = (user_id,)
+            mycursor.execute(sql_remove_codes, data_remove)
+        elif not user['2FA'] and is_2_fa_enabled:
+            self.add_recovery_codes(user_id, new_user_data_json['hashedRecoveryCodes'])
+
         sql_update_query = ("""UPDATE Users SET
                                 Password = %s,
+                                Salt = %s,
                                 Email = %s,
                                 2FA = %s,
-                                AccountConfirmed = %s""")
+                                AccountConfirmed = %s WHERE userID = %s""")
 
-        data_update = (new_password, email, is_2_fa_enabled, is_account_activated)
+        data_update = (new_password, salt, email, is_2_fa_enabled, is_account_activated, user_id)
         mycursor.execute(sql_update_query, data_update)
 
         self.mydb.commit()
@@ -252,7 +264,7 @@ class ChessDB:
     def update_password(self, new_password, email):
         mycursor = self.mydb.cursor(dictionary=True)
 
-        sql_update = ("""UPDATE Users SET Password = %s, Salt = %s WHERE UserID = %s""")
+        sql_update = ("""UPDATE Users SET Password = %s, Salt = %s WHERE userID = %s""")
 
         salt = self.get_salt()
 
