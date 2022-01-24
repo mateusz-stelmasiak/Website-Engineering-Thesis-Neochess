@@ -12,22 +12,28 @@ import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDispla
 
 
 function UserProfileScreen(props) {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(undefined);
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
+    const [accCreated, setAccCreted] = useState(undefined);
 
     useEffect(async () => {
+<<<<<<< Updated upstream
         const response = (await getUserData())['response']
 
         setUsername(response['Username'])
+=======
+        const response = (await getUserData())
+>>>>>>> Stashed changes
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
+        setAccCreted(response['Joined'])
     }, [])
 
     const are_fields_correct = () => {
-        return username !== ""
-            && email !== ""
-            && is2FaEnabled !== undefined
+        return props.username !== undefined &&
+            email !== undefined &&
+            is2FaEnabled !== undefined &&
+            accCreated !== undefined
     }
 
     let glowingStyle = {
@@ -69,9 +75,18 @@ function UserProfileScreen(props) {
 
                     <div style={containerStyle}>
                         <h1 style={glowingStyle}>CURRENT INFO</h1>
-                        <span className="container"><h3>Username</h3><span>{props.username}</span></span>
-                        <span className="container"><h3>Acc created</h3><span><Dots>loading</Dots></span></span>
-                        <span className="container"><h3>Email address</h3><span><Dots>loading</Dots></span></span>
+                        <span className="container">
+                            <h3>Username</h3>
+                            <span>{are_fields_correct() ? props.username: <Dots>loading</Dots>}</span>
+                        </span>
+                        <span className="container">
+                            <h3>Acc created</h3>
+                            <span>{are_fields_correct() ? accCreated: <Dots>loading</Dots>}</span>
+                        </span>
+                        <span className="container">
+                            <h3>Email address</h3>
+                            <span>{are_fields_correct() ? email: <Dots>loading</Dots>}</span>
+                        </span>
                     </div>
 
                     <FenDisplayingBoard/>
@@ -80,16 +95,13 @@ function UserProfileScreen(props) {
             </Section>
 
             <Section id="UserProfileEdition">
-                {are_fields_correct() ?
+                {are_fields_correct() &&
                     <UserEditForm
-                        username={username}
+                        username={props.username}
                         email={email}
                         is2FaEnabled={is2FaEnabled}
-                    /> : null}
-
+                    />}
             </Section>
-
-
         </FooterHeaderWithMarginsLayout>
     );
 }
