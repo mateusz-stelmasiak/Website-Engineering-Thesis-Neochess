@@ -65,6 +65,10 @@ def is_checkmate(FEN):
     board.set_fen(FEN)
     return board.is_checkmate()
 
+def is_stalemate(FEN):
+    board.set_fen(FEN)
+    return board.is_stalemate()
+
 
 def update_fen_with_turn_info(FEN, player_to_move):
     separator = ' '

@@ -862,6 +862,10 @@ def make_move(data):
     if is_checkmate:
         finish_game(game_info, curr_turn)
 
+    is_stalemate = ChessLogic.is_stalemate(games[game_room_id].curr_FEN)
+    if is_stalemate:
+        finish_game(game_info, 'N')
+
 
 # propose a draw
 @socketio.on("propose_draw")
