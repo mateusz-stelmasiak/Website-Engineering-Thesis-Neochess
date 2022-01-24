@@ -8,21 +8,24 @@ import "../../../CommonComponents/CircleWidget/CircleWidget.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import DeleteAccount from "./DeleteAccount/DeleteAccount";
-import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {logout, updateUser} from "../../../../serverCommunication/LogRegService";
+import {generateRecoveryCodes, logout, updateUser} from "../../../../serverCommunication/LogRegService";
+import {Modal} from "react-bootstrap";
+
 
 function UserEditForm(props) {
     //fields in form
     const [newPassword, setNewPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [recoveryCodes, setRecoveryCodes] = useState([]);
+    const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
     const [email, setEmail] = useState("");
     const [confirmEmail, setConfirmEmail] = useState("");
     const [areEmailsEqual, setAreEmailsEqual] = useState(false);
 
-    const [is2FaEnabled, setIs2FaEnabled] = useState(!!Number(props.is2FaEnabled));
+    const [is2FaEnabled, setIs2FaEnabled] = useState(props.is2FaEnabled);
     const [twoFaCode, setTwoFaCode] = useState("");
     const [qrCode, setQrCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -126,6 +129,8 @@ function UserEditForm(props) {
             setIs2FaEnabled(false)
         } else {
             setIs2FaEnabled(true)
+            setRecoveryCodes(generateRecoveryCodes());
+            setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(props.email))['qr_code']);
         }
     }
@@ -136,7 +141,7 @@ function UserEditForm(props) {
             setErrorMessage("Given email is invalid")
             setTimeout(() => {
                 setErrorMessage("")
-            }, 5000)
+            }, 3000)
             return;
         }
 
@@ -157,7 +162,7 @@ function UserEditForm(props) {
             setErrorMessage(errorList);
             setTimeout(() => {
                 setErrorMessage("")
-            }, 5000)
+            }, 3000)
             return;
         }
 
@@ -168,20 +173,24 @@ function UserEditForm(props) {
         event.preventDefault();
 
         if (currentPassword !== "") {
-            setIsLoadingShown(true)
-            //if all data is correct, try to update user
-            const response = await updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email)
-            if (response === undefined) return;
-            if (response.error !== undefined) {
-                setErrorMessage(response.error);
-                return;
-            }
-            if (response['response'] === "OK") {
-                setTimeout(async () => {
-                    await logout();
-                }, 4000)
+            if ((is2FaEnabled && twoFaCode !== "") || props.is2FaEnabled && twoFaCode === "") {
+                setIsLoadingShown(true)
+                //if all data is correct, try to update user
+                const response = await updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email)
+                if (response === undefined) return;
+                if (response.error !== undefined) {
+                    setErrorMessage(response.error);
+                    return;
+                }
+                if (response['response'] === "OK") {
+                    setTimeout(async () => {
+                        await logout();
+                    }, 2000)
+                } else {
+                    setErrorMessage(response['response']);
+                }
             } else {
-                setErrorMessage(response['response']);
+                setErrorMessage("2FA code cannot be empty");
             }
         } else {
             setErrorMessage("Current password cannot be empty");
@@ -191,7 +200,7 @@ function UserEditForm(props) {
 
         setTimeout(() => {
             setErrorMessage("");
-        }, 3750);
+        }, 3000);
     }
 
     function AssignTwoFaCode(value) {
@@ -201,6 +210,48 @@ function UserEditForm(props) {
     }
 
     return <>
+        <Modal
+            show={showRecoveryCodes}
+            backdrop="static"
+            keyboard={false}
+            centered={true}
+            dialogClassName="modal"
+        >
+            <Modal.Header>
+                <Modal.Title>Recovery Codes</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                These recovery codes can help you to login into your account without one-time password.
+                <br/>
+                <br/>
+                Just enter one of these codes in 2FA field.
+                <br/>
+                <br/>
+                Please write down these codes and store them in a safe place.
+                <br/>
+                <br/>
+                <div className="codesContainer">
+                    {recoveryCodes.map((code, index) => {
+                        return <>
+                            <p
+                                key={index}
+                                style={{
+                                    marginTop: "0px"
+                                }}
+                            >{code}</p>
+                        </>
+                    })
+                    }
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button
+                    variant="primary"
+                    onClick={() => setShowRecoveryCodes(false)}
+                >Understood</Button>
+            </Modal.Footer>
+        </Modal>
+
         <div className="UserEditForm">
             <h1 className="UserAccountDetailsLabel">USER: {props.username}</h1>
             <Form>

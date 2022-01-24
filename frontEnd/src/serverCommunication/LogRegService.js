@@ -12,6 +12,19 @@ function hashRecoveryCodes(recoveryCodes) {
     return hashedRecoveryCodes
 }
 
+export function generateRecoveryCodes() {
+    const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?";
+    let recoveryCodes = [];
+    for (let i = 0; i < 16; i++) {
+        let code = ""
+        for (let j = 0; j < 16; j++) {
+            code += alphabet.charAt(Math.floor(Math.random() * alphabet.length))
+        }
+        recoveryCodes.push(code);
+    }
+    return recoveryCodes;
+}
+
 export async function login(username, password, two_fa_code) {
     try {
         let hashedPassword = sha256(password);

@@ -8,7 +8,13 @@ import {useHistory} from "react-router-dom";
 import {connect} from 'react-redux'
 import ReCAPTCHA from "react-google-recaptcha";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {check2FaCode, login, reSentActivationEmail, register} from "../../../../serverCommunication/LogRegService";
+import {
+    check2FaCode,
+    login,
+    reSentActivationEmail,
+    register,
+    generateRecoveryCodes
+} from "../../../../serverCommunication/LogRegService";
 import validator from 'validator';
 import "./RegisterForm.css";
 import "../LoadingComponent.css";
@@ -29,7 +35,7 @@ function RegisterForm({dispatch}) {
     const [isLoadingShown, setIsLoadingShown] = useState(false);
     const [isActivateAccountInfoShown, setIsActivateAccountInfoShown] = useState(false);
     const [reSentResult, setReSentResult] = useState("");
-    const [recoveryCodes, _] = useState(generateRecoveryCodes());
+    const [recoveryCodes, setRecoveryCodes] = useState([]);
     const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
     //for checking email requirements
@@ -80,21 +86,6 @@ function RegisterForm({dispatch}) {
 
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
-
-    function generateRecoveryCodes() {
-        const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?";
-        let recoveryCodes = [];
-
-        for (let i = 0; i < 16; i++) {
-            let code = ""
-
-            for (let j = 0; j < 16; j++) {
-                code += alphabet.charAt(Math.floor(Math.random() * alphabet.length))
-            }
-            recoveryCodes.push(code);
-        }
-        return recoveryCodes;
-    }
 
     //checks for all errors in data
     function validateData() {
@@ -172,6 +163,8 @@ function RegisterForm({dispatch}) {
             setIs2FaEnabled(false)
         } else {
             setIs2FaEnabled(true)
+            setRecoveryCodes(generateRecoveryCodes());
+            setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
         }
     }
