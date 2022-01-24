@@ -143,11 +143,12 @@ export default function sketch(p5) {
     p5.setup = function () {
         board = new Board(p5);
         generate_pos_to_stocknot_dict();
+        console.log("SETTING UP")
 
         if (gameMode === "1" || gameMode == "2") {
             canvas_width = game_mode_defender_width;
         }
-        console.log(canvas_width)
+
         canvas = p5.createCanvas(canvas_width, canvas_height, p5.WEBGL);
         if (gameMode === '0') {
             if (startingFEN !== undefined) {
