@@ -25,6 +25,13 @@ input[type=number] {
     display: inline-flex;
 }
 
-.infoContainer {
+.codesContainer {
+    margin: 25px;
+    columns: 4 auto;
+}
 
+@media (max-width: 800px) {
+    .codesContainer {
+        columns: 2 auto;
+    }
 }

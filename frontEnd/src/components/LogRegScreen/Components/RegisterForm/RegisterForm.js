@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Form from "react-bootstrap/Form";
+import "./RecoveryCodesModal.css";
 import Button from "react-bootstrap/Button";
 import "../../../../serverCommunication/APIConfig";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -8,10 +8,18 @@ import {useHistory} from "react-router-dom";
 import {connect} from 'react-redux'
 import ReCAPTCHA from "react-google-recaptcha";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {check2FaCode, login, reSentActivationEmail, register} from "../../../../serverCommunication/LogRegService";
+import {
+    check2FaCode,
+    login,
+    reSentActivationEmail,
+    register,
+    generateRecoveryCodes
+} from "../../../../serverCommunication/LogRegService";
 import validator from 'validator';
 import "./RegisterForm.css";
 import "../LoadingComponent.css";
+import {Modal} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 
 
 function RegisterForm({dispatch}) {
@@ -27,6 +35,8 @@ function RegisterForm({dispatch}) {
     const [isLoadingShown, setIsLoadingShown] = useState(false);
     const [isActivateAccountInfoShown, setIsActivateAccountInfoShown] = useState(false);
     const [reSentResult, setReSentResult] = useState("");
+    const [recoveryCodes, setRecoveryCodes] = useState([]);
+    const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -153,6 +163,9 @@ function RegisterForm({dispatch}) {
             setIs2FaEnabled(false)
         } else {
             setIs2FaEnabled(true)
+            setRecoveryCodes(generateRecoveryCodes());
+            console.log("TUTAJ");
+            setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
         }
     }
@@ -170,7 +183,7 @@ function RegisterForm({dispatch}) {
 
         if (errors.length !== 0) {
             setIsLoadingShown(false);
-            let errorList = errors.map(error => <li key={error}>{error}</li>);
+            let errorList = errors.map((error, index) => <li key={index}>{error}</li>);
             setErrorMessage(errorList);
 
             setTimeout(() => {
@@ -181,46 +194,37 @@ function RegisterForm({dispatch}) {
         }
 
         //if all data is correct, try to register user
-        const resp = await register(username, password, captchaValue, email, is2FaEnabled);
+        const resp = await register(username, password, captchaValue, email, is2FaEnabled, recoveryCodes);
         if (resp === undefined) return;
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
         }
 
-        //autologin after successful register
         if (is2FaEnabled) {
             if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                await ForwardAfterLogin(await login(username, password, twoFaCode));
+                await ForwardAfterRegister(await login(username, password, twoFaCode));
             }
         } else {
-            await ForwardAfterLogin(await login(username, password, ""));
+            await ForwardAfterRegister(await login(username, password, ""));
         }
     }
 
     async function CheckTwoFaCode() {
         const response = await check2FaCode(twoFaCode, username)
-
         if (!response['result']) {
             setErrorMessage("Two authentication code is incorrect. Go to login page and try again");
         }
-
         return response['result'];
     }
 
-    async function ForwardAfterLogin(resp) {
+    async function ForwardAfterRegister(resp) {
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
         }
         setIsActivateAccountInfoShown(true);
         setIsLoadingShown(false);
-    }
-
-    function AssignTwoFaCode(value) {
-        if (value.length <= 6) {
-            setTwoFaCode(value);
-        }
     }
 
     async function reSentEmail() {
@@ -240,7 +244,49 @@ function RegisterForm({dispatch}) {
         setCaptchaValue(value);
     }
 
-    return (
+    return <>
+        <Modal
+            show={showRecoveryCodes}
+            backdrop="static"
+            keyboard={false}
+            centered={true}
+            dialogClassName="modal"
+        >
+            <Modal.Header>
+                <Modal.Title>Recovery Codes</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                These recovery codes can help you to login into your account without one-time password.
+                <br/>
+                <br/>
+                Just enter one of these codes in 2FA field.
+                <br/>
+                <br/>
+                Please write down these codes and store them in a safe place.
+                <br/>
+                <br/>
+                <div className="codesContainer">
+                    {recoveryCodes.map((code, index) => {
+                        return <>
+                            <p
+                                key={index}
+                                style={{
+                                    marginTop: "0px"
+                                }}
+                            >{code}</p>
+                        </>
+                    })
+                    }
+                </div>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button
+                    variant="primary"
+                    onClick={() => setShowRecoveryCodes(false)}
+                >Understood</Button>
+            </Modal.Footer>
+        </Modal>
+
         <div className="LogRegForm">
             <Form>
                 <Form.Control
@@ -313,9 +359,9 @@ function RegisterForm({dispatch}) {
                                     className="twoFaField"
                                     required
                                     placeholder="2FA code..."
-                                    type="number"
+                                    type="text"
                                     value={twoFaCode}
-                                    onChange={(e) => AssignTwoFaCode(e.target.value)}
+                                    onChange={(e) => setTwoFaCode(e.target.value)}
                                 />
 
                                 <div style={{
@@ -358,7 +404,7 @@ function RegisterForm({dispatch}) {
                 </div>
             </Form>
         </div>
-    );
+    </>
 }
 
 export default connect()(RegisterForm)

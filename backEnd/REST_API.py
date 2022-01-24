@@ -277,6 +277,12 @@ def check_2_fa():
 
         verify_result = otp.verify(two_fa_code)
 
+        if not verify_result:
+            user_codes = db.get_user_recovery_codes_by_id(user['userID'])
+
+            recovery_code = sha256(str.encode(two_fa_code)).hexdigest()
+            verify_result = recovery_code in [codes['Code'] for codes in user_codes]
+
         return generate_response(request, {
             "result": verify_result
         }, 200 if verify_result else 403)
@@ -300,6 +306,7 @@ def register():
     hashed_password = request_data['hashedPassword']
     email = request_data['email']
     is2FaEnabled = request_data['is2FaEnabled']
+    hashed_recovery_codes = request_data['hashedRecoveryCodes']
 
     if debug_mode:
         print("REGISTER REQUEST " + str(request_data))
@@ -324,7 +331,8 @@ def register():
 
         # add to database
         db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
-                    RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility)
+                    RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility,
+                    hashed_recovery_codes if is2FaEnabled else None)
 
         token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
         link = url_for('confirm_email', token=token, _external=True)
@@ -338,11 +346,13 @@ def register():
         if debug_mode:
             ("DB ERROR " + str(ex))
 
-        return generate_response(request, {"error": "Database error"}, 503)
+        return generate_response(request, {
+            "error": "Database error"
+        }, 503)
 
     return generate_response(request,
                              {
-                                 "registration": 'succesfull',
+                                 "registration": 'successful'
                              }, 200)
 
 
@@ -544,10 +554,10 @@ def confirm_email(token):
 
     if user is not None:
         if user['AccountConfirmed']:
-            return redirect(f"{local_domain}/")
+            return redirect(f"{origin_prefix}{local_domain}/")
         else:
             db.activate_user_account(email)
-            return redirect(f"{local_domain}/")
+            return redirect(f"{origin_prefix}{local_domain}/")
 
 
 @app.route('/reset', methods=['POST'])

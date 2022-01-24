@@ -6,6 +6,25 @@ import {GAME_DEBUGING_MODE} from "../App";
 import {disconnectSocket, setSocketStatus} from "../redux/actions/socketActions";
 import {SocketStatus} from "./WebSocket";
 
+function hashRecoveryCodes(recoveryCodes) {
+    let hashedRecoveryCodes = [];
+    recoveryCodes.forEach(c => hashedRecoveryCodes.push(sha256(c)))
+    return hashedRecoveryCodes
+}
+
+export function generateRecoveryCodes() {
+    const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?";
+    let recoveryCodes = [];
+    for (let i = 0; i < 16; i++) {
+        let code = ""
+        for (let j = 0; j < 16; j++) {
+            code += alphabet.charAt(Math.floor(Math.random() * alphabet.length))
+        }
+        recoveryCodes.push(code);
+    }
+    return recoveryCodes;
+}
+
 export async function login(username, password, two_fa_code) {
     try {
         let hashedPassword = sha256(password);
@@ -100,7 +119,7 @@ export async function deleteUserAccount(password, twoFaCode, isTwoFaEnabled) {
     }
 }
 
-export async function updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email) {
+export async function updateUser(newPassword, currentPassword, is2FaEnabled, twoFaCode, email, recoveryCodes) {
     try {
         const storeState = store.getState();
         let userId = storeState.user.userId;
@@ -115,6 +134,7 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
 
         const hashedNewPassword = newPassword !== "" ? sha256(newPassword) : null;
         const hashedCurrentPassword = sha256(currentPassword);
+        const hashedRecoveryCodes = hashRecoveryCodes(recoveryCodes);
 
         const requestOptions = {
             method: 'POST',
@@ -130,6 +150,7 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
                 email,
                 is2FaEnabled,
                 twoFaCode,
+                hashedRecoveryCodes
             })
         }
 
@@ -227,9 +248,11 @@ export async function setNewPassword(token, newPassword) {
     }
 }
 
-export async function register(username, password, captcha, email, is2FaEnabled) {
+export async function register(username, password, captcha, email, is2FaEnabled, recoveryCodes) {
     try {
-        let hashedPassword = sha256(password);
+        const hashedPassword = sha256(password);
+        const hashedRecoveryCodes = hashRecoveryCodes(recoveryCodes);
+
         const requestOptions = {
             method: 'POST',
             mode: 'cors',
@@ -239,7 +262,8 @@ export async function register(username, password, captcha, email, is2FaEnabled)
                 hashedPassword,
                 email,
                 is2FaEnabled,
-                captcha
+                captcha,
+                hashedRecoveryCodes
             })
         };
 
