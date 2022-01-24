@@ -876,6 +876,10 @@ def make_move(data):
     if is_checkmate:
         finish_game(game_info, curr_turn)
 
+    is_stalemate = ChessLogic.is_stalemate(games[game_room_id].curr_FEN)
+    if is_stalemate:
+        finish_game(game_info, 'N')
+
 
 def add_move_to_db(game_id, move_AN_notation, curr_turn, move_order):
     try:
