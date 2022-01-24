@@ -27,6 +27,8 @@
 
 .LogRegForm .input-wrapper .form-control {
     all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
     width: 90%;
     color: var(--text-color);
     text-align: left;
@@ -40,11 +42,6 @@
 .LogRegForm .input-wrapper i:hover {
     color: var(--primary-color-dark);
     cursor: pointer;
-}
-
-
-.twoFaField {
-    margin-top: 25px !important;
 }
 
 .loginContainer {

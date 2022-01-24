@@ -8,7 +8,6 @@ import "../../../CommonComponents/CircleWidget/CircleWidget.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import DeleteAccount from "./DeleteAccount/DeleteAccount";
-import SectionTitle from "../../../CommonComponents/SectionTitle/SectionTitle";
 import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
 import {logout, updateUser} from "../../../../serverCommunication/LogRegService";
 
@@ -301,6 +300,7 @@ function UserEditForm(props) {
                             onChange={(_) => enable2FA()}
                             checked={is2FaEnabled}
                         />
+
                         {is2FaEnabled ?
                             <>
                                 {!props.is2FaEnabled ?

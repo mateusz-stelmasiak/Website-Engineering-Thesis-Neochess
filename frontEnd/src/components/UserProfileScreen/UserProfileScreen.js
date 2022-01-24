@@ -14,13 +14,14 @@ import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDispla
 function UserProfileScreen(props) {
     const [email, setEmail] = useState(undefined);
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
-    const [accCreated, setAccCreted] = useState(undefined);
+    const [accCreated, setAccCreated] = useState(undefined);
 
     useEffect(async () => {
         const response = (await getUserData())
+        console.log(response)
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
-        setAccCreted(response['Joined'])
+        setAccCreated(response['Joined'])
     }, [])
 
     const are_fields_correct = () => {

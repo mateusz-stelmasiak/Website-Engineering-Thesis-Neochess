@@ -433,9 +433,7 @@ def get_user_details():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
 
-        return generate_response(request, {
-            "response": user
-        }, 200)
+        return generate_response(request, user, 200)
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"
