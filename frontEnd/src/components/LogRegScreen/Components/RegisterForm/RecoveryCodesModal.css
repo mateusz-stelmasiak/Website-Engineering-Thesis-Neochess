@@ -106,7 +106,8 @@
 
 .modal-title {
     all: unset;
-    display: block;
+    display: table;
+    margin: 0 auto;
     text-align: center;
     font-weight: bold;
     font-size: min(2em, 5vw);
@@ -126,10 +127,27 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: flex-end;
-    padding: 0.75rem;
+    padding: 1rem;
     border-top: 2px solid var(--sec-color);
     border-bottom-right-radius: calc(0.3rem - 1px);
     border-bottom-left-radius: calc(0.3rem - 1px);
+}
+
+.modal-footer button {
+    all: unset;
+    padding: 0.7rem 4.5rem;
+    background-color: var(--sec-color);
+    color: var(--section-bg-color);
+    display: table;
+    margin: 0 auto;
+}
+
+.modal-footer button:hover {
+    transition: 200ms;
+    transform: scale(1.1);
+    background-color: var(--sec-color-dark);
+    color: var(--section-bg-color);
+    cursor: pointer;
 }
 
 .modal-footer > * {
@@ -138,7 +156,7 @@
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 500px;
+        max-width: 900px;
         margin: 1.75rem auto;
     }
 

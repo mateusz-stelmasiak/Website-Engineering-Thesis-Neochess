@@ -258,8 +258,10 @@ function RegisterForm({dispatch}) {
             show={true}
             backdrop="static"
             keyboard={false}
+            centered={true}
+            dialogClassName="modal"
         >
-            <Modal.Header closeButton>
+            <Modal.Header>
                 <Modal.Title>Recovery Codes</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -269,15 +271,22 @@ function RegisterForm({dispatch}) {
                 Just enter one of these codes in 2FA field.
                 <br/>
                 <br/>
-                Please write down these codes and store it in safe place.
+                Please write down these codes and store them in a safe place.
                 <br/>
                 <br/>
-                {recoveryCodes.map((code, index) => {
+                <div className="codesContainer">
+                    {recoveryCodes.map((code, index) => {
                         return <>
-                            <p key={index}>{code}</p>
+                            <p
+                                key={index}
+                                style={{
+                                    marginTop: "0px"
+                                }}
+                            >{code}</p>
                         </>
                     })
-                }
+                    }
+                </div>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary">Understood</Button>
