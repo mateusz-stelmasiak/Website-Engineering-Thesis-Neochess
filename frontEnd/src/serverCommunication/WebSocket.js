@@ -122,8 +122,8 @@ export default class SocketClient {
 
     gameListeners() {
         this.on("make_move_local_ai", data => {
-          make_opponents_move(data.StartSquare,data.TargetSquare,data.mType)
             console.log(data)
+            make_opponents_move(data.startingSquare,data.targetSquare,data.mType)
         });
 
         this.on("make_move_local", data => {

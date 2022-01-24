@@ -80,9 +80,9 @@ export function Generate_moves(grid, check, gtype) {
         if (check === 1 && ally_moves.length === 0 && board.color_to_move === playingAs) {
             console.log("tu szachmat");
         }
-
-
     }
+
+
     if (board.check === 1 && ally_moves.length !== 0) {
         board.check = 0;
     }
@@ -387,9 +387,7 @@ function Get_Knight_moves(startSquare, piece, grid, t_moves) {
 
 
             if (Piece_on_target.type_letter !== 'e' && Piece_on_target.color !== piece.color) {
-
                 t_moves[t_moves.length - 1].type = 'C';
-
             }
         }
     }

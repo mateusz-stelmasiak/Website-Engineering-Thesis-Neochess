@@ -674,7 +674,7 @@ def place_defender_piece(data):
     games[game_room_id].curr_FEN = updated_FEN
 
     # only notify opponent if multiplayer,
-    if not game_modes[game_info.game_mode_id].game_mode_multiplayer:
+    if not game_modes[int(game_info.game_mode_id)].game_mode_multiplayer:
         return
 
     # send move to opponent
@@ -687,8 +687,12 @@ def place_defender_piece(data):
           'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
 
 
-def make_AI_move(req):
-    emit('make_move_local', {"StartSquare": "8", "TargetSquare": "16", "mType": "n"}, to=req.sid)
+def make_AI_move(opponent_sid,FEN):
+    newFEN, move_AN_notation, move_neo_chess_notation = ChessLogic.get_best_move(FEN)
+
+    emit('make_move_local_ai', move_neo_chess_notation, to=opponent_sid)
+
+    return newFEN, move_AN_notation
     # # authorize player
     # if not check_auth(request.sid, data_obj['playerId']):
     #     print("Unathorized!! ")
@@ -835,24 +839,33 @@ def make_move(data):
         return
 
     new_FEN = ChessLogic.update_FEN_by_AN_move(game_info.curr_FEN, move_AN_notation)
-    print(new_FEN)
     games[game_room_id].curr_FEN = new_FEN
     move_order = game_info.num_of_moves
     games[game_room_id].num_of_moves = move_order + 1
-    # get opposite turn
+
+    #add move to db
+    add_move_to_db(game_info.game_id, move_AN_notation, curr_turn, move_order)
+
+    # switch turns
     opp_turn = 'w'
     if curr_turn == 'w':
         opp_turn = 'b'
     games[game_room_id].curr_turn = opp_turn
 
-    try:
-        game_id = game_info.game_id
-        db = ChessDB.ChessDB()
-        print("ADDING MOVE TO BD " + str(move_AN_notation))
-        move_string = str(move_AN_notation)
-        db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
-    except Exception as ex:
-        print("DB ERROR " + str(ex))
+    # make AI move in positions gamemode
+    if str(game_info.game_mode_id) == "2" and opp_turn != player_color:
+        newFEN , move_AN_notation = make_AI_move(request.sid,games[game_room_id].curr_FEN)
+        # update FEN after AI move
+        new_FEN = ChessLogic.update_FEN_by_AN_move(games[game_room_id].curr_FEN, move_AN_notation)
+        games[game_room_id].curr_FEN = new_FEN
+        # increment move count
+        move_order = games[game_room_id].num_of_moves
+        games[game_room_id].num_of_moves = move_order + 1
+        # add move to db
+        add_move_to_db(games[game_room_id].game_id, move_AN_notation, games[game_room_id].curr_turn, move_order)
+        #change turn back to players
+        games[game_room_id].curr_turn = player_color
+
 
     # check for checkmates
     if game_room_id not in games:
@@ -862,6 +875,15 @@ def make_move(data):
     is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
     if is_checkmate:
         finish_game(game_info, curr_turn)
+
+
+def add_move_to_db(game_id, move_AN_notation, curr_turn, move_order):
+    try:
+        db = ChessDB.ChessDB()
+        move_string = str(move_AN_notation)
+        db.add_move(game_id, str(curr_turn).upper(), move_order, move_string)
+    except Exception as ex:
+        print("DB ERROR WHEN ADDING MOVE " + str(ex))
 
 
 # propose a draw

@@ -81,26 +81,26 @@ def update_FEN_by_AN_move(old_FEN, move):
 def get_best_move(FEN):
     board.set_fen(FEN)
     result = engine.play(board, limit)
-    board_move = result.move
-    moving_piece_type = board.piece_type_at(board_move.from_square)
+    move_AN_notation = result.move
+    moving_piece_type = board.piece_type_at(move_AN_notation.from_square)
     board.push(result.move)
 
     move_type = "n"
-    if board.is_en_passant(board_move): move_type = "CP"
-    if board.is_capture(board_move): move_type = "C"
-    if board.is_kingside_castling(board_move): move_type = "r"
-    if board.is_queenside_castling(board_move): move_type = "R"
+    if board.is_en_passant(move_AN_notation): move_type = "CP"
+    if board.is_capture(move_AN_notation): move_type = "C"
+    if board.is_kingside_castling(move_AN_notation): move_type = "r"
+    if board.is_queenside_castling(move_AN_notation): move_type = "R"
     # check for P TYPE, moved to enpassant
-    if moving_piece_type == 1 and abs(board_move.to_square - board_move.from_square) == 16:
+    if moving_piece_type == 1 and abs(move_AN_notation.to_square - move_AN_notation.from_square) == 16:
         move_type = "P"
 
-    start_move = (63 - board_move.from_square) % 64
-    target_move = (63 - board_move.to_square) % 64
+    start_move = (62 - move_AN_notation.from_square) % 64
+    target_move = (62 - move_AN_notation.to_square) % 64
 
-    move = {
+    move_neo_chess_notation = {
         'startingSquare': start_move,
         'targetSquare': target_move,
-        'mtype': move_type
+        'mType': move_type
     }
 
-    return board.fen(), move
+    return board.fen(), move_AN_notation, move_neo_chess_notation
