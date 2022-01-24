@@ -64,6 +64,7 @@ def is_checkmate(FEN):
     board.set_fen(FEN)
     return board.is_checkmate()
 
+
 def is_stalemate(FEN):
     board.set_fen(FEN)
     return board.is_stalemate()
@@ -97,14 +98,17 @@ def get_best_move(FEN):
     # check for P TYPE, moved to enpassant
     if moving_piece_type == 1 and abs(move_AN_notation.to_square - move_AN_notation.from_square) == 16:
         move_type = "P"
-
-    start_move = (62 - move_AN_notation.from_square) % 64
-    target_move = (62 - move_AN_notation.to_square) % 64
+    print(move_AN_notation.from_square)
+    print(move_AN_notation.to_square)
+    start_move = (7 - int(move_AN_notation.from_square / 8)) * 8 + (move_AN_notation.from_square % 8)
+    target_move = (7 - int(move_AN_notation.to_square / 8)) * 8 + (move_AN_notation.to_square % 8)
 
     move_neo_chess_notation = {
         'startingSquare': start_move,
         'targetSquare': target_move,
         'mType': move_type
     }
+    print("neochessnotation")
+    print(move_neo_chess_notation)
 
     return board.fen(), move_AN_notation, move_neo_chess_notation

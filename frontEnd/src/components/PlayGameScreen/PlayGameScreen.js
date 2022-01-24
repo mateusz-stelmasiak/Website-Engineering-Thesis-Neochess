@@ -183,7 +183,6 @@ function PlayGameScreen({
                         eloChange={eloChange}
                     />
                     }
-
                     <PlayersInfo/>
 
                     {!loadingGameInfo &&

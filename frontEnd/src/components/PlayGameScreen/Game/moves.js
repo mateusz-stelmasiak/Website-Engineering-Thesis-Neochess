@@ -446,7 +446,9 @@ function Get_long_moves(startSquare, piece, grid, t_moves) {
     }
 }
 
-function get_move(StartSquare, TargetSquare) {
+export function get_move(StartSquare, TargetSquare) {
+    console.log(opponent_moves)
+    console.log(future_opponent_moves)
     for (let i = 0; i < moves.length; i++) {
         if (moves[i].StartSquare === StartSquare && moves[i].EndSquare === TargetSquare) {
             return moves[i];

@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import {API_URL} from "./APIConfig";
-import {make_opponents_move} from "../components/PlayGameScreen/Game/moves";
+import {make_opponents_move,get_move} from "../components/PlayGameScreen/Game/moves";
 import {store} from "../index";
 import {setSocketStatus} from "../redux/actions/socketActions";
 import {
@@ -123,6 +123,8 @@ export default class SocketClient {
     gameListeners() {
         this.on("make_move_local_ai", data => {
             console.log(data)
+            console.log("check")
+            console.log(get_move(data.startingSquare,data.targetSquare))
             make_opponents_move(data.startingSquare,data.targetSquare,data.mType)
         });
 
