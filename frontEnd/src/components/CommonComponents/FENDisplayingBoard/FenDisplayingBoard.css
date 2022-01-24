@@ -1,0 +1,49 @@
+.FenDisplayingBoard {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 2%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+.FenDisplayingBoard h1{
+    unset:all;
+}
+.FenDisplayingBoard .FenDisplayingBoard-content{
+    padding: 2%;
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-content .FenDisplayingBoard-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 2%;
+    row-gap: 2%;
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square {
+    transition: 200ms;
+
+}
+.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square:hover{
+    animation: text_glow 5s infinite;
+    cursor: pointer;
+    filter: drop-shadow(0 0 1rem var(--primary-color-dark));
+    transform: scale(1.2);
+    background-color: var(--sec-color-dark);
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square.black{
+    background-color: var(--sec-color-dark);
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square.white{
+    background-color: var(--chessboard--white);
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square.white.glowing{
+
+}

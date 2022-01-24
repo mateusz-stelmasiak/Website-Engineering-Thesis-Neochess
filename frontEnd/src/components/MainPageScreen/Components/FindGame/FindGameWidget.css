@@ -112,6 +112,59 @@
     content: " | ";
 }
 
+.FindGameWidget-positionsContainer{
+    display: flex;
+    flex-direction: column;
+    row-gap:2rem;
+}
+
+.FindGameWidget-positionsContainer .scoreInput{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    align-content: center;
+    justify-content: center;
+}
+
+.FindGameWidget-positionsContainer .scoreInput h2{
+    color:var(--primary-color-dark)
+}
+
+.FindGameWidget-positionsContainer .form-control {
+    margin:0;
+    border: unset;
+    padding: 0.7rem 1rem;
+    width: 20%;
+
+    color: var(--text-color);
+    background-color: var(--textfield-bg-color);
+    text-align: center;
+    border-radius: 10rem;
+    font-size: 1.2rem;
+}
+
+.FindGameWidget-positionsContainer .positionList{
+    color:var(--text-color);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+    row-gap: 1rem;
+    align-content: center;
+    justify-content: space-between;
+}
+
+.FindGameWidget-positionsContainer .positionList span{
+
+}
+
+.FindGameWidget-positionsContainer .positionList span:hover{
+    cursor: pointer;
+    color:var(--sec-color-dark);
+    transform: scale(1.1    );
+}
+
 /*resize play game text to fit screen*/
 @media (max-width: 420px) {
     .FindGameWidget .FindGameWidget-mainText h1{

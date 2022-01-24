@@ -1,6 +1,7 @@
 // Import all actions
 import * as actions from '../actions/gameActions'
 import {SocketStatus} from "../../serverCommunication/WebSocket";
+import {playingAs} from "../../components/PlayGameScreen/Game/Main";
 
 
 export const gameInitialState = {
@@ -55,6 +56,18 @@ export default function gameInfoReducer(state = gameInitialState, action) {
             } else {
                 state.currentTurn == 'w' ? nextTurn = 'b' : nextTurn = 'w';
             }
+
+            let playing_as_score= state.whiteScore
+            if (state.playingAs == 'b') playing_as_score= state.blackScore
+
+            if (state.gameMode == 2 && playing_as_score>=0){
+                nextTurn= playingAs
+            }
+            else
+            {
+                state.currentTurn == 'w' ? nextTurn = 'b' : nextTurn = 'w';
+            }
+
             sessionStorage.setItem('currentTurn', nextTurn)
             return {...state, currentTurn: nextTurn}
         case actions.SET_WHITE_TIME:

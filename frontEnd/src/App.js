@@ -10,7 +10,7 @@ import {connect} from 'react-redux'
 import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
-import {toast, Toaster} from "react-hot-toast";
+import {Toaster} from "react-hot-toast";
 import CookiesPreferences from "./components/Cookies/CookiesPreferences";
 import CookiesPage from "./components/Cookies/CookiesPage";
 import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";

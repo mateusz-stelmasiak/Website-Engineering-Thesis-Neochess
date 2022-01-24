@@ -16,9 +16,9 @@ input[type=number] {
 }
 
 .UserEditForm {
-    width: 90%;
-    display: table;
-    margin: 0 auto;
+   display: flex;
+    flex-direction: column;
+    row-gap: 4rem;
 }
 
 .updateProgress {
@@ -35,39 +35,30 @@ input[type=number] {
     margin-right: 75px;
 }
 
-.EditFormContainer {
+.EditFormContainer{
     display: flex !important;
-    justify-content: space-around;
-}
-
-.PasswordEmailContainer {
-    display: flex;
-    width: 50%;
+    justify-content: space-between;
+    align-content: center;
+    column-gap: 2rem;
+    flex-wrap: wrap;
+    flex-direction: row;
+    row-gap: 2rem;
 }
 
 .FormContainer {
     display: flex;
     align-items: center;
-    margin-bottom: 25px;
-    margin-top: 25px;
     justify-content: center;
 }
-
-.TwoFaDeleteContainer {
+.InfoContainer{
+    flex: 1 0 30%; /* explanation below */
     display: flex;
+    flex-direction: column;
     align-items: center;
+    margin-right: 1rem;
 }
 
-.TwoFaContainer {
-    align-items: center;
-    margin-right: 75px;
-}
 
-.updateLoadingContainer {
-    display: flex;
-    margin-left: 65px;
-    margin-top: 30px;
-}
 
 :root {
     --textfield-bg-color: #0b0b0b;
@@ -122,9 +113,7 @@ input[type=number] {
     display: flow-root !important;
 }
 
-.UserEditForm form {
-    margin-top: 1.5rem;
-}
+
 
 .UserEditForm h1 {
     all: unset;
@@ -136,17 +125,29 @@ input[type=number] {
     color: var(--sec-color);
     margin-top: 50px;
 }
+.UserEditForm h2 {
+    all: unset;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: min(2em, 2vw);
+    animation: text_glow 5s infinite;
+    color: var(--primary-color-dark);
+    margin-bottom: 2rem;
+}
 
 .UserEditForm .form-control {
     all: unset;
     padding: 0.7rem 1rem;
-    width: 90%;
-
-    margin-top: 0.5rem;
+    width: 80%;
     color: var(--text-color);
     background-color: var(--textfield-bg-color);
     text-align: left;
     border-radius: 10rem;
+}
+
+.UserEditForm .InfoContainer.DeleteContainer h2{
+    color:var(--fail-color)
 }
 
 .UserEditForm .form-check {
@@ -162,8 +163,9 @@ input[type=number] {
 
 .UserEditForm .pass-wrapper {
     position: relative;
-    /*width: 100%;*/
+    width: 100%;
     display: flex;
+    justify-content: center;
 }
 
 .UserEditForm i {
@@ -215,12 +217,11 @@ input[type=number] {
 
 .UserEditForm Button {
     all: unset;
-
+    cursor: pointer;
     padding: 0.7rem 4.5rem;
-
+    margin-top: 2rem;
     background-color: var(--sec-color);
     color: var(--section-bg-color);
-    margin-top: 1rem;
 }
 
 .UserEditForm Button:hover {
