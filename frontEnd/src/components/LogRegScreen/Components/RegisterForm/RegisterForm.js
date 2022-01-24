@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import Form from "react-bootstrap/Form";
+import "./RecoveryCodesModal.css";
 import Button from "react-bootstrap/Button";
 import "../../../../serverCommunication/APIConfig";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -12,6 +12,8 @@ import {check2FaCode, login, reSentActivationEmail, register} from "../../../../
 import validator from 'validator';
 import "./RegisterForm.css";
 import "../LoadingComponent.css";
+import {Modal} from "react-bootstrap";
+import Form from "react-bootstrap/Form";
 
 
 function RegisterForm({dispatch}) {
@@ -28,6 +30,7 @@ function RegisterForm({dispatch}) {
     const [isActivateAccountInfoShown, setIsActivateAccountInfoShown] = useState(false);
     const [reSentResult, setReSentResult] = useState("");
     const [recoveryCodes, _] = useState(generateRecoveryCodes());
+    const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -207,7 +210,7 @@ function RegisterForm({dispatch}) {
         if (is2FaEnabled) {
             console.log(recoveryCodes);
             //TODO show recovery codes
-
+            setShowRecoveryCodes(true)
             if (twoFaCode !== "" && await CheckTwoFaCode()) {
                 await ForwardAfterRegister(await login(username, password, twoFaCode));
             }
@@ -250,7 +253,37 @@ function RegisterForm({dispatch}) {
         setCaptchaValue(value);
     }
 
-    return (
+    return <>
+        <Modal
+            show={true}
+            backdrop="static"
+            keyboard={false}
+        >
+            <Modal.Header closeButton>
+                <Modal.Title>Recovery Codes</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                These recovery codes can help you to login into your account without one-time password.
+                <br/>
+                <br/>
+                Just enter one of these codes in 2FA field.
+                <br/>
+                <br/>
+                Please write down these codes and store it in safe place.
+                <br/>
+                <br/>
+                {recoveryCodes.map((code, index) => {
+                        return <>
+                            <p key={index}>{code}</p>
+                        </>
+                    })
+                }
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary">Understood</Button>
+            </Modal.Footer>
+        </Modal>
+
         <div className="LogRegForm">
             <Form>
                 <Form.Control
@@ -325,7 +358,7 @@ function RegisterForm({dispatch}) {
                                     placeholder="2FA code..."
                                     type="text"
                                     value={twoFaCode}
-                                    onChange={(e) =>  setTwoFaCode(e.target.value)}
+                                    onChange={(e) => setTwoFaCode(e.target.value)}
                                 />
 
                                 <div style={{
@@ -368,7 +401,7 @@ function RegisterForm({dispatch}) {
                 </div>
             </Form>
         </div>
-    );
+    </>
 }
 
 export default connect()(RegisterForm)
