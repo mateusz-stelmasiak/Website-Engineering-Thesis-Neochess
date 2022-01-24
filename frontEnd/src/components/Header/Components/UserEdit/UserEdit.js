@@ -365,6 +365,7 @@ function UserEditForm(props) {
                             onChange={(_) => enable2FA()}
                             checked={is2FaEnabled}
                         />
+
                         {is2FaEnabled ?
                             <>
                                 {!props.is2FaEnabled ?

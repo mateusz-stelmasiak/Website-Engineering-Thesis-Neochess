@@ -20,6 +20,8 @@ import "./RegisterForm.css";
 import "../LoadingComponent.css";
 import {Modal} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
+import SectionTitle from "../../../Layout/Section/SectionTitle";
+import {toast} from "react-hot-toast";
 
 
 function RegisterForm({dispatch}) {
@@ -29,6 +31,7 @@ function RegisterForm({dispatch}) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [email, setEmail] = useState("");
     const [is2FaEnabled, setIs2FaEnabled] = useState(false);
+    const [show2FaPopup, setShow2FaPopup] = useState(false);
     const [twoFaCode, setTwoFaCode] = useState("");
     const [qrCode, setQrCode] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -37,6 +40,7 @@ function RegisterForm({dispatch}) {
     const [reSentResult, setReSentResult] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState([]);
     const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
+    let checkBoxRef = React.createRef();
 
     //for checking email requirements
     const [isEmailValid, setIsEmailValid] = useState(false);
@@ -83,9 +87,6 @@ function RegisterForm({dispatch}) {
         size="normal"
         theme='dark'
     />
-
-    const successColor = 'var(--success-color)';
-    const failColor = 'var(--fail-color)';
 
     //checks for all errors in data
     function validateData() {
@@ -150,7 +151,6 @@ function RegisterForm({dispatch}) {
 
     function checkEmail(email) {
         setEmail(email);
-        setIs2FaEnabled(false);
         setIsEmailValid(false);
 
         if (validator.isEmail(email)) {
@@ -166,7 +166,24 @@ function RegisterForm({dispatch}) {
             setRecoveryCodes(generateRecoveryCodes());
             setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
+            setShow2FaPopup(false)
+            return
         }
+
+        validateData();
+        if (isEmailValid === false) {
+            toast.error("You must first enter a valid email")
+            if (checkBoxRef) checkBoxRef.current.checked = false
+            return
+        }
+
+        setIs2FaEnabled(true)
+        setShow2FaPopup(true)
+
+        let res = await get2FaCode(email)['qr_code'];
+        if (!res) return
+
+        setQrCode(res);
     }
 
     async function handleSubmit(event) {
@@ -182,12 +199,11 @@ function RegisterForm({dispatch}) {
 
         if (errors.length !== 0) {
             setIsLoadingShown(false);
-            let errorList = errors.map((error, index) => <li key={index}>{error}</li>);
-            setErrorMessage(errorList);
-
-            setTimeout(() => {
-                setErrorMessage("")
-            }, 5000)
+            //toast all errors
+            errors.forEach((error) => {
+                console.log(error);
+                toast.error(error, {duration: 10000})
+            });
 
             return;
         }
@@ -288,13 +304,16 @@ function RegisterForm({dispatch}) {
 
         <div className="LogRegForm">
             <Form>
-                <Form.Control
-                    required
-                    placeholder="Username..."
-                    type="text"
-                    value={username}
-                    onChange={(e) => checkUsername(e.target.value)}
-                />
+                <div className="input-wrapper">
+                    <Form.Control
+                        required
+                        placeholder="Username..."
+                        type="text"
+                        value={username}
+                        onChange={(e) => checkUsername(e.target.value)}
+                    />
+                </div>
+
                 <p>Must be at least
                     <span
                         style={{color: isUsernameLongEnough ? successColor : failColor}}> {minUsernameLength} characters </span>
@@ -302,7 +321,7 @@ function RegisterForm({dispatch}) {
                     <span style={{color: !usernameContainsWhitespace ? successColor : failColor}}> not contain whitespace</span> characters.
                 </p>
 
-                <div className="pass-wrapper mt2">
+                <div className="input-wrapper">
                     <Form.Control
                         required
                         placeholder="Password..."
@@ -317,6 +336,19 @@ function RegisterForm({dispatch}) {
                         {eye}
                     </i>
                 </div>
+
+                <div className="input-wrapper"
+                     style={{background: arePasswordsEqual ? successColor : failColor}}
+                >
+                    <Form.Control
+                        required
+                        placeholder="Confirm password..."
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => checkPasswordConfirm(e.target.value)}
+                    />
+                </div>
+
                 <p>Must be at least
                     <span
                         style={{color: isPasswordLongEnough ? successColor : failColor}}> {minPassLength} characters </span> long,
@@ -325,70 +357,63 @@ function RegisterForm({dispatch}) {
                     <span style={{color: passwordContainsUppercase ? successColor : failColor}}> uppercase letter</span>.
                 </p>
 
-                <Form.Control
-                    required
-                    placeholder="Confirm password..."
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => checkPasswordConfirm(e.target.value)}
-                    style={{background: arePasswordsEqual ? successColor : failColor}}
-                />
 
-                <Form.Control
-                    className="emailField"
-                    required
-                    placeholder="e-mail address..."
-                    type="text"
-                    value={email}
-                    onChange={(e) => checkEmail(e.target.value)}
-                />
+                <div className="input-wrapper emailField">
+                    <Form.Control
+                        required
+                        placeholder="e-mail address..."
+                        type="text"
+                        value={email}
+                        onChange={(e) => checkEmail(e.target.value)}
+                    />
+                </div>
 
-                {isEmailValid ?
-                    <div className="infoContainer">
-                        <Form.Check
-                            className="twoFactorAuth"
-                            type="checkbox"
-                            label="Use 2-Factor authentication"
-                            onChange={(_) => enable2FA()}
-                        />
+                <div className="infoContainer">
+                    <Form.Check
+                        className="twoFactorAuth"
+                        type="checkbox"
+                        label="Use 2-Factor authentication"
+                        ref={checkBoxRef}
+                        onChange={(_) => enable2FA()}
+                    />
 
-                        {is2FaEnabled ?
-                            <>
+                    {catptcha}
+
+
+                    {show2FaPopup &&
+                    <div className="twoFaContainer">
+                        <SectionTitle>TWO FACTOR AUTHENTICATION</SectionTitle>
+
+                        <div className="twoFaInputs">
+                            <div className="twoFaField-wrapper">
                                 <Form.Control
-                                    className="twoFaField"
                                     required
                                     placeholder="2FA code..."
                                     type="text"
                                     value={twoFaCode}
                                     onChange={(e) => setTwoFaCode(e.target.value)}
                                 />
+                            </div>
 
-                                <div style={{
-                                    display: "flex",
-                                    alignItems: "center"
-                                }}>
-                                    <img
-                                        className="twoFaImg"
-                                        src={`data:image/jpeg;base64,${qrCode}`}
-                                    />
-                                    {catptcha}
-                                </div>
-                            </> : null}
-                    </div> : null}
-
-                <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
-                    <ul>{errorMessage}</ul>
+                            <img
+                                className="twoFaImg"
+                                src={`data:image/jpeg;base64,${qrCode}`}
+                            />
+                            <button onClick={() => setShow2FaPopup(false)}>CLOSE</button>
+                        </div>
+                    </div>}
                 </div>
 
+
                 <div>
-                    {!is2FaEnabled ? catptcha : null}
-                    {errorMessage === "" && isLoadingShown ?
-                        <div className="registerLoadingContainer">
-                            <p className="registeringProgress">
-                                Creating new account...
-                            </p>
-                            <div className="loader"/>
-                        </div> : null}
+                    {(isLoadingShown) &&
+                    <div className="registerLoadingContainer">
+                        <p className="registeringProgress">
+                            Creating new account...
+                        </p>
+                        <div className="loader"/>
+                    </div>
+                    }
                     {isActivateAccountInfoShown ?
                         <div className="infoContainer">
                             <p>Please activate your account and then login</p>
