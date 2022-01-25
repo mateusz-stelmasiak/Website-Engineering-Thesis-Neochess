@@ -1,10 +1,12 @@
 import chess
 import chess.engine
+from sys import platform
 
 board = chess.Board()
-engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_win.exe")
-# LINUX VESION
-# engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")
+if platform == "win32":
+    engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_win.exe")
+elif platform == "linux":
+    engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")
 
 limit = chess.engine.Limit(time=2.0)
 
