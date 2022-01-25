@@ -13,6 +13,7 @@ import {getAvailableGameModes} from "../../../../serverCommunication/DataFetcher
 import {emit} from "../../../../redux/actions/socketActions";
 import {formatTime} from "../../../../serverCommunication/Utils";
 import Form from "react-bootstrap/Form";
+import FenDisplayingBoard from "../../../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
 
 
 function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
@@ -239,7 +240,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                         key={"position" + index}
                                         onClick={() => joinSinglePlayerGame(currGameMode, index)}
                                     >
-                                    Position{index}
+                                    <FenDisplayingBoard FEN={position}/>
                                 </span>
                                 )
                             }

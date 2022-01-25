@@ -1,12 +1,12 @@
 import "./FenDisplayingBoard.css"
 import React, {useEffect, useState} from "react";
+import {faChessPawn,faChessBishop,faChessRook,faChessKnight,faChessKing,faChessQueen} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
-
-export default function FenDisplayingBoard({props}) {
+export default function FenDisplayingBoard({FEN}) {
     let board_width = 8;
     let board_height = 8;
     const [squareArray, setSquareArray] = useState(undefined)
-    const [FEN, setFEN] = useState("")
 
     let boardSize = board_width * board_height
     let squareBoard = board_width === board_height
@@ -14,6 +14,7 @@ export default function FenDisplayingBoard({props}) {
     let maxMargin = percent / (board_width - 1)
 
     let squareSize = "" + Number(percent - maxMargin) + "%";
+
     let squareStyle = {
         'width': squareSize,
         'height': squareSize,
@@ -25,28 +26,98 @@ export default function FenDisplayingBoard({props}) {
         'backgroundColor': 'var(--body-color)'
     }
 
+    let pieceIcons = {
+        'K': <FontAwesomeIcon icon={faChessKing}/>,
+        'P': <FontAwesomeIcon icon={faChessPawn}/>,
+        'N': <FontAwesomeIcon icon={faChessKnight}/>,
+        'B': <FontAwesomeIcon icon={faChessBishop}/>,
+        'R': <FontAwesomeIcon icon={faChessRook}/>,
+        'Q': <FontAwesomeIcon icon={faChessQueen}/>
+    }
+
+    let whiteFigureStyle = {
+        'color':'white',
+    }
+
+    let blackFigureStyle = {
+        'color':'black'
+    }
+
     let clickSquare = (i) => {
     }
 
-    let generateBoard = () => {
+    let getSquareClass = (rank, file) => {
+        let parityFlag = rank % 2
+        let isBlack
+
+        if (((rank * board_width) + file) % 2 === 0) {
+            isBlack = parityFlag === 0
+        } else {
+            isBlack = parityFlag !== 0
+        }
+
+        return  isBlack ? "FenDisplayingBoard-square black" : "FenDisplayingBoard-square white"
+    }
+
+    let loadFEN = (FEN) => {
         let sqrArray = []
         let square = <></>
-        for (let i = 0; i < board_width * board_height; i++) {
-            let j = (i % board_width)
+        let split_FEN = FEN.split(' ')
 
-            let squareClass = "";
-            //TODO change to black
-            (j % 2) === 0 ? squareClass = "FenDisplayingBoard-square white" : squareClass = "FenDisplayingBoard-square white"
+        let fenBoard = split_FEN[0];   // taking only pieces position (FEN.split[0]), discarding game info
+        let row = 0;
+        let column = 0;
 
-            square = <div key={i} className={squareClass} style={squareStyle} onClick={() => clickSquare(i)}/>
-            sqrArray.push(square);
+        for (let i = 0; i < fenBoard.length; i++) {
+            let e = fenBoard[i];
+            if (e === '/') {
+                column = 0;
+                row++;
+            }
+            else
+            {
+                if (Number.isInteger(Number(e))) {
+
+                    for (let z = 0; z < Number(e); z++) {
+                        square =
+                            <div
+                                key={i}
+                                className={getSquareClass(column, row)}
+                                style={squareStyle}
+                                onClick={() => clickSquare(i)}
+                            />
+                        sqrArray.push(square);
+                        column++
+                    }
+
+                } else {
+
+                    square =
+                        <div
+                            key={i}
+                            className={getSquareClass(column,row)}
+                            style={squareStyle}
+                            onClick={() => clickSquare(i)}
+                        >
+                            <span className="FenDisplayingBoard-pieceContainer" style={e === e.toUpperCase() ? whiteFigureStyle:blackFigureStyle}>
+                                {pieceIcons[e.toUpperCase()]}
+                            </span>
+
+                        </div>
+                    sqrArray.push(square);
+                    column++
+                }
+            }
         }
+
         setSquareArray(sqrArray)
     }
 
+
+
     useEffect(() => {
-        generateBoard();
-    }, [])
+            loadFEN(FEN)
+        }, [FEN])
 
     return (
         <div className="FenDisplayingBoard">

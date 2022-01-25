@@ -26,14 +26,29 @@
 
 .FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square {
     transition: 200ms;
-
 }
 .FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square:hover{
     animation: text_glow 5s infinite;
     cursor: pointer;
-    filter: drop-shadow(0 0 1rem var(--primary-color-dark));
+    filter: drop-shadow(0 0 1rem var(--sec-color));
     transform: scale(1.2);
     background-color: var(--sec-color-dark);
+}
+
+.FenDisplayingBoard .FenDisplayingBoard-pieceContainer{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.FenDisplayingBoard .FenDisplayingBoard-container svg{
+    width: 80%;
+    height: 80%;
+    text-align: center;
+    stroke: black;
+    stroke-width: 20px;
+    stroke-linejoin: round;
 }
 
 .FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square.black{
@@ -44,6 +59,3 @@
     background-color: var(--chessboard--white);
 }
 
-.FenDisplayingBoard .FenDisplayingBoard-container .FenDisplayingBoard-square.white.glowing{
-
-}

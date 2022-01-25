@@ -26,7 +26,6 @@ function UserProfileScreen(props) {
         setAccCreated(response['Joined'])
         setAccountUpdatedTime(response['UpdatedAt'])
         setAccountCreatedTime(response['CreatedAt'])
-
     }, [])
 
     const are_fields_correct = () => {
