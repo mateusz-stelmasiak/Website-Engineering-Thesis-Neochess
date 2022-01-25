@@ -11,8 +11,9 @@ input[type=number] {
 }
 
 .twoFaImg {
-    height: 100px !important;
+    height: 200px !important;
     margin-top: 25px !important;
+    margin-bottom: 25px !important;
 }
 
 .registeringProgress {
@@ -24,7 +25,6 @@ input[type=number] {
     margin-top: 5px !important;
     display: inline-flex;
 }
-
 
 .codesContainer {
     margin: 25px;
@@ -72,7 +72,7 @@ input[type=number] {
 }
 
 .twoFaContainer .twoFaField-wrapper{
-    width: min(7rem,100%);
+    width: min(25rem,100%);
     padding: 0.7rem 1rem;
     background-color: var(--textfield-bg-color);
     border-radius: 10rem;

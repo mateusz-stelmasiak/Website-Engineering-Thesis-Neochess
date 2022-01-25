@@ -40,6 +40,7 @@ function RegisterForm({dispatch}) {
     const [reSentResult, setReSentResult] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState([]);
     const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
+
     let checkBoxRef = React.createRef();
     const successColor = 'var(--success-color)';
     const failColor = 'var(--fail-color)';
@@ -168,7 +169,7 @@ function RegisterForm({dispatch}) {
             setRecoveryCodes(generateRecoveryCodes());
             setShowRecoveryCodes(true)
             setQrCode((await get2FaCode(email))['qr_code']);
-            setShow2FaPopup(false)
+            setShow2FaPopup(true)
             return
         }
 
@@ -262,48 +263,6 @@ function RegisterForm({dispatch}) {
     }
 
     return <>
-        <Modal
-            show={showRecoveryCodes}
-            backdrop="static"
-            keyboard={false}
-            centered={true}
-            dialogClassName="modal"
-        >
-            <Modal.Header>
-                <Modal.Title>Recovery Codes</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                These recovery codes can help you to login into your account without one-time password.
-                <br/>
-                <br/>
-                Just enter one of these codes in 2FA field.
-                <br/>
-                <br/>
-                Please write down these codes and store them in a safe place.
-                <br/>
-                <br/>
-                <div className="codesContainer">
-                    {recoveryCodes.map((code, index) => {
-                        return <>
-                            <p
-                                key={index}
-                                style={{
-                                    marginTop: "0px"
-                                }}
-                            >{code}</p>
-                        </>
-                    })
-                    }
-                </div>
-            </Modal.Body>
-            <Modal.Footer>
-                <Button
-                    variant="primary"
-                    onClick={() => setShowRecoveryCodes(false)}
-                >Understood</Button>
-            </Modal.Footer>
-        </Modal>
-
         <div className="LogRegForm">
             <Form>
                 <div className="input-wrapper">
@@ -359,7 +318,6 @@ function RegisterForm({dispatch}) {
                     <span style={{color: passwordContainsUppercase ? successColor : failColor}}> uppercase letter</span>.
                 </p>
 
-
                 <div className="input-wrapper emailField">
                     <Form.Control
                         required
@@ -381,40 +339,60 @@ function RegisterForm({dispatch}) {
 
                     {!isActivateAccountInfoShown && catptcha}
 
-
                     {show2FaPopup &&
-                    <div className="twoFaContainer">
-                        <SectionTitle>TWO FACTOR AUTHENTICATION</SectionTitle>
-
-                        <div className="twoFaInputs">
-                            <div className="twoFaField-wrapper">
-                                <Form.Control
-                                    required
-                                    placeholder="2FA code..."
-                                    type="text"
-                                    value={twoFaCode}
-                                    onChange={(e) => setTwoFaCode(e.target.value)}
+                        <div className="twoFaContainer">
+                            <SectionTitle>TWO FACTOR AUTHENTICATION</SectionTitle>
+                            <div className="twoFaInputs">
+                                <div className="twoFaField-wrapper">
+                                    <Form.Control
+                                        required
+                                        placeholder="2FA code..."
+                                        type="text"
+                                        value={twoFaCode}
+                                        onChange={(e) => setTwoFaCode(e.target.value)}
+                                    />
+                                </div>
+                                <img
+                                    className="twoFaImg"
+                                    src={`data:image/jpeg;base64,${qrCode}`}
                                 />
+                                <div style={{textAlign: "left"}}>
+                                    These recovery codes can help you to login into your account without one-time
+                                    password.
+                                    <br/>
+                                    <br/>
+                                    Just enter one of these codes in 2FA field.
+                                    <br/>
+                                    <br/>
+                                    Please write down these codes and store them in a safe place.
+                                    <br/>
+                                    <br/>
+                                </div>
+                                <div className="codesContainer">
+                                    {recoveryCodes.map((code, index) => {
+                                        return <>
+                                            <p
+                                                key={index}
+                                                style={{
+                                                    marginTop: "0px"
+                                                }}
+                                            >{code}</p>
+                                        </>
+                                    })
+                                    }
+                                </div>
+                                <button onClick={() => setShow2FaPopup(false)}>CLOSE</button>
                             </div>
-
-                            <img
-                                className="twoFaImg"
-                                src={`data:image/jpeg;base64,${qrCode}`}
-                            />
-                            <button onClick={() => setShow2FaPopup(false)}>CLOSE</button>
-                        </div>
-                    </div>}
+                        </div>}
                 </div>
-
-
-                <div>
-                    {(isLoadingShown) &&
-                    <div className="registerLoadingContainer">
-                        <p className="registeringProgress">
-                            Creating new account...
-                        </p>
-                        <div className="loader"/>
-                    </div>
+                <div style={{display: "grid"}}>
+                    {isLoadingShown &&
+                        <div className="registerLoadingContainer">
+                            <p className="registeringProgress">
+                                Creating new account...
+                            </p>
+                            <div className="loader"/>
+                        </div>
                     }
                     {isActivateAccountInfoShown ?
                         <div className="infoContainer">
