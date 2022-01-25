@@ -11,8 +11,8 @@ import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
 import {Toaster} from "react-hot-toast";
-import CookiesPreferences from "./components/Cookies/CookiesPreferences";
-import CookiesPage from "./components/Cookies/CookiesPage";
+import CookiesPreferences from "./components/Cookies/CookiesPreferences/CookiesPreferences";
+import CookiesPage from "./components/Cookies/CookiesPage/CookiesPage";
 import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
 
 
