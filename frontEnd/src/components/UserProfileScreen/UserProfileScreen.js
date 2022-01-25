@@ -15,7 +15,7 @@ function UserProfileScreen(props) {
     const [email, setEmail] = useState(undefined);
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
-    const [accountUpdatedTime, setAccountUpdatedTime] = useState(undefined);
+    const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
 
     useEffect(async () => {
         const response = (await getUserData())
@@ -86,7 +86,7 @@ function UserProfileScreen(props) {
                             <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
                         </span>
                     </div>
-                    <FenDisplayingBoard/>
+                    <FenDisplayingBoard FEN={"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}/>
                 </div>
             </Section>
             <Section id="UserProfileEdition">
