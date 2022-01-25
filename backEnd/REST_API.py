@@ -1,5 +1,6 @@
 import json
 
+import requests
 from flask import Flask, request, jsonify, make_response, url_for, redirect
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from hashlib import sha256
@@ -19,7 +20,8 @@ dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
-allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
+allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1',
+                   '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
@@ -31,6 +33,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CAPTCHA_KEY'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
@@ -97,6 +100,19 @@ def get_domain_from_url(url):
         dom = '127.0.0.1'
 
     return dom
+
+
+def verify_recaptcha(token):
+    recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
+    recaptcha_secret_key = app.config['CAPTCHA_KEY']
+    payload = {
+        'secret': recaptcha_secret_key,
+        'response': token,
+        'remoteip': request.remote_addr,
+    }
+    response = requests.post(recaptcha_url, data=payload)
+    result = response.json()
+    return result.get('success', False)
 
 
 @app.route('/login', methods=['POST', 'OPTIONS'])
@@ -307,53 +323,59 @@ def register():
     email = request_data['email']
     is2FaEnabled = request_data['is2FaEnabled']
     hashed_recovery_codes = request_data['hashedRecoveryCodes']
+    captcha_token = request_data['captcha']
 
     if debug_mode:
         print("REGISTER REQUEST " + str(request_data))
 
-    try:
-        # handle username taken
-        db = ChessDB.ChessDB()
+    if verify_recaptcha(captcha_token):
+        try:
+            # handle username taken
+            db = ChessDB.ChessDB()
 
-        if db.user_exists(username):
+            if db.user_exists(username):
+                return generate_response(request, {
+                    "error": "Username already taken"
+                }, 403)
+
+            if db.user_exists(email):
+                return generate_response(request, {
+                    "error": "Email already taken"
+                }, 403)
+
+            # generate OTP data
+            otp_secret = base64.b32encode(email.encode('ascii'))
+            otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+
+            # add to database
+            db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
+                        RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility,
+                        hashed_recovery_codes if is2FaEnabled else None)
+
+            token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
+            link = url_for('confirm_email', token=token, _external=True)
+
+            if is2FaEnabled:
+                mail.send_qr_code(login, email, otp_url, otp_secret.decode('utf-8'))
+
+            mail.send_welcome_message(login, email, link)
+
+        except Exception as ex:
+            if debug_mode:
+                ("DB ERROR " + str(ex))
+
             return generate_response(request, {
-                "error": "Username already taken"
-            }, 403)
-
-        if db.user_exists(email):
-            return generate_response(request, {
-                "error": "Email already taken"
-            }, 403)
-
-        # generate OTP data
-        otp_secret = base64.b32encode(email.encode('ascii'))
-        otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
-
-        # add to database
-        db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
-                    RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility,
-                    hashed_recovery_codes if is2FaEnabled else None)
-
-        token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
-        link = url_for('confirm_email', token=token, _external=True)
-
-        if is2FaEnabled:
-            mail.send_qr_code(login, email, otp_url, otp_secret.decode('utf-8'))
-
-        mail.send_welcome_message(login, email, link)
-
-    except Exception as ex:
-        if debug_mode:
-            ("DB ERROR " + str(ex))
+                "error": "Database error"
+            }, 503)
 
         return generate_response(request, {
-            "error": "Database error"
-        }, 503)
+            "registration": 'successful'
+        }, 200)
 
-    return generate_response(request,
-                             {
-                                 "registration": 'successful'
-                             }, 200)
+    else:
+        return generate_response(request, {
+            "error": "Captcha verification failed"
+        }, 403)
 
 
 @app.route('/delete', methods=['DELETE', 'OPTIONS'])
@@ -532,7 +554,6 @@ def resent_activation_email():
         return generate_response(request, {
             "result": ex
         }, 503)
-
 
 
 @app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
@@ -729,8 +750,8 @@ def get_game_info():
                 'drawProposedColor': game.draw_proposed,
                 'currentPhase': game.defender_state.phase
                 }
-        
-#   print("currphase :" + str(data['currentPhase']))
+
+    #   print("currphase :" + str(data['currentPhase']))
     return generate_response(request, data, 200)
 
 
@@ -969,7 +990,6 @@ def get_history():
             result = possible_results[black_score]
             if str(white[2]) == user_id:
                 result = possible_results[white_score]
-
 
             # extract date info from given string
             day_mont_year = str(game['played'])[:10]

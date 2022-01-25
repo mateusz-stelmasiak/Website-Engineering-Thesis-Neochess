@@ -205,17 +205,20 @@ function RegisterForm({dispatch}) {
             //toast all errors
             errors.forEach((error) => {
                 console.log(error);
-                toast.error("ERROR:"+error, {duration: 10000})
+                toast.error("ERROR:" + error, {duration: 10000})
             });
 
             return;
         }
 
         //if all data is correct, try to register user
-        const resp = await register(username, password, captchaValue, email, is2FaEnabled, recoveryCodes);
-        if (resp === undefined) return;
-        if (resp.error !== undefined) {
-            setErrorMessage(resp.error);
+        const response = await register(username, password, captchaValue, email, is2FaEnabled, recoveryCodes);
+
+        if (response === undefined) return;
+        if (response.error !== undefined) {
+            setErrorMessage(response.error);
+            toast.error("ERROR:" + response.error, {duration: 10000});
+            setIsLoadingShown(false);
             return;
         }
 
