@@ -333,6 +333,7 @@ function RegisterForm({dispatch}) {
 
                 <div className="infoContainer">
                     <Form.Check
+                        disabled={!isEmailValid}
                         className="twoFactorAuth"
                         type="checkbox"
                         label="Use 2-Factor authentication"
