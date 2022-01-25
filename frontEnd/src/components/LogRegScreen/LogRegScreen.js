@@ -8,6 +8,7 @@ import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDispla
 import AboutNeoChess from "./AboutNeoChess";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment} from "@fortawesome/free-solid-svg-icons";
+import logo from "../../assets/neochess-logo.png";
 
 
 export default function LogRegScreen() {
@@ -28,7 +29,7 @@ export default function LogRegScreen() {
     ]
 
     let centerContainer = <CircleWidget
-        title={"neoCHESS"}
+        title={<><img src={logo} alt="Logo"/><span>neoCHESS</span><hr/></>}
         navigation={navItems}
         basecolor={"var(--primary-color)"}
         secColor={"var(--sec-color)"}
@@ -38,14 +39,16 @@ export default function LogRegScreen() {
     >
     </CircleWidget>;
 
-    let gitICON =<FontAwesomeIcon icon={faComment}/>
+    let gitICON = <FontAwesomeIcon icon={faComment}/>
 
-    let routeToGithub = () =>{
+    let routeToGithub = () => {
         window.history.pushState({page: 1}, "Login", "/login?")
         window.location.replace('https://github.com/mateusz-stelmasiak/NeoChess')
     }
     let outerContainer = <CircleWidget
-        title={<div onClick={routeToGithub}>GITHUB<div>{gitICON}</div></div>}
+        title={<div onClick={routeToGithub}>GITHUB
+            <div>{gitICON}</div>
+        </div>}
         views={centerViews}
         navigation={gitOptions}
         basecolor={"var(--sec-color)"}

@@ -62,11 +62,12 @@
 
 .CircleStatus h1{
     all:unset;
-    display: block;
     text-align: center;
     font-weight: bold;
     font-size: min(2em,3vw);
     animation: text_glow 5s infinite;
+    display: flex;
+    flex-direction: column;
 }
 
 .CircleStatus h2{
@@ -103,6 +104,11 @@
 
 .CircleStatus .contentContainer h1{
     margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color:var(--sec-color)
 }
 .CircleStatus .contentContainer div{
     font-size: 1.1rem;
@@ -162,7 +168,7 @@
     bottom: -0.3rem;
     content: "";
     display: block;
-    height: 3px;
+    height: 2px;
     left: 50%;
     position: absolute;
     background: var(--primary-color-dark);
@@ -193,6 +199,26 @@
 }
 .CircleWidget .success span{
     color: var(--success-color);
+}
+.CircleStatus .contentContainer h1{
+    position: relative;
+}
+.CircleStatus .contentContainer h1 img{
+    width: min(40vw,6rem);
+    height: min(40vw,6rem);
+}
+
+.CircleStatus .contentContainer hr{
+    border: unset;
+    position: relative;
+    width: 130%;
+    background-color: var(--sec-color-dark);
+    height: 4px;
+    border-radius: 30rem;
+    margin: 0;
+    margin-top: 25px;
+    margin-bottom: -20px;
+    filter: drop-shadow(0 0 1rem var(--sec-color-dark));
 }
 
 @media (max-width:750px) {
