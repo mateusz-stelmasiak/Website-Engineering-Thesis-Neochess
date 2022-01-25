@@ -14,7 +14,6 @@ import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDispla
 function UserProfileScreen(props) {
     const [email, setEmail] = useState(undefined);
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
-    const [accCreated, setAccCreated] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
     const [accountUpdatedTime, setAccountUpdatedTime] = useState(undefined);
 
@@ -23,7 +22,6 @@ function UserProfileScreen(props) {
         console.log(response)
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
-        setAccCreated(response['Joined'])
         setAccountUpdatedTime(response['UpdatedAt'])
         setAccountCreatedTime(response['CreatedAt'])
 
@@ -33,9 +31,7 @@ function UserProfileScreen(props) {
         return props.username !== undefined &&
             email !== undefined &&
             is2FaEnabled !== undefined &&
-            accCreated !== undefined&&
-            accountCreatedTime !==undefined &&
-            accountUpdatedTime !==undefined
+            accountCreatedTime !== undefined
     }
 
     let glowingStyle = {
@@ -76,19 +72,19 @@ function UserProfileScreen(props) {
                         <h1 style={glowingStyle}>CURRENT INFO</h1>
                         <span className="container">
                             <h3>Username</h3>
-                            <span>{are_fields_correct() ? props.username: <Dots>loading</Dots>}</span>
+                            <span>{are_fields_correct() ? props.username : <Dots>loading</Dots>}</span>
                         </span>
                         <span className="container">
                             <h3>Account created</h3>
-                            <span>{are_fields_correct() ? accountCreatedTime: <Dots>loading</Dots>}</span>
+                            <span>{are_fields_correct() ? accountCreatedTime : <Dots>loading</Dots>}</span>
                         </span>
                         <span className="container">
                             <h3>Account updated</h3>
-                            <span>{are_fields_correct() ? accountUpdatedTime: <Dots>loading</Dots>}</span>
+                            <span>{are_fields_correct() ? accountUpdatedTime : <Dots>loading</Dots>}</span>
                         </span>
                         <span className="container">
                             <h3>Email address</h3>
-                            <span>{are_fields_correct() ? email: <Dots>loading</Dots>}</span>
+                            <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
                         </span>
                     </div>
                     <FenDisplayingBoard/>
@@ -96,11 +92,11 @@ function UserProfileScreen(props) {
             </Section>
             <Section id="UserProfileEdition">
                 {are_fields_correct() &&
-                <UserEditForm
-                    username={props.username}
-                    email={email}
-                    is2FaEnabled={is2FaEnabled}
-                />}
+                    <UserEditForm
+                        username={props.username}
+                        email={email}
+                        is2FaEnabled={is2FaEnabled}
+                    />}
             </Section>
         </FooterHeaderWithMarginsLayout>
     );
