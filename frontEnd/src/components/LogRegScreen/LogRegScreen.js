@@ -42,7 +42,7 @@ export default function LogRegScreen() {
 
     let routeToGithub = () =>{
         window.history.pushState({page: 1}, "Login", "/login?")
-        window.location.replace('https://google.com')
+        window.location.replace('https://github.com/mateusz-stelmasiak/NeoChess')
     }
     let outerContainer = <CircleWidget
         title={<div onClick={routeToGithub}>GITHUB<div>{gitICON}</div></div>}
