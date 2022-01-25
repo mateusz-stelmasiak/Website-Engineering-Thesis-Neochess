@@ -356,9 +356,9 @@ def register():
             link = url_for('confirm_email', token=token, _external=True)
 
             if is2FaEnabled:
-                mail.send_qr_code(login, email, otp_url, otp_secret.decode('utf-8'))
+                mail.send_qr_code(username, email, otp_url, otp_secret.decode('utf-8'))
 
-            mail.send_welcome_message(login, email, link)
+            mail.send_welcome_message(username, email, link)
 
         except Exception as ex:
             if debug_mode:
@@ -536,16 +536,17 @@ def resent_activation_email():
 
     data = request.args['data']
 
-    if "@" not in data:
+    try:
         db = ChessDB.ChessDB()
         user = db.get_user(data)
-        data = user['Email']
 
-    try:
+        if "@" not in data:
+            data = user['Email']
+
         token = account_serializer.dumps(data, salt=app.config['SECRET_KEY'])
         link = url_for('confirm_email', token=token, _external=True)
 
-        mail.send_welcome_message(login, data, link)
+        mail.send_welcome_message(user['Username'], data, link)
 
         return generate_response(request, {
             "response": "OK"
@@ -630,7 +631,7 @@ def forgot_password():
             token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
             reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
 
-            mail.send_reset_password_token(user['userID'], email, reset_url)
+            mail.send_reset_password_token(user['Username'], email, reset_url)
         except Exception as ex:
             return generate_response(request, {
                 "response": f"Password reset error: {ex}"

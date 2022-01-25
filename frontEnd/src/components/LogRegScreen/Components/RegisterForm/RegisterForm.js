@@ -374,14 +374,12 @@ function RegisterForm({dispatch}) {
                                 </div>
                                 <div className="codesContainer">
                                     {recoveryCodes.map((code, index) => {
-                                        return <>
-                                            <p
-                                                key={index}
-                                                style={{
-                                                    marginTop: "0px"
-                                                }}
-                                            >{code}</p>
-                                        </>
+                                        return <p
+                                            key={index}
+                                            style={{
+                                                marginTop: "0px"
+                                            }}
+                                        >{code}</p>
                                     })
                                     }
                                 </div>
