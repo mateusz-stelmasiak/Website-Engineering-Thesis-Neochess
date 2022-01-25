@@ -7,7 +7,7 @@ import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
 import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
 import AboutNeoChess from "./AboutNeoChess";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faComment} from "@fortawesome/free-solid-svg-icons";
+import {faCodeBranch} from "@fortawesome/free-solid-svg-icons";
 import logo from "../../assets/neochess-logo.png";
 
 
@@ -39,13 +39,13 @@ export default function LogRegScreen() {
     >
     </CircleWidget>;
 
-    let gitICON = <FontAwesomeIcon icon={faComment}/>
+    let gitICON = <FontAwesomeIcon style={{'fontSize':'2rem'}} icon={faCodeBranch}/>
 
     let routeToGithub = () => {
         window.history.pushState({page: 1}, "Login", "/login?")
         window.location.replace('https://github.com/mateusz-stelmasiak/NeoChess')
     }
-    let outerContainer = <CircleWidget
+    let outerContainer = <CircleWidget onClick={routeToGithub}
         title={<div onClick={routeToGithub}>GITHUB
             <div>{gitICON}</div>
         </div>}
