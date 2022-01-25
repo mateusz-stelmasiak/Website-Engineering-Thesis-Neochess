@@ -1,0 +1,5 @@
+backEnd/.idea
+backEnd/__pycache__
+frontEnd/.idea
+frontEnd/.gitignore
+frontEnd/node_modules
