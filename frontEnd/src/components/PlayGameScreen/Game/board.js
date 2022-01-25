@@ -145,6 +145,7 @@ export default class Board {
         let split_FEN = this.FEN.split(' ')
 
         this.color_to_move = split_FEN[1];   //setting color to move from fen
+        let isCastlePossible = split_FEN[2];
         this.enPassant = split_FEN[3];
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
@@ -170,14 +171,31 @@ export default class Board {
                     this.grid[file * 8 + rank].y = temp[1];
                     this.grid[file * 8 + rank].old_x = temp[0];
                     this.grid[file * 8 + rank].old_y = temp[1];
-                    if ((file === 6 && this.grid[file * 8 + rank].color === 'w') || (file === 1 && this.grid[file * 8 + rank].color === 'b')) {
+                    if ((file === 6 && this.grid[file * 8 + rank].color === 'w') && this.grid[file * 8 + rank] || (file === 1 && this.grid[file * 8 + rank].color === 'b')) {
                         this.grid[file * 8 + rank].did_move = 0;
                     } else {
                         this.grid[file * 8 + rank].did_move = 1;
                     }
+                    console.log()
                     rank++;
                 }
             }
+        }
+        if (isCastlePossible && isCastlePossible.includes('K')){
+            this.grid[60].did_move = 0 //king                         //setting king and rook did_move to zero because if they can castle they for sure werent moved
+            this.grid[63].did_move = 0 //rook
+        }
+        if (isCastlePossible && isCastlePossible.includes('Q')){
+            this.grid[60].did_move = 0
+            this.grid[56].did_move = 0
+        }
+        if (isCastlePossible && isCastlePossible.includes('k')){
+            this.grid[4].did_move = 0
+            this.grid[7].did_move = 0
+        }
+        if (isCastlePossible && isCastlePossible.includes('q')){
+            this.grid[4].did_move = 0
+            this.grid[0].did_move = 0
         }
 
 
