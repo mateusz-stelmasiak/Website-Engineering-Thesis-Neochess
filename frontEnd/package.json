@@ -63,5 +63,8 @@
     "react-reel": "^1.2.3",
     "react-super-responsive-table": "^5.2.0",
     "p5": "^1.4.0"
+  },
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
   }
 }

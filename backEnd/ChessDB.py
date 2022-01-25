@@ -1,5 +1,4 @@
 import base64
-from datetime import date
 import mysql.connector
 import pyotp
 
@@ -14,21 +13,14 @@ server_time_difference = '02:00:00'
 
 class ChessDB:
     def __init__(self):
-
-        # self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
-        self.mydb = mysql.connector.connect(host="localhost", user="user",
-                                            password="Serek123",
-                                            database="neo-chess-database")
-
-        #self.mydb = mysql.connector.connect(host="localhost", user="root", password="Pudzian123", database="ChessDB1")
         # self.mydb = mysql.connector.connect(host="localhost", user="user",
         #                                     password="Serek123",
         #                                     database="neo-chess-database")
 
 
-        # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-        #                                     password="YhuuFd6Z",
-        #                                     database="13748919_neochess")
+        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
+                                            password="YhuuFd6Z",
+                                            database="13748919_neochess")
 
         self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?"
 
@@ -53,7 +45,8 @@ class ChessDB:
                             2FA boolean not null DEFAULT false,
                             OTPSecret varchar(64) not null,
                             AccountConfirmed boolean not null DEFAULT false,
-                            Joined DATE not null,
+                            CreatedAt DATETIME not null,
+                            UpdatedAt DATETIME,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             ELOVolatility FLOAT not null DEFAULT ''' + str(
@@ -98,7 +91,7 @@ class ChessDB:
 
     def get_curr_date(self):
         mycursor = self.mydb.cursor()
-        date = "SELECT CURRENT_DATE() AS Today"
+        date = "SELECT NOW() AS Today"
         mycursor.execute(date)
 
         return mycursor.fetchone()[0]
@@ -131,7 +124,7 @@ class ChessDB:
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Salt, Email, 2FA, OTPSecret, Joined, Elo, EloDeviation, EloVolatility)"
+                    "(Username, Password, Salt, Email, 2FA, OTPSecret, CreatedAt, Elo, EloDeviation, EloVolatility)"
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()
@@ -265,9 +258,10 @@ class ChessDB:
                                 Salt = %s,
                                 Email = %s,
                                 2FA = %s,
+                                UpdatedAt = %s,
                                 AccountConfirmed = %s WHERE userID = %s""")
 
-        data_update = (new_password, salt, email, is_2_fa_enabled, is_account_activated, user_id)
+        data_update = (new_password, salt, email, is_2_fa_enabled, self.get_curr_date(), is_account_activated, user_id)
         mycursor.execute(sql_update_query, data_update)
 
         self.mydb.commit()

@@ -333,7 +333,7 @@ function UserEditForm(props) {
                     </div>
 
                     <div className="InfoContainer EmailAddressContainer">
-                        <h2>Change Email Adress</h2>
+                        <h2>Change Email Address</h2>
                         <Form.Control
                             className="emailField"
                             required
@@ -365,6 +365,7 @@ function UserEditForm(props) {
                             onChange={(_) => enable2FA()}
                             checked={is2FaEnabled}
                         />
+
                         {is2FaEnabled ?
                             <>
                                 {!props.is2FaEnabled ?

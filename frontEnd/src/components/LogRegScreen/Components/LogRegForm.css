@@ -3,11 +3,45 @@
 }
 
 .LogRegForm {
-    width: 55%;
+    width: 60%;
 }
 
-.twoFaField {
-    margin-top: 25px !important;
+.LogRegForm form {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 0.7rem;
+}
+
+.LogRegForm .input-wrapper{
+    width: 95%;
+    padding: 0.7rem 1rem;
+    background-color: var(--textfield-bg-color);
+    border-radius: 10rem;
+
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.LogRegForm .input-wrapper .form-control {
+    all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    width: 90%;
+    color: var(--text-color);
+    text-align: left;
+}
+
+/*icon in field*/
+.LogRegForm .input-wrapper i {
+
+}
+
+.LogRegForm .input-wrapper i:hover {
+    color: var(--primary-color-dark);
+    cursor: pointer;
 }
 
 .loginContainer {
@@ -39,25 +73,7 @@ input[type=number] {
     display: flow-root !important;
 }
 
-.LogRegForm form {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
 
-
-.LogRegForm .form-control {
-    all: unset;
-    padding: 0.7rem 1rem;
-    width: 90%;
-
-    margin-top: 0.5rem;
-    color: var(--text-color);
-    background-color: var(--textfield-bg-color);
-    text-align: left;
-    border-radius: 10rem;
-}
 
 .LogRegForm p {
     font-size: 0.9rem;
@@ -66,30 +82,17 @@ input[type=number] {
     align-self: flex-start;
 }
 
-.LogRegForm .pass-wrapper {
-    position: relative;
-    width: 100%;
-    display: flex;
-}
 
-.LogRegForm i {
-    position: absolute;
-    top: 38%;
-    right: 10%;
-}
 
-.LogRegForm i:hover {
-    color: var(--primary-color-dark);
-    cursor: pointer;
-}
 
-.response {
+
+.LogRegForm .response {
     display: flex;
     flex-wrap: wrap;
     color: var(--text-color);
-    height: 4rem;
     width: 100%;
     align-items: center;
+    height: unset;
 }
 
 .emailField {

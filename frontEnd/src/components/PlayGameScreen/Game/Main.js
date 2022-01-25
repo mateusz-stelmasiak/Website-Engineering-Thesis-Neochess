@@ -146,10 +146,12 @@ export default function sketch(p5) {
     p5.setup = function () {
         board = new Board(p5);
         generate_pos_to_stocknot_dict();
+        console.log("SETTING UP")
 
         if (gameMode === "1" || gameMode == "2" !== undefined) {
             canvas_width = game_mode_defender_width;
         }
+
 
         if(gameMode=="2" && currentPhaseFromServer){
             board.phase = currentPhaseFromServer;
