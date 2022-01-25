@@ -1,6 +1,13 @@
 import "./FenDisplayingBoard.css"
 import React, {useEffect, useState} from "react";
-import {faChessPawn,faChessBishop,faChessRook,faChessKnight,faChessKing,faChessQueen} from "@fortawesome/free-solid-svg-icons";
+import {
+    faChessPawn,
+    faChessBishop,
+    faChessRook,
+    faChessKnight,
+    faChessKing,
+    faChessQueen
+} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function FenDisplayingBoard({FEN}) {
@@ -21,8 +28,8 @@ export default function FenDisplayingBoard({FEN}) {
     }
 
     let boardStyle = {
-        'width': '22rem',
-        'height': '22rem',
+        'width': '19rem',
+        'height': '19rem',
         'backgroundColor': 'var(--body-color)'
     }
 
@@ -35,12 +42,36 @@ export default function FenDisplayingBoard({FEN}) {
         'Q': <FontAwesomeIcon icon={faChessQueen}/>
     }
 
+    let example_FENS = ["", "", "", "", "", "", "", "", "", "", ""]
+    let FEN_DICT = {
+        'n': "nnPPPnnn/nqnPPnqn/nqqnPnqn/nqqqnnqn/nqnqqnqn/nqnnqqqn/nqnPnqqn/nnnPPnnn w - - 0 1",
+        'e': "PPnnnnnP/PPnnnnnP/1PnnPPPP/PPnnnnPP/PPnnnnPP/PPnnPPPP/PPnnnnnP/PPnnnnnP w - - 0 1",
+        'o': "PPnnnnPP/PnnppnnP/nnPPP1nn/npPPPPpn/npPPPPpn/nn1PPPnn/PnnppnnP/PPnnnnPP w - - 0 1"
+    }
+
+    let randomLetter = function () {
+        let keys = Object.keys(FEN_DICT);
+        return keys[ keys.length * Math.random() << 0];
+    };
+    let MAX_FEN_DICT = 2
+    let cycleFENS = (FENS) => {
+        //use for array
+        // let min = Math.ceil(0);
+        // let max = Math.floor(MAX_FEN_DICT);
+        // let random = Math.floor(Math.random() * (max - min)) + min;
+        // !FENS ? loadFEN(chosen) :loadFEN(chosen)
+
+        let randomLtr= randomLetter()
+        let chosen= FEN_DICT[randomLtr]
+        !FENS ? loadFEN(chosen) :loadFEN(chosen)
+    }
+
     let whiteFigureStyle = {
-        'color':'white',
+        'color': 'white',
     }
 
     let blackFigureStyle = {
-        'color':'black'
+        'color': 'black'
     }
 
     let clickSquare = (i) => {
@@ -56,14 +87,16 @@ export default function FenDisplayingBoard({FEN}) {
             isBlack = parityFlag !== 0
         }
 
-        return  isBlack ? "FenDisplayingBoard-square black" : "FenDisplayingBoard-square white"
+        return isBlack ? "FenDisplayingBoard-square black" : "FenDisplayingBoard-square white"
     }
 
     let loadFEN = (FEN) => {
         let sqrArray = []
-        let square = <></>
-        let split_FEN = FEN.split(' ')
+        setSquareArray(undefined)
 
+        let square = <></>
+
+        let split_FEN = FEN.split(' ')
         let fenBoard = split_FEN[0];   // taking only pieces position (FEN.split[0]), discarding game info
         let row = 0;
         let column = 0;
@@ -73,9 +106,7 @@ export default function FenDisplayingBoard({FEN}) {
             if (e === '/') {
                 column = 0;
                 row++;
-            }
-            else
-            {
+            } else {
                 if (Number.isInteger(Number(e))) {
 
                     for (let z = 0; z < Number(e); z++) {
@@ -95,11 +126,12 @@ export default function FenDisplayingBoard({FEN}) {
                     square =
                         <div
                             key={i}
-                            className={getSquareClass(column,row)}
+                            className={getSquareClass(column, row)}
                             style={squareStyle}
                             onClick={() => clickSquare(i)}
                         >
-                            <span className="FenDisplayingBoard-pieceContainer" style={e === e.toUpperCase() ? whiteFigureStyle:blackFigureStyle}>
+                            <span className="FenDisplayingBoard-pieceContainer"
+                                  style={e === e.toUpperCase() ? whiteFigureStyle : blackFigureStyle}>
                                 {pieceIcons[e.toUpperCase()]}
                             </span>
 
@@ -114,10 +146,15 @@ export default function FenDisplayingBoard({FEN}) {
     }
 
 
-
     useEffect(() => {
-            loadFEN(FEN)
-        }, [FEN])
+        if (!FEN) {
+            cycleFENS()
+            setInterval(cycleFENS, 500)
+            return
+        }
+
+        loadFEN(FEN)
+    }, [FEN])
 
     return (
         <div className="FenDisplayingBoard">

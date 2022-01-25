@@ -205,7 +205,7 @@ function RegisterForm({dispatch}) {
             //toast all errors
             errors.forEach((error) => {
                 console.log(error);
-                toast.error(error, {duration: 10000})
+                toast.error("ERROR:"+error, {duration: 10000})
             });
 
             return;

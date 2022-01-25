@@ -1,11 +1,28 @@
+:root{
+    --board-size:19rem
+}
+
 .FenDisplayingBoard {
     display: flex;
     flex-wrap: wrap;
     column-gap: 2%;
-    height: 100%;
     align-items: center;
     justify-content: center;
     flex-direction: row;
+    width: var(--board-size);
+    height: var(--board-size);
+    transition: 500ms;
+    animation: come_in 500ms;
+}
+
+/* Animate the color text glow */
+@keyframes come_in {
+    from {
+        transform: scale(0.3);
+    }
+    to {
+        transform: scale(1);
+    }
 }
 .FenDisplayingBoard h1{
     unset:all;

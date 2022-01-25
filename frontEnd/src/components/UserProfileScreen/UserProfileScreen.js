@@ -22,7 +22,7 @@ function UserProfileScreen(props) {
         console.log(response)
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
-        setAccountUpdatedTime(response['UpdatedAt'])
+        setAccountUpdatedTime(response['UpdatedAt']? response['UpdatedAt']:"--:--:---")
         setAccountCreatedTime(response['CreatedAt'])
     }, [])
 
@@ -86,7 +86,7 @@ function UserProfileScreen(props) {
                             <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
                         </span>
                     </div>
-                    <FenDisplayingBoard FEN={"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"}/>
+                    <FenDisplayingBoard/>
                 </div>
             </Section>
             <Section id="UserProfileEdition">

@@ -1,0 +1,31 @@
+.AboutNeoChess{
+    width: 70%;
+margin-top: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 1.2rem;
+    animation: appear 2600ms;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.AboutNeoChess h3{
+    font-size: 1.5rem;
+    animation: text_glow 5s;
+
+}
+
+.AboutNeoChess p{
+    color: var(--text-color);
+    margin:0;
+    text-justify: inter-word;
+}
