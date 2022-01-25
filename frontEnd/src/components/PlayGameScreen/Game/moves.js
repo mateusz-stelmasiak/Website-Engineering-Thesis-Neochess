@@ -16,7 +16,7 @@ class move {
         this.EndSquare = ending_square;
         this.type = arguments.length === 3 ? type : "n";
         // typy ruchow R - roszada dluga, r - roszada krotka , C - capture, P - pion wysuniety do en passant
-        //CP - zbicie przez en passant
+        //CP - zbicie przez en passant  PR - promocja
     }
 }
 
@@ -45,7 +45,6 @@ export function count_squares_to_edge() {
 export function Generate_moves(grid, check, gtype) {
     let ally_moves = [];
 
-    console.log("playingsas" + playingAs)
     for (let startSquare = 0; startSquare < 64; startSquare++) {
         let p = grid[startSquare];
         if (p.color === board.color_to_move && check === 0 && board.color_to_move === playingAs) { //TODO removed  && board.color_to_move === playingAs for now
@@ -81,9 +80,9 @@ export function Generate_moves(grid, check, gtype) {
         if (check === 1 && ally_moves.length === 0 && board.color_to_move === playingAs) {
             console.log("tu szachmat");
         }
-
-
     }
+
+
     if (board.check === 1 && ally_moves.length !== 0) {
         board.check = 0;
     }
@@ -94,8 +93,7 @@ export function Generate_moves(grid, check, gtype) {
     } else {
         moves = ally_moves;
     }
-    if (playingAs !== board.color_to_move)
-    {
+    if (playingAs !== board.color_to_move) {
         moves = [];
     }
 
@@ -163,9 +161,13 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
 
 //5 i 7
     //EN PASSEANT
-    if (board.lastmove.type === 'P') {
-        let Target = board.lastmove.EndSquare;
-        let numbers_to_edge;        //TODO napraw zeby nie dalo sie bić z rogów planszy XD
+
+
+    if (board.enPassant !== undefined && board.enPassant !== '-') {
+        let letterCodeToNubmer = board.enPassant.charCodeAt(0) - 97 + (8 - board.enPassant[1]) * 8;
+        let Target
+        piece.color === 'w' ? Target = letterCodeToNubmer + 8 : Target = letterCodeToNubmer - 8;
+        let numbers_to_edge;
         piece.color === 'w' ? numbers_to_edge = Numbers_of_squares_to_edge[startSquare][2] : numbers_to_edge = Numbers_of_squares_to_edge[startSquare][3];
         if (Math.abs(startSquare - Target) === 1) {
             piece.color === 'w' ? Target = Target + Directions[1] : Target = Target + Directions[0];
@@ -178,15 +180,16 @@ function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
     if (Squares_to_end > 0) {
         piece.color === 'w' ? Target = startSquare + Directions[5] : Target = startSquare + Directions[4];
         let Piece_on_Target = grid[Target];
-
-        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && Numbers_of_squares_to_edge[startSquare][2] > 0) {
+        let directions = [];
+        piece.color === 'w' ? directions = [Numbers_of_squares_to_edge[startSquare][3], Numbers_of_squares_to_edge[startSquare][2]] : directions = [Numbers_of_squares_to_edge[startSquare][2], Numbers_of_squares_to_edge[startSquare][3]]
+        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && directions[0] > 0) {
 
             t_moves.push(new move(startSquare, Target, 'C'));
 
         }
         piece.color === 'w' ? Target = startSquare + Directions[7] : Target = startSquare + Directions[6];
         Piece_on_Target = grid[Target];
-        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && Numbers_of_squares_to_edge[startSquare][3] > 0) {
+        if (Piece_on_Target.type_letter !== 'e' && Piece_on_Target.color !== piece.color && directions[1] > 0) {
 
             t_moves.push(new move(startSquare, Target, 'C'));
 
@@ -209,7 +212,9 @@ function check_if_promotion(piece, targetsquare) {
             piece.type = 'q';
             piece.type_letter = 'q';
         }
+        return true
     }
+    return false
 }
 
 function is_square_save(targetSquare) {
@@ -247,19 +252,17 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
     if (piece.did_move === 0) {
         let target = startSquare + Directions[3] * 3;
         let Piece_on_Target = grid[target];
-        if (Piece_on_Target!=undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
+        if (Piece_on_Target !== undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
             //roszada krótka
             if (grid[startSquare + Directions[3] * 2].type_letter === 'e' && grid[startSquare + Directions[3]].type_letter === 'e')
-
                 t_moves.push(new move(startSquare, target - 1, 'r'));
-
         }
 
         //roszada dluga
 
         target = startSquare + Directions[2] * 4;
         Piece_on_Target = grid[target];
-        if (Piece_on_Target!=undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
+        if (Piece_on_Target !== undefined && Piece_on_Target.type_letter !== 'e' && Piece_on_Target.did_move === 0) {
             if (grid[startSquare + Directions[2] * 2].type_letter === 'e' && grid[startSquare + Directions[2]].type_letter === 'e'
                 && grid[startSquare + Directions[2] * 3].type_letter === 'e') {
 
@@ -270,7 +273,6 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
 
 
     }
-    //
 
 }
 
@@ -385,9 +387,7 @@ function Get_Knight_moves(startSquare, piece, grid, t_moves) {
 
 
             if (Piece_on_target.type_letter !== 'e' && Piece_on_target.color !== piece.color) {
-
                 t_moves[t_moves.length - 1].type = 'C';
-
             }
         }
     }
@@ -446,7 +446,9 @@ function Get_long_moves(startSquare, piece, grid, t_moves) {
     }
 }
 
-function get_move(StartSquare, TargetSquare) {
+export function get_move(StartSquare, TargetSquare) {
+    console.log(opponent_moves)
+    console.log(future_opponent_moves)
     for (let i = 0; i < moves.length; i++) {
         if (moves[i].StartSquare === StartSquare && moves[i].EndSquare === TargetSquare) {
             return moves[i];
@@ -518,7 +520,6 @@ export function make_opponents_move(StartingSquare, TargetSquare, mType) {
         let Target;
         let rook_pos;
         mType === 'r' ? Target = StartingSquare + 2 : Target = StartingSquare - 2;
-        board.change_Turn();
 
         board.set_FEN_by_move(StartingSquare, Target, true); //przenies krola
         piece.snap();
@@ -529,6 +530,7 @@ export function make_opponents_move(StartingSquare, TargetSquare, mType) {
 
         board.grid[Target].did_move = 1;
         board.grid[Target].snap_back();
+        board.change_Turn()
 
     } else {
         if (mType === 'C') {
@@ -549,7 +551,6 @@ export function make_opponents_move(StartingSquare, TargetSquare, mType) {
         //kolejnosc wazna
 
         board.set_FEN_by_move(StartingSquare, TargetSquare, true);
-        console.log(board.FEN);
         piece.snap_back();
     }
     piece.did_move = 1;
@@ -559,6 +560,7 @@ export function make_opponents_move(StartingSquare, TargetSquare, mType) {
     Generate_opponent_moves(board.grid);
     check_if_check();
     Generate_moves(board.grid, board.check, "after_opponent");
+    //board.change_Turn();  <TODO to chyba musi sie dziac jak bedzie AI robiło rzecz
 }
 
 export function generate_pos_to_stocknot_dict() {
@@ -575,14 +577,13 @@ export function generate_pos_to_stocknot_dict() {
 }
 
 
-
 export function make_a_move() {
     for (let i = 0; i < board.grid.length; i++) {
         let piece = board.grid[i];
         if (piece.dragging === 1 && piece.type_letter !== 'e') {
             let Target_Square_position = piece.get_closest_position();
             let Starting_Square_position = [piece.old_x, piece.old_y]
-
+            let isPromotion = 0;
             let StartingSquare = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array(Starting_Square_position)); //TODO optymalizacja robie to drugi raz w set fen by move!!!
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
 
@@ -594,7 +595,6 @@ export function make_a_move() {
                         board.numOfMoves += 1;
                     }
                     board.lastPawnMoveOrCapture += 1;
-                    //TODO zbijanko + moze case z tego zrob
                     if (move.type === 'P') {
                         let EP_target2;
                         piece.color === 'w' ? EP_target2 = TargetSquare + Directions[0] : EP_target2 = TargetSquare + Directions[1];
@@ -607,7 +607,6 @@ export function make_a_move() {
                         let Target;
                         let rook_pos;
                         move.type === 'r' ? Target = StartingSquare + 2 : Target = StartingSquare - 2;
-                        board.change_Turn();
 
                         board.set_FEN_by_move(StartingSquare, Target, true); //przenies krola
                         piece.snap();
@@ -618,6 +617,7 @@ export function make_a_move() {
 
                         board.grid[Target].did_move = 1;
                         board.grid[Target].snap_back();
+                        board.change_Turn();
 
 
                     } else {
@@ -633,13 +633,16 @@ export function make_a_move() {
                         }
 
                         if (piece.type_letter === 'p' || piece.type_letter === 'P') {
-                            check_if_promotion(piece, TargetSquare);
+                            if(check_if_promotion(piece, TargetSquare)){
+                                isPromotion = 1
+                            }
                             board.lastPawnMoveOrCapture = 0;
                         }
                         //kolejnosc wazna
-                        console.log(move);
+
                         board.set_FEN_by_move(StartingSquare, TargetSquare, true);
-                        console.log(board.FEN);
+
+
 
                         piece.snap();
                     }
@@ -647,11 +650,12 @@ export function make_a_move() {
                     moves = [];
                     opponent_moves = [];
 
-                    if(gameMode!==1 || board.SetupState===-1){
+                    if (gameMode !== 1 || board.SetupState === -1) {
                         let data = {
                             'startingSquare': StartingSquare,
                             'targetSquare': TargetSquare,
-                            'mtype': move.type
+                            'mtype': move.type,
+                            'isPromotion':isPromotion
                         }
                         sendMoveToServer(data, board.FEN);
                     }

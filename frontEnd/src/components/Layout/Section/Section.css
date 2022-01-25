@@ -1,0 +1,16 @@
+.Section {
+    -webkit-box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);
+    background-color: var(--section-bg-color);
+
+}
+
+.Section .Section-content {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    padding: 2rem 5%;
+    row-gap: 4rem;
+
+}

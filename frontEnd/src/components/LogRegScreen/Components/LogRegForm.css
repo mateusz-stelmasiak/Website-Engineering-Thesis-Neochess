@@ -1,75 +1,119 @@
-:root{
+:root {
     --textfield-bg-color: #0b0b0b;
 }
 
 .LogRegForm {
-    width: 55%;
+    width: 60%;
 }
 
-.LogRegForm form{
-    margin-top:1.5rem;
+.LogRegForm form {
+    margin-top: 1.5rem;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
+    row-gap: 0.7rem;
 }
 
-
-.LogRegForm .form-control{
-    all:unset;
+.LogRegForm .input-wrapper{
+    width: 95%;
     padding: 0.7rem 1rem;
-    width: 90%;
-
-    margin-top: 0.5rem;
-    color: var(--text-color);
     background-color: var(--textfield-bg-color);
-    text-align: left;
     border-radius: 10rem;
+
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
 }
 
-.LogRegForm p{
+.LogRegForm .input-wrapper .form-control {
+    all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    width: 90%;
+    color: var(--text-color);
+    text-align: left;
+}
+
+/*icon in field*/
+.LogRegForm .input-wrapper i {
+
+}
+
+.LogRegForm .input-wrapper i:hover {
+    color: var(--primary-color-dark);
+    cursor: pointer;
+}
+
+.loginContainer {
+    display: grid !important;
+}
+
+.resetEmailButton {
+    display: inline-block !important;
+    margin-top: 100px !important;
+}
+
+.forgotPassword {
+    margin-top: 10px !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.notActivatedAccountContainer {
+    display: flow-root !important;
+}
+
+
+
+.LogRegForm p {
     font-size: 0.9rem;
     color: var(--text-color);
     margin: 0.4rem 0rem;
     align-self: flex-start;
 }
 
-.LogRegForm .pass-wrapper {
-    position: relative;
-    width: 100%;
-    display: flex;
-}
 
-.LogRegForm i {
-    position: absolute;
-    top: 38%;
-    right: 10%;
-}
-.LogRegForm i:hover{
-    color: var(--primary-color-dark);
-    cursor: pointer;
-}
 
-.response{
+
+
+.LogRegForm .response {
     display: flex;
     flex-wrap: wrap;
     color: var(--text-color);
-    height: 4rem;
     width: 100%;
     align-items: center;
+    height: unset;
+}
+
+.emailField {
+    margin-top: 25px !important;
+}
+
+.twoFactorAuth {
+    margin-top: 25px !important;
 }
 
 .errorMessage {
-    flex: 1 1 100%;
     margin-top: 1rem;
 }
 
-.errorMessage:before{
+.errorMessage:before {
     content: "Operation failed: ";
     color: var(--fail-color);
     margin-right: 0.2rem;
 }
 
-.feedbackMessage:before{
+.feedbackMessage:before {
     content: "Operation status: ";
     color: var(--success-color);
     margin-right: 0.2rem;
@@ -81,22 +125,23 @@
 }
 
 .LogRegForm Button{
-    all:unset;
-
+    all: unset;
     padding: 0.7rem 4.5rem;
-
     background-color: var(--sec-color);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
     margin-top: 1rem;
 }
-.LogRegForm Button:hover{
-    transition:200ms;
+
+.LogRegForm Button:hover {
+    transition: 200ms;
     transform: scale(1.1);
     background-color: var(--sec-color-dark);
-    color:var(--section-bg-color);
+    color: var(--section-bg-color);
 }
 
-
+.rc-anchor-container {
+    margin-top: 1rem;
+}
 
 @media all and (min-width: 480px) {
 

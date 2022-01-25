@@ -3,12 +3,14 @@ import "./userReducer"
 import userInfoReducer from "./userReducer";
 import gameInfoReducer from "./gameReducer"
 import socketReducer from "./socketReducer"
+import cookieReducer from "./cookieReducer"
 
 //all reducers combined
 const rootReducer = combineReducers({
     user: userInfoReducer,
     game: gameInfoReducer,
     socket:socketReducer,
+    cookie:cookieReducer
 })
 
 
@@ -35,6 +37,8 @@ export const mapAllStateToProps = (state) => {
         opponentsStatus: state.game.opponentsStatus,
         loadingGameInfo: state.game.loadingGameInfo,
         whiteScore:state.game.whiteScore,
-        blackScore:state.game.blackScore
+        blackScore:state.game.blackScore,
+        drawProposedColor: state.game.drawProposedColor,
+        currentPhase:state.game.currentPhase
     };
 };

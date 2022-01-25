@@ -8,8 +8,6 @@ function print_board() {
 
 
         }
-        console.log(tempxd);
-        console.log("\n")
     }
 }
 
@@ -20,5 +18,4 @@ let temp="";
     for (let i = 0; i < board.grid.length; i++) {
         temp+= board.grid[i].type_letter + " ";
     }
-    console.log(temp);
 }

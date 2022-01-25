@@ -1,25 +1,34 @@
-import React, {useContext, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import "./LogRegForm.css";
-import "../../../serverLogic/APIConfig.js"
+import "../../../serverCommunication/APIConfig.js"
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory} from 'react-router-dom';
-import {login, logout} from "../../../serverLogic/LogRegService"
+import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serverCommunication/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
-import Dots from "../../CommonComponents/Dots";
+import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
+import {toast} from "react-hot-toast";
+import "./ActivateAccountPopup.css"
+
 
 function LoginForm({dispatch}) {
     const [username, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [passwordShown, setPasswordShown] = useState(false);
+    const [twoFaCode, setTwoFaCode] = useState("");
+    const [isTwoFaUsed, setIsTwoFaUsed] = useState(false);
+    const [isAccountActivated, setIsAccountActivated] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [feedBack, setFeedback] = useState("");
+    const [forgotPassword, setForgotPassword] = useState(false);
+
     const togglePasswordVisiblity = () => {
         setPasswordShown(!passwordShown);
     };
+
     const eye = <FontAwesomeIcon icon={faEye}/>;
 
     //routing after succesfull login
@@ -36,9 +45,29 @@ function LoginForm({dispatch}) {
         event.preventDefault();
         //reset error message
         setErrorMessage("");
-        setFeedback(<span>Logging in<Dots/></span>);
-        let resp = await login(username, password)
 
+        const response = await login(username, password, "")
+
+        if (response['error'] === undefined) {
+            setIsAccountActivated(response['accountActivated'])
+
+            if (response['accountActivated']) {
+                setIsTwoFaUsed(response['twoFa'])
+
+                if (response['twoFa']) {
+                    if (twoFaCode !== "" && await CheckTwoFaCode()) {
+                        await ForwardAfterLogin(await login(username, password, twoFaCode));
+                    }
+                } else {
+                    await ForwardAfterLogin(response);
+                }
+            }
+        } else {
+            setErrorMessage(response['error'])
+        }
+    }
+
+    async function ForwardAfterLogin(resp) {
         if (resp.error !== undefined) {
             setErrorMessage(resp.error);
             return;
@@ -51,45 +80,125 @@ function LoginForm({dispatch}) {
         routeToNext();
     }
 
+    async function CheckTwoFaCode() {
+        const response = await check2FaCode(twoFaCode, username)
+
+        if (!response['result']) {
+            setErrorMessage("Two authentication code is incorrect");
+        }
+
+        return response['result'];
+    }
+
+
+    function AssignTwoFaCode(value) {
+        if (value.length <= 6) {
+            setTwoFaCode(value);
+        }
+    }
+
+    let dismissToast = (toastId) => {
+        toast.dismiss(toastId)
+        setIsAccountActivated(true)
+    }
+
+    let resentEmail = (username, toastId) => {
+        dismissToast(toastId)
+        reSentActivationEmail(username)
+    }
+
+    useEffect(() => {
+        //toast activate account popup
+        if (isAccountActivated === false) {
+            let toastDuration = 4000;
+
+            toast.custom((t) => (
+                    <div className="ActivateAccountPopup">
+                        <div className="ActivateAccountPopup-text">
+                            <span>Account has not been activated!</span>
+                            <span id="secText">click the link in email to activate</span>
+                        </div>
+
+                        <div className="ActivateAccountPopup-buttons">
+                            <button id="resend" onClick={() => resentEmail(username, t.id)}>RESEND EMAIL</button>
+                            <button id="dismiss" onClick={() => dismissToast(t.id)}>DISMISS</button>
+                        </div>
+                    </div>),
+                {
+                    duration: 4000
+                });
+
+            //set account activated to false after disapears
+            setTimeout(() => setIsAccountActivated(true), toastDuration)
+        }
+
+    }, [isAccountActivated])
+
 
     return (
+        <>
+            {!forgotPassword ?
+                <div className="LogRegForm">
+                    <Form>
+                        <div className="input-wrapper">
+                            <Form.Control
+                                required
+                                placeholder="Username..."
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUserName(e.target.value)}
+                            />
+                        </div>
 
-        <div className="LogRegForm">
+                        <div className="input-wrapper">
+                            <Form.Control
+                                required
+                                placeholder="Password..."
+                                type={passwordShown ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <i
+                                onClick={togglePasswordVisiblity}
+                                style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
+                            >{eye}</i>
+                        </div>
 
-            <Form onSubmit={HandleSubmit}>
+                        {isTwoFaUsed &&
+                        <div className="input-wrapper">
+                            <Form.Control
+                                className="twoFaField"
+                                required
+                                placeholder="2FA code..."
+                                type="text"
+                                value={twoFaCode}
+                                onChange={(e) => setTwoFaCode(e.target.value)}
+                            />
+                        </div>
+                        }
 
-                <Form.Control
-                    required
-                    placeholder="Username..."
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUserName(e.target.value)}
-                />
+                        <div className="response">
+                            {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
+                                feedBack !== "" && <span className="feedbackMessage">{feedBack}</span>}
+                        </div>
 
-                <div className="pass-wrapper">
-                    <Form.Control
-                        required
-                        placeholder="Password..."
-                        type={passwordShown ? "text" : "password"}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                    <i
-                        onClick={togglePasswordVisiblity}
-                        style={{color: passwordShown ? 'var(--primary-color)' : 'var(--body-color)'}}
-                    >{eye}</i>
+                        <div className="loginContainer">
+                            <Button onClick={HandleSubmit} type="submit">LOGIN</Button>
+                            <a
+                                className="forgotPassword"
+                                onClick={() => setForgotPassword(true)}
+                            >
+                                Forgot password?
+                            </a>
+                        </div>
+
+
+                    </Form>
                 </div>
-
-                <div className="response">
-                        {errorMessage !== "" ? <span className="errorMessage">{errorMessage}</span> :
-                            feedBack!=="" && <span className="feedbackMessage">{feedBack}</span>  }
-                </div>
-
-
-                <Button type="submit">LOGIN</Button>
-            </Form>
-        </div>
-    );
+                :
+                <ForgotPasswordForm/>
+            }
+        </>);
 }
 
 // Connect Redux to React

@@ -19,16 +19,12 @@ export function simulate_moves_for_ally(grid, ally_moves) {
     board.color_to_move === 'w' ? opponent_king = get_white_king_pos(board.grid) : opponent_king = get_black_king_pos(board.grid);
     let temp_grid = grid.slice();
     Generate_moves(temp_grid, 0, "future");
-    console.log("nowa paczka");
-    console.log(future_moves);
     let future_move;
     let temp_move;
     for (let i = 0; i < future_moves.length; i++) {
         let check_flag = 0;
         simulation_grid = simulate_set_grid_by_move(future_moves[i].StartSquare, future_moves[i].EndSquare, temp_grid,future_moves[i].type);
         Generate_opponent_moves(simulation_grid, "future2",);
-
-        console.log(future_opponent_moves2);
         if(board.color_to_move ==='b')
         {
             ally_king = simulate_black_king_pos(simulation_grid);

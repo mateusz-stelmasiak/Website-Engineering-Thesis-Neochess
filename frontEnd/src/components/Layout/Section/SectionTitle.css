@@ -1,0 +1,25 @@
+.SectionTitle {
+    all: unset;
+    width: 100%;
+    position: relative;
+}
+
+.SectionTitle span{
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    padding: 1rem 0;
+    font-weight: 500;
+    width: 100%;
+
+    font-size: 2.2rem;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.SectionTitle hr{
+    height: 0.3rem;
+    background-color: var(--primary-color);
+    filter: drop-shadow(0 0 0.2rem var(--primary-color-dark));
+    border-color:var(--primary-color);
+}

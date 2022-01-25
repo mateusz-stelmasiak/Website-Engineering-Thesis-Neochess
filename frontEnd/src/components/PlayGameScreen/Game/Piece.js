@@ -1,4 +1,4 @@
-import {pieces_dict, pixel_positions, scalar, textures,size} from "./Main";
+import {pieces_dict, pixel_positions, scalar, textures, size} from "./Main";
 import {Distance_between_points, get_pixel_position_from_pixel_positon_array} from "./moves";
 
 export default class Piece {
@@ -24,8 +24,6 @@ export default class Piece {
         this.p5 = p5;
         this.did_move = 0;
         this.color = "none";
-
-        // console.log(Object.keys(pieces_dict).find(key => pieces_dict[key] === type))
         this.type_letter = type;
         type = type.toLowerCase();
         this.type = Object.keys(pieces_dict).find(key => pieces_dict[key] === type);
@@ -36,11 +34,12 @@ export default class Piece {
         this.possible_moves = [];
         this.old_x = this.x;
         this.old_y = this.y;
-        this.grid_pos = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array([this.x,this.y]));
+        this.grid_pos = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array([this.x, this.y]));
+        // this.myDiv = createDiv(<div>xd</div>);
     }
 
-    get_grid_pos(){
-        let pos = [this.x,this.y];
+    get_grid_pos() {
+        let pos = [this.x, this.y];
         this.grid_pos = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array(pos));
         return this.grid_pos;
     }
@@ -90,6 +89,7 @@ export default class Piece {
 
     draw_piece() {
         this.p5.push();
+        // this.myDiv.style('font-size', '20px');
         let trueType = this.type_letter;
         this.p5.noStroke();
         this.color === "w" ? trueType = this.type_letter.toUpperCase() : trueType = this.type_letter;
@@ -97,6 +97,7 @@ export default class Piece {
         this.p5.translate(scalar / 2, scalar / 2);
         this.rect = this.p5.rect(this.x, this.y, this.scaled_size, this.scaled_size);
         this.p5.pop();
+
     }
 
     isIntersecting() {

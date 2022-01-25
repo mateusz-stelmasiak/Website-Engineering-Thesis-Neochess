@@ -1,18 +1,21 @@
 import "./Footer.css"
 import {Link} from "react-router-dom";
+import {connect} from "react-redux";
+import {setPreferencesOpen} from "../../redux/actions/cookieActions";
+import React from "react";
 
-function Banner(){
+function Footer({dispatch}){
     return (
-        <footer className="Footer">
+        <footer>
             <div className="moreinfoContainer">
                 <a href="https://www.put.poznan.pl/">Politechnika Poznańska - praca dyplomowa</a>
             </div>
             <div className="hyperlinksContainer">
-                <Link to={process.env.REACT_APP_TOKEN+'/polityka-prywatnosci/'}> Polityka Prywatności </Link>
-                <Link to={process.env.REACT_APP_TOKEN+'/pliki-cookie'}> Ustawienia plików cookie </Link>
-                <Link to={process.env.REACT_APP_TOKEN+'/informacje-prawne/'}> Informacje prawne </Link>
+                <Link to={'/about'}> About </Link>
+                <Link to={'/cookies'}> Cookies </Link>
+                <a onClick={()=>dispatch(setPreferencesOpen(true))}>Cookie Preferences</a>
             </div>
         </footer>
     );
 }
-export default Banner;
+export default  connect()(Footer);

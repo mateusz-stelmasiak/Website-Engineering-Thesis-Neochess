@@ -1,22 +1,20 @@
 import React from "react";
-import CircleWidget from "../CommonComponents/CircleWidget";
 import "./LogRegScreen.css"
-import OrbitContainer from "../OrbitContainer/OrbitContainer";
+import OrbitContainer from "./Components/OrbitContainer/OrbitContainer";
 import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm";
+import RegisterForm from "./Components/RegisterForm/RegisterForm";
+import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
 
 
 export default function LogRegScreen() {
     let navItems = [
         <>LOGIN</>,
         <>REGISTER</>,
-        <>WATCH</>
     ];
 
     let centerViews = [
         <LoginForm/>,
         <RegisterForm/>,
-        <h2>NOT YET IMPLEMENTED</h2>
     ]
 
     let centerContainer =  <CircleWidget
@@ -26,6 +24,7 @@ export default function LogRegScreen() {
         secColor={"var(--sec-color)"}
         size={'large'}
         views = {centerViews}
+        renderWithContent = {false}
     >
     </CircleWidget>;
 
@@ -36,16 +35,12 @@ export default function LogRegScreen() {
     >
     </CircleWidget>
 
-
-
     return (
         <div className="LogRegScreen">
-
             <OrbitContainer
                 center={centerContainer}
                 outer={outerContainer}
             />
-
         </div>
     );
 }

@@ -1,0 +1,37 @@
+.UserProfileScreen h1{
+    all: unset;
+    display: block;
+    text-align: center;
+    font-weight: bold;
+    font-size: min(3em, 5vw);
+    animation: text_glow 5s infinite;
+    color: var(--sec-color);
+}
+
+
+.CurrentInfo-container .container{
+    background-color: var(--body-color);
+    padding: 0.2rem 2rem;
+    border-radius: 1rem;
+
+    font-weight: bold;
+    animation: none;
+    display: flex;
+    column-gap: 1rem;
+    align-items: center;
+}
+
+.CurrentInfo-container .container h3{
+    color:var(--sec-color-dark);
+    'animation': 'text_glow 5s infinite',
+}
+.CurrentInfo-container .container h3:after{
+    content: ':';
+}
+
+.CurrentInfo-container .container span{
+
+    color:var(--text-color);
+    font-weight: bold;
+    animation: none;
+}

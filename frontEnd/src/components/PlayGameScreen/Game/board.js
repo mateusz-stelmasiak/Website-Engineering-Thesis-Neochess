@@ -3,23 +3,16 @@ import {
     pixel_positions,
     size,
     playingAs,
-    canvas_height,
-    canvas_width,
-    rows,
-    cols,
-    Checkboard,
     Checkboard_size,
     pieces_dict,
-    myFont,
     Font,
     textures,
     scalar,
     shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn,
 } from "./Main";
 import Piece from "./Piece";
-import {check_if_check, Generate_moves, Generate_opponent_moves, moves} from "./moves";
-import CSquare from "./CSquare";
-import {forEach} from "react-bootstrap/ElementChildren";
+import {Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
+import {store} from "../../../index";
 
 
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -40,9 +33,9 @@ export default class Board {
         for (var key in pieces_dict) {
             i += 1;
             if (playingAs === 'b') {
-                this.gameMode2_grid.push(new Piece(pieces_dict[key], this.p5, Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * i));
+                this.gameMode2_grid.push(new Piece(pieces_dict[key], this.p5, Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * i));
             } else {
-                this.gameMode2_grid.push(new Piece(pieces_dict[key].toUpperCase(), this.p5, Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * i));//dont ask why 0.666
+                this.gameMode2_grid.push(new Piece(pieces_dict[key].toUpperCase(), this.p5, Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * i));//dont ask why 0.666
                 this.gameMode2_grid[this.gameMode2_grid.length - 1].color = 'w'; //TODO w konstrukotrze koloru nie da sie podac XD
             }
 
@@ -56,7 +49,8 @@ export default class Board {
         this.check = 0;
         this.enPassant = "-";
         this.SetupState = 0;
-        this.waveFunction=0; //used for calculating wave animation timing
+        this.phase = 0;
+        this.waveFunction = 0; //used for calculating wave animation timing
     }
 
 
@@ -111,7 +105,6 @@ export default class Board {
         //split 3 - en passant
         temp_fen += " " + this.color_to_move + " " + this.FEN.split(' ')[2] + " " + this.enPassant + " " + this.lastPawnMoveOrCapture + " " + this.numOfMoves;
         this.FEN = temp_fen;
-        console.log("AAAAA " + temp_fen);
         this.load_FEN();
     }
 
@@ -141,7 +134,6 @@ export default class Board {
         board.grid[TargetSquare].old_x = pixel_positions[TargetSquare][0];
         board.grid[TargetSquare].old_y = pixel_positions[TargetSquare][1];
 
-        console.log(board.color_to_move)
         board.change_Turn();
         Generate_opponent_moves(board.grid);
         Generate_moves(board.grid, board.check, "after_opponent");
@@ -151,7 +143,10 @@ export default class Board {
 
     load_FEN() {
         let split_FEN = this.FEN.split(' ')
+
         this.color_to_move = split_FEN[1];   //setting color to move from fen
+        let isCastlePossible = split_FEN[2];
+        this.enPassant = split_FEN[3];
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
         }
@@ -176,40 +171,60 @@ export default class Board {
                     this.grid[file * 8 + rank].y = temp[1];
                     this.grid[file * 8 + rank].old_x = temp[0];
                     this.grid[file * 8 + rank].old_y = temp[1];
-                    if ((file === 6 && this.grid[file * 8 + rank].color === 'w')||(file === 1 && this.grid[file * 8 + rank].color === 'b')) {
+                    if ((file === 6 && this.grid[file * 8 + rank].color === 'w') && this.grid[file * 8 + rank] || (file === 1 && this.grid[file * 8 + rank].color === 'b')) {
                         this.grid[file * 8 + rank].did_move = 0;
-                    }else{
+                    } else {
                         this.grid[file * 8 + rank].did_move = 1;
                     }
+                    console.log()
                     rank++;
                 }
             }
         }
+        if (isCastlePossible && isCastlePossible.includes('K')){
+            this.grid[60].did_move = 0 //king                         //setting king and rook did_move to zero because if they can castle they for sure werent moved
+            this.grid[63].did_move = 0 //rook
+        }
+        if (isCastlePossible && isCastlePossible.includes('Q')){
+            this.grid[60].did_move = 0
+            this.grid[56].did_move = 0
+        }
+        if (isCastlePossible && isCastlePossible.includes('k')){
+            this.grid[4].did_move = 0
+            this.grid[7].did_move = 0
+        }
+        if (isCastlePossible && isCastlePossible.includes('q')){
+            this.grid[4].did_move = 0
+            this.grid[0].did_move = 0
+        }
+
 
     }
 
     //signals to the player which side of the board he's operating
-    highlightBoardSide(side,highlight_color){
-        let modifier=0; //decides which side is being drawn, start drawing on sqr 0 for black, sqr 32 for white
-        if (side==='w'){ modifier=32;}
-        for (let i = modifier; i < board.grid.length-(modifier+board.grid.length/2)%board.grid.length  ; i++) {
+    highlightBoardSide(side, highlight_color) {
+        let modifier = 0; //decides which side is being drawn, start drawing on sqr 0 for black, sqr 32 for white
+        if (side === 'w') {
+            modifier = 32;
+        }
+        for (let i = modifier; i < board.grid.length - (modifier + board.grid.length / 2) % board.grid.length; i++) {
             let highlight = pixel_positions[i];
             this.p5.push()
             this.p5.noStroke();
-            this.p5.translate(5,5)
+            this.p5.translate(5, 5)
             let squareColor = this.p5.color(highlight_color.r, highlight_color.g, highlight_color.b);
             squareColor.setAlpha(48);
             this.p5.fill(squareColor);
-            this.p5.rect(highlight[0], highlight[1], size-10, size-10);
+            this.p5.rect(highlight[0], highlight[1], size - 10, size - 10);
             this.p5.pop();
 
         }
     }
 
-    highlightAroundPieces(side,highlight_color){
+    highlightAroundPieces(side, highlight_color) {
         for (let k = 0; k < this.grid.length; k++) {
             let piece = this.grid[k];
-            if (piece.color===side){
+            if (piece.color === side) {
                 this.p5.push()
                 let squareColor = this.p5.color(highlight_color.r, highlight_color.g, highlight_color.b);
                 squareColor.setAlpha(48);
@@ -218,14 +233,14 @@ export default class Board {
                 for (let x = 0; x <= this.p5.width; x = x + 30) {
                     for (let y = 0; y <= this.p5.height; y = y + 30) {
                         // starting point of each circle depends on mouse position
-                        const xAngle = this.p5.map(this.p5.mouseX, 0, this.p5.width, -4 *  this.p5.PI, 4 *  this.p5.PI , true);
-                        const yAngle = this.p5.map(this.p5.mouseY, 0, this.p5.height, -4 *  this.p5.PI , 4 *  this.p5.PI , true);
+                        const xAngle = this.p5.map(this.p5.mouseX, 0, this.p5.width, -4 * this.p5.PI, 4 * this.p5.PI, true);
+                        const yAngle = this.p5.map(this.p5.mouseY, 0, this.p5.height, -4 * this.p5.PI, 4 * this.p5.PI, true);
                         // and also varies based on the particle's location
                         const angle = xAngle * (x / this.p5.width) + yAngle * (y / this.p5.height);
 
                         // each particle moves in a circle
-                        const myX = x + 20 * Math.cos(2 *  this.p5.PI * this.waveFunction  + angle);
-                        const myY = y + 20 * Math.sin(2 *  this.p5.PI * this.waveFunction  + angle);
+                        const myX = x + 20 * Math.cos(2 * this.p5.PI * this.waveFunction + angle);
+                        const myY = y + 20 * Math.sin(2 * this.p5.PI * this.waveFunction + angle);
 
                         this.p5.ellipse(myX, myY, 10); // draw particle
                     }
@@ -244,21 +259,21 @@ export default class Board {
         let dragged_index2 = -1;
         let j = 0;
 
-        if(currentTurn===playingAs){
-            let color={r:105,g:172,b:162};
+        if (currentTurn === playingAs) {
+            let color = {r: 105, g: 172, b: 162};
             //this.highlightBoardSide(playingAs,color);
         }
 
-        if(currentTurn===playingAs && this.lastmove[0]!==-1){
+        if (currentTurn === playingAs && this.lastmove[0] !== -1) {
             this.p5.push()
             this.p5.noStroke();
-            //this.p5.translate(0, 3*size/4);
-            this.p5.fill(this.p5.color(108, 169, 82,255/2));
+            this.p5.fill(this.p5.color(108, 169, 82, 255 / 2));
+            this.p5.fill(this.p5.color(108, 169, 82, 255 / 2));
             let startHighlight = pixel_positions[this.lastmove.StartSquare];
             let endHighlight = pixel_positions[this.lastmove.EndSquare];
-            this.p5.rect(startHighlight[0],startHighlight[1],size,size)
-            this.p5.fill(this.p5.color(108, 169, 82,255/2));
-            this.p5.rect(endHighlight[0],endHighlight[1],size,size)
+            this.p5.rect(startHighlight[0], startHighlight[1], size, size)
+            this.p5.fill(this.p5.color(108, 169, 82, 255 / 2));
+            this.p5.rect(endHighlight[0], endHighlight[1], size, size)
             this.p5.pop();
         }
 
@@ -297,7 +312,7 @@ export default class Board {
                     piece.draw_piece();
                 }
                 i++;
-                if (i % 8 === 0) {      //TODO co to wogole jest to i XDDDDDD
+                if (i % 8 === 0) {
                     i = 0;
                 }
             } else {
@@ -318,14 +333,13 @@ export default class Board {
                 this.p5.push()
                 this.p5.translate(scalar / 2, scalar / 2);
                 this.p5.tint(255, 127);
-                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * (rew + 1) / 2, size - scalar, size - scalar);
+                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * (rew + 1) / 2, size - scalar, size - scalar);
                 this.p5.pop()
             } else if (playingAs === 'b' && rew % 2 === 0) {
-
                 this.p5.push()
                 this.p5.translate(scalar / 2, scalar / 2);
                 this.p5.tint(200, 127);
-                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.666, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
+                this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
                 this.p5.pop()
 
             }
@@ -337,12 +351,19 @@ export default class Board {
         //making pieces for gamemode2 purposes they only appear above the image for setupstate
         if (this.SetupState > -1) {
 
+            let storeVars = store.getState().game;
+            // this.p5.fill(255,255,255)        white rectangle to show scores
+            // this.p5.rect( Checkboard_size + shelf_size / 2 - textsize * 1.63-5, size - 40,60,50)
+            // this.p5.pop()
             this.p5.push();
             this.p5.textFont(Font);
             this.p5.textSize(textsize);
             this.p5.fill(0, 0, 0);
-            this.p5.text(this.SetupState.toString(), Checkboard_size + shelf_size / 2 - textsize * 0.833, size);
+            let scores = this.SetupState.toString()  //storeVars.whiteScore.toString() + " | " + storeVars.blackScore.toString() <--- show both scores
+            this.p5.text(scores, Checkboard_size + shelf_size / 2 - textsize * 0.666, size); // -> scalar if both scores 1.63
             this.p5.pop();
+            this.p5.push();
+
             this.GameMode2_checkState()
             for (let z = 0; z < this.gameMode2_grid.length; z++) {
 
@@ -355,9 +376,7 @@ export default class Board {
                 if (dragged_index2 !== -1) {
                     this.gameMode2_grid[dragged_index2].draw_piece();
                 }
-
             }
-
         } else if (this.SetupState < 0 && this.gameMode2_grid.length === 1) {
             this.gameMode2_grid = [];
         }
@@ -365,7 +384,39 @@ export default class Board {
     }
 
     change_Turn() {
-        this.color_to_move === 'b' ? this.color_to_move = 'w' : this.color_to_move = 'b';
+
+        let storeVars = store.getState().game;
+        let gameMode = storeVars.gameMode;
+        if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
+            this.color_to_move = 'w';
+        } else if(gameMode == 1  && storeVars.whiteScore <0) {
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        }else if(gameMode == 1  && storeVars.blackScore <0){
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        } else if (gameMode == 1  && (storeVars.blackScore == 0)) {
+            this.color_to_move = 'w'
+        } else if (gameMode == 1  && (storeVars.whiteScore == 0)) {
+            this.color_to_move = 'b'
+        } else if(gameMode==1){
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        }
+
+        if (gameMode == 2 && this.SetupState>=0){
+            this.color_to_move=playingAs
+        }
+        else if(gameMode == 2)
+        {
+            if(this.phase !== 0){
+                this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            }else{
+                this.phase=1;
+            }
+
+        }
+        if(gameMode == 0)
+        {
+            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        }
     }
 
 

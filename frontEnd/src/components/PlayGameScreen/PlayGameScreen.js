@@ -1,13 +1,9 @@
-import {Component} from "react";
-import GameContainer from "./Components/GameContainer"
-import Chat from "./Components/Chat"
-
+import React, {useEffect, useState} from "react";
 import P5Wrapper from "react-p5-wrapper"
-import sketch from "./Game/Main";
-import {getGameInfo, getGameIsInGame} from "../../serverLogic/DataFetcher";
-import PlayersInfo from "./Components/PlayersInfo";
+import sketch, {board} from "./Game/Main";
+import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";
 import "./PlayGameScreen.css";
-import GameButtons from "./Components/GameButtons";
+import GameButtons from "./Components/GameButton/GameButtons";
 import {store} from "../../index";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
@@ -23,177 +19,203 @@ import {
     setBlackTime,
     setWhiteTime,
     setLoadingGameInfo,
-    setWhiteScore, setBlackScore
+    setWhiteScore, setBlackScore, setDrawProposedColor, setCurrentPhase
 } from "../../redux/actions/gameActions";
 import {setIsInGame} from "../../redux/actions/userActions";
-import {withRouter} from "react-router-dom"
-import {GAME_DEBUGING_MODE} from "../../App";
-import {emit} from "../../redux/actions/socketActions";
-import GameTimer from "./Components/GameTimer";
-import {sleep} from "../../serverLogic/Utils";
-import {CSSTransition} from "react-transition-group";
-import GameTimersWidget from "./Components/GameTimersWidget";
-import TurnIndicator from "./Components/TurnIndicator";
+import {useHistory} from "react-router-dom"
+import {authorizeSocket, emit} from "../../redux/actions/socketActions";
+import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
+import {SocketStatus} from "../../serverCommunication/WebSocket";
+import GameResult from "./Components/GameResult";
+import PlayersInfo from "./Components/PlayersInfo/PlayersInfo";
+import GameContainer from "./Components/GameContainer/GameContainer";
+import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
+import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
+import Chat from "./Components/Chat/Chat";
 
-class PlayGameScreen extends Component {
 
-    constructor(props) {
-        super(props);
+function PlayGameScreen({
+                            dispatch,
+                            socket,
+                            userId,
+                            sessionToken,
+                            isInGame,
+                            gameId,
+                            playingAs,
+                            gameMode,
+                            currentFEN,
+                            currentTurn,
+                            whiteScore,
+                            blackScore,
+                            loadingGameInfo,
+                            currentPhase,
+                        }) {
+    let [gameResult, setGameResult] = useState('DRAW');
+    let [eloChange, setEloChange] = useState(0);
+    let [gameEnded, setGameEnded] = useState(false);
 
-        this.socket = this.props.socket;
-        this.state = {
-            gameStatus: "Draw",
-            showResult: false,
-        }
-    }
 
-    async fetchGameData(){
-        await this.props.dispatch(setLoadingGameInfo(true));
-        //check if opponent is in game, if not REROUTE back
-        let playerId = this.props.userId;
-        if (this.props.gameroomId===undefined){
-            let resp= await getGameIsInGame(this.props.userId,this.props.sessionToken);
-            if (resp === undefined) return
+    //routing
+    const history = useHistory();
+    const routeToMain = () => history.push('/');
 
-            //if not in game REROUTE back
-            if(!resp.inGame && !GAME_DEBUGING_MODE){
-                this.props.dispatch(setIsInGame(false));
-                this.props.history.push('/');
-                return;
-            }
-            await this.props.dispatch(setGameId(resp.gameId));
-            await this.props.dispatch(setPlayingAs(resp.playingAs));
-            await this.props.dispatch(setGameMode(resp.gameMode));
-            await this.props.dispatch(setIsInGame(true));
-        }
 
-        if(this.props.isInGame){
-            this.props.history.push('/play?id=' + this.props.gameId);
-            //get game info for game setup
-            let resp= await getGameInfo(this.props.gameId,this.props.sessionToken);
-            if (resp === undefined) return
+    useEffect(() => {
+        dispatch(authorizeSocket(userId, sessionToken));
+        fetchGameData();
 
-            console.log(resp)
-            await this.props.dispatch(setGameMode(resp.gameMode));
-            await this.props.dispatch(setCurrentFEN(resp.FEN));
-            //
-            if (this.props.playingAs ==="w"){
-                await this.props.dispatch(setOpponentUsername(resp.blackPlayer.username));
-                await this.props.dispatch(setOpponentELO(resp.blackPlayer.ELO));
-            }else{
-                await this.props.dispatch(setOpponentUsername(resp.whitePlayer.username));
-                await this.props.dispatch(setOpponentELO(resp.whitePlayer.ELO));
-            }
-            await this.props.dispatch(setCurrentTurn(resp.currentTurn));
-            await this.props.dispatch(setBlackTime(resp.blackTime));
-            await this.props.dispatch(setWhiteTime(resp.whiteTime))
-
-            if (resp.gameMode==="1"){
-                await this.props.dispatch(setWhiteScore(resp.whiteScore));
-                await this.props.dispatch(setBlackScore(resp.blackScore));
-            }
-
-            await this.props.dispatch(setLoadingGameInfo(false));
-        }
-
-        if (GAME_DEBUGING_MODE) await this.setDebugingGameValues();
-    }
-
-    setDebugingGameValues(){
-        this.props.dispatch(setPlayingAs('w'));
-        this.props.dispatch(setCurrentFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"));
-        this.props.dispatch(setOpponentUsername("YOURSELF"));
-    }
-    componentDidMount() {
-        //style canvas programatically TODO maybe find a more elegant way?
-
-        this.fetchGameData();
-        this.socket.on("game_ended", data => {
+        socket.on("game_ended", data => {
             if (data === undefined) return;
-            this.setState({gameStatus: data.result, showResult: true});
-            this.props.dispatch(setIsInGame(false));
-            this.props.dispatch(setGameId(""));
+            setGameResult(data.result);
+            setEloChange(data.eloChange)
+            dispatch(setIsInGame(false));
+            dispatch(setGameId(""));
+            setGameEnded(true);
         });
-    }
 
-    async placeDefenderPiece(FEN,spentPoints){
-        const storeState=store.getState();
-        let playerId = storeState.user.userId;
-        let gameroomId =storeState.game.gameId;
+    }, [])
 
-        console.log("SEND OPPONENT DEFENDER");
-        let makeMoveEvent ={
-            event:'place_defender_piece',
-            msg:JSON.stringify({gameroomId, playerId,FEN,spentPoints})
+
+    let fetchGameData = async () => {
+        await dispatch(setLoadingGameInfo(true));
+
+        //check if player is in game, if not REROUTE back
+        let resp = await getGameIsInGame(userId, sessionToken);
+        if (resp === undefined) return
+
+        //if not in game REROUTE back
+        if (resp.inGame == false) {
+            dispatch(setIsInGame(false));
+            routeToMain();
+            return;
         }
 
-        store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
-    }
-    async sendMove(move,FEN) {
-        const storeState=store.getState();
-        let playerId = storeState.user.userId;
-        let gameroomId =storeState.game.gameId;
+        await dispatch(setGameId(resp.gameId));
+        await dispatch(setPlayingAs(resp.playingAs));
+        await dispatch(setGameMode(resp.gameMode));
+        await dispatch(setIsInGame(true));
 
-        let makeMoveEvent ={
-            event:'make_move',
-            msg:JSON.stringify({move, gameroomId, playerId,FEN})
+
+        if (resp.inGame) {
+            //get game info for game setup
+            let response = await getGameInfo(gameId, sessionToken);
+            if (response === undefined) return
+
+            await dispatch(setGameMode(response.gameMode));
+            await dispatch(setCurrentFEN(response.FEN));
+            await dispatch(setCurrentPhase(response.currentPhase));
+            await dispatch(setCurrentTurn(response.currentTurn));
+            await dispatch(setBlackTime(response.blackTime));
+            await dispatch(setWhiteTime(response.whiteTime));
+            await dispatch(setDrawProposedColor(response.drawProposedColor))
+
+            if (resp.playingAs === "w") {
+                await dispatch(setOpponentUsername(response.blackPlayer.username));
+                await dispatch(setOpponentELO(response.blackPlayer.ELO));
+
+            } else {
+                await dispatch(setOpponentUsername(response.whitePlayer.username));
+                await dispatch(setOpponentELO(response.whitePlayer.ELO));
+            }
+
+            //if defender
+            if (response.gameMode == "1" || response.gameMode == "2") {
+                await dispatch(setWhiteScore(response.whiteScore));
+                await dispatch(setBlackScore(response.blackScore));
+            }
+
+            await dispatch(setLoadingGameInfo(false));
+        }
+    }
+
+    let placeDefenderPiece = async (FEN, spentPoints) => {
+        let storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+
+
+        let makeMoveEvent = {
+            event: 'place_defender_piece',
+            msg: JSON.stringify({gameroomId, playerId, FEN, spentPoints})
         }
 
-        store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(emit(makeMoveEvent));
+        await store.dispatch(flipCurrentTurn());
+        storeState = store.getState();
+        store.dispatch(setWhiteScore(storeState.game.whiteScore));
+        store.dispatch(setBlackScore(storeState.game.blackScore))
+    }
+
+    let sendMove = async (move, FEN) => {
+        const storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+        let socketStatus = storeState.socket.status;
+
+        //if socket is not connected, don't allow the move to be made locally
+        if (socketStatus !== SocketStatus.authorized) {
+            store.dispatch(authorizeSocket(playerId, storeState.user.sessionToken))
+            board.set_FEN_by_rejected_move(move.startingSquare, move.targetSquare)
+            return;
+        }
+
+
+        let makeMoveEvent = {
+            event: 'make_move',
+            msg: JSON.stringify({move, gameroomId, playerId, FEN})
+        }
+
+        await store.dispatch(emit(makeMoveEvent));
         store.dispatch(flipCurrentTurn());
     }
 
+    return (
+        <FooterHeaderLayout>
+            <div className="PlayGameScreenContainer">
+                <div
+                    className={Number(gameMode) === 1||2 ? "PlayGameScreen chessDefenderGameScreen" : "PlayGameScreen"}
+                    id="PLAY_GAME_SCREEN"
+                >
 
-    render() {
-        return (
-            <CSSTransition
-                in={!this.props.loadingGameInfo}
-                timeout={200}
-                classNames="PlayGameScreenContainer"
-                unmountOnExit
-            >
-                <div className="PlayGameScreenContainer">
-                    <div className={this.props.gameMode==='0'? "PlayGameScreen":"PlayGameScreen chessDefenderGameScreen"} id="PLAY_GAME_SCREEN">
-                        {this.state.showResult &&
-                        <div className="ResultInfo">
-                            <p>&nbsp;{this.state.gameStatus.toUpperCase()}</p>
-                            <button disabled={!this.state.showResult} onClick={()=>{this.props.history.push('/')}}>GO BACK</button>
-                        </div>
-                        }
+                    {gameEnded &&
+                    <GameResult
+                        gameResult={gameResult}
+                        eloChange={eloChange}
+                    />
+                    }
+                    <PlayersInfo/>
 
-                        <PlayersInfo/>
-
+                    {!loadingGameInfo &&
+                    <>
                         <Chat/>
-
                         <GameContainer>
                             <P5Wrapper
                                 sketch={sketch}
-                                sendMoveToServer={this.sendMove}
-                                placeDefenderPiece={this.placeDefenderPiece}
-                                playingAs={this.props.playingAs}
-                                startingFEN={this.props.currentFEN}
-                                currentTurn={this.props.currentTurn}
-                                gameMode={this.props.gameMode}
-                                whiteScore={this.props.whiteScore}
-                                blackScore={this.props.blackScore}
+                                sendMoveToServer={sendMove}
+                                placeDefenderPiece={placeDefenderPiece}
+                                playingAs={playingAs}
+                                startingFEN={currentFEN}
+                                currentTurn={currentTurn}
+                                gameMode={gameMode}
+                                whiteScore={whiteScore}
+                                blackScore={blackScore}
+                                currentPhase={currentPhase}
                             />
                         </GameContainer>
+                    </>
 
-                        <div className="Game-info">
+                    }
 
-                            <GameTimersWidget>
-                                <TurnIndicator/>
-                            </GameTimersWidget>
-                            <GameButtons/>
-                        </div>
-
+                    <div className="Game-info">
+                        <GameTimersWidget>
+                            <TurnIndicator/>
+                        </GameTimersWidget>
+                        <GameButtons/>
                     </div>
                 </div>
-            </CSSTransition>
-
-        );
-    }
+            </div>
+        </FooterHeaderLayout>
+    );
 }
 
-export default connect(mapAllStateToProps)(withRouter(PlayGameScreen));
+export default connect(mapAllStateToProps)(PlayGameScreen);

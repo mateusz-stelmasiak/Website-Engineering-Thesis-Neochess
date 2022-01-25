@@ -1,10 +1,10 @@
 // Import all actions
 import * as actions from '../actions/socketActions'
-import SocketClient, {SocketStatus} from "../../serverLogic/WebSocket";
+import SocketClient, {SocketStatus} from "../../serverCommunication/WebSocket";
 
 export const socketInitialState = {
     socket: new SocketClient(),
-    status: SocketStatus.disconnected
+    status: SocketStatus.disconnected,
 };
 
 export default function socketReducer(state = socketInitialState, action) {
@@ -16,8 +16,11 @@ export default function socketReducer(state = socketInitialState, action) {
             return {...state, socket:action.payload}
         case actions.SET_SOCKET_STATUS:
             return {...state, status:action.payload}
+        case actions.AUTHORIZE_SOCKET:
+            state.socket.authorizeFromDispatch(action.payload.userId,action.payload.sessionToken)
+            return state
         case actions.EMIT:
-            state.socket.emit(action.payload.event,action.payload.msg)
+            if (state.socket.is_authorized) state.socket.emit(action.payload.event,action.payload.msg)
             return state
         default:
             return state
