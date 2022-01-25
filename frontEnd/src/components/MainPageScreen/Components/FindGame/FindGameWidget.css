@@ -6,6 +6,9 @@
     row-gap: 1rem;
 }
 
+#move_down{
+    margin-top: 1rem;
+}
 .FindGameWidget .FindGameWidget-mainText{
     all:unset;
     color: var(--primary-color);
@@ -59,6 +62,7 @@
     text-align: center;
     row-gap: 0.3rem;
     position: relative;
+    transition: 150ms;
 }
 
 .FindGameWidget .FindGameWidget-gameModeButton svg{
