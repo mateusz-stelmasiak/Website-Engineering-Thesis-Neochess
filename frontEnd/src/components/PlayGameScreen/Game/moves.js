@@ -530,6 +530,7 @@ export function make_opponents_move(StartingSquare, TargetSquare, mType) {
 
         board.grid[Target].did_move = 1;
         board.grid[Target].snap_back();
+        board.change_Turn()
 
     } else {
         if (mType === 'C') {
@@ -616,6 +617,7 @@ export function make_a_move() {
 
                         board.grid[Target].did_move = 1;
                         board.grid[Target].snap_back();
+                        board.change_Turn();
 
 
                     } else {
