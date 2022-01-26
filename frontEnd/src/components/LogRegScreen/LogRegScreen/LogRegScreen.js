@@ -1,14 +1,13 @@
 import React from "react";
 import "./LogRegScreen.css"
-import OrbitContainer from "./Components/OrbitContainer/OrbitContainer";
-import LoginForm from "./Components/LoginForm";
-import RegisterForm from "./Components/RegisterForm/RegisterForm";
-import CircleWidget from "../CommonComponents/CircleWidget/CircleWidget";
-import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
-import AboutNeoChess from "./AboutNeoChess";
+import OrbitContainer from "../Components/OrbitContainer/OrbitContainer";
+import LoginForm from "../Components/LoginForm";
+import RegisterForm from "../Components/RegisterForm/RegisterForm";
+import CircleWidget from "../../CommonComponents/CircleWidget/CircleWidget";
+import AboutNeoChess from "../AboutNeoChess/AboutNeoChess";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faComment} from "@fortawesome/free-solid-svg-icons";
-import logo from "../../assets/neochess-logo.png";
+import logo from "../../../assets/neochess-logo.png";
 
 
 export default function LogRegScreen() {
@@ -29,7 +28,9 @@ export default function LogRegScreen() {
     ]
 
     let centerContainer = <CircleWidget
-        title={<><img src={logo} alt="Logo"/><span>neoCHESS</span><hr/></>}
+        title={<><img src={logo} alt="Logo"/><span>neoCHESS</span>
+            <hr/>
+        </>}
         navigation={navItems}
         basecolor={"var(--primary-color)"}
         secColor={"var(--sec-color)"}

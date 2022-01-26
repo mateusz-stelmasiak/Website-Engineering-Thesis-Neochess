@@ -18,7 +18,6 @@ import {
 import validator from 'validator';
 import "./RegisterForm.css";
 import "../LoadingComponent.css";
-import {Modal} from "react-bootstrap";
 import Form from "react-bootstrap/Form";
 import SectionTitle from "../../../Layout/Section/SectionTitle";
 import {toast} from "react-hot-toast";
@@ -198,8 +197,6 @@ function RegisterForm({dispatch}) {
         //check if all data matches requirments
         let errors = validateData();
 
-        setIs2FaEnabled(false);
-
         if (errors.length !== 0) {
             setIsLoadingShown(false);
             //toast all errors
@@ -207,9 +204,10 @@ function RegisterForm({dispatch}) {
                 console.log(error);
                 toast.error("ERROR:" + error, {duration: 10000})
             });
-
             return;
         }
+
+        const twoFaCheckResult = is2FaEnabled ? await CheckTwoFaCode() : true;
 
         //if all data is correct, try to register user
         const response = await register(username, password, captchaValue, email, is2FaEnabled, recoveryCodes);
@@ -223,20 +221,29 @@ function RegisterForm({dispatch}) {
         }
 
         if (is2FaEnabled) {
-            if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                await ForwardAfterRegister(await login(username, password, twoFaCode));
-            }
+            await ForwardAfterRegister(await login(username, password, twoFaCode));
         } else {
             await ForwardAfterRegister(await login(username, password, ""));
+        }
+
+        if (!twoFaCheckResult) {
+            toast.error("ERROR: Two authentication code is incorrect.\nGo to login page and try again",
+                {duration: 5000});
+            toast.success("Account has been successfully created", {duration: 5000})
+            setIsLoadingShown(false);
+
+            setTimeout(() => {
+                history.push("/");
+            }, 2500)
         }
     }
 
     async function CheckTwoFaCode() {
-        const response = await check2FaCode(twoFaCode, username)
-        if (!response['result']) {
+        const response = await check2FaCode(twoFaCode, username, email)
+        if (!response['response']) {
             setErrorMessage("Two authentication code is incorrect. Go to login page and try again");
         }
-        return response['result'];
+        return response['response'];
     }
 
     async function ForwardAfterRegister(resp) {

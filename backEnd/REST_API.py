@@ -279,6 +279,7 @@ def check_2_fa():
 
     request_data = request.get_json()
     username = request_data['username']
+    email = request_data['email']
     two_fa_code = request_data['code']
 
     if debug_mode:
@@ -288,19 +289,26 @@ def check_2_fa():
         db = ChessDB.ChessDB()
         user = db.get_user(username)
 
-        otp_secret = user['OTPSecret']
-        otp = pyotp.totp.TOTP(otp_secret)
+        if user is not None:
+            otp_secret = user['OTPSecret']
+            otp = pyotp.totp.TOTP(otp_secret)
 
-        verify_result = otp.verify(two_fa_code)
+            verify_result = otp.verify(two_fa_code)
 
-        if not verify_result:
-            user_codes = db.get_user_recovery_codes_by_id(user['userID'])
+            if not verify_result:
+                user_codes = db.get_user_recovery_codes_by_id(user['userID'])
 
-            recovery_code = sha256(str.encode(two_fa_code)).hexdigest()
-            verify_result = recovery_code in [codes['Code'] for codes in user_codes]
+                recovery_code = sha256(str.encode(two_fa_code)).hexdigest()
+                verify_result = recovery_code in [codes['Code'] for codes in user_codes]
+        else:
+            # generate OTP data
+            otp_secret = base64.b32encode(email.encode('ascii'))
+            otp = pyotp.totp.TOTP(otp_secret)
+
+            verify_result = otp.verify(two_fa_code)
 
         return generate_response(request, {
-            "result": verify_result
+            "response": verify_result
         }, 200 if verify_result else 403)
 
     except Exception as ex:
@@ -553,7 +561,7 @@ def resent_activation_email():
         }, 200)
     except Exception as ex:
         return generate_response(request, {
-            "result": ex
+            "response": ex
         }, 503)
 
 
@@ -567,7 +575,7 @@ def confirm_email(token):
     except SignatureExpired as ex:
         print(ex)
         return generate_response(request, {
-            "activation_result": "The confirmation link is invalid or has expired."
+            "response": "The confirmation link is invalid or has expired."
         }, 400)
 
     db = ChessDB.ChessDB()
