@@ -209,11 +209,11 @@ function UserEditForm(props) {
     }
 
     async function CheckTwoFaCode() {
-        const response = await check2FaCode(twoFaCode, props.username)
-        if (!response['result']) {
+        const response = await check2FaCode(twoFaCode, props.username, props.email)
+        if (!response['response']) {
             setErrorMessage("Two authentication code is incorrect");
         }
-        return response['result'];
+        return response['response'];
     }
 
     function AssignTwoFaCode(value) {

@@ -13,6 +13,7 @@ import {getAvailableGameModes} from "../../../../serverCommunication/DataFetcher
 import {emit} from "../../../../redux/actions/socketActions";
 import {formatTime} from "../../../../serverCommunication/Utils";
 import Form from "react-bootstrap/Form";
+import FenDisplayingBoard from "../../../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
 
 
 function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
@@ -142,8 +143,8 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         setIsInQ(false);
     }
 
-    let updatePosStartingScore = (newScore)=>{
-        if(newScore>99) return
+    let updatePosStartingScore = (newScore) => {
+        if (newScore > 99) return
         setPosStartingScore(newScore);
     }
 
@@ -199,15 +200,25 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                 onClick={() => {
                                     findGame(gameMode.gameModeId)
                                 }}
-                                style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}
+                                style={gameMode.gameModeId === 1 ? {'margin-top': '2rem'} :
+                                    gameMode.gameModeId === currGameMode && gameMode.gameModeId === 1
+                                        ?
+                                        {'margin-top': '1rem'}
+                                        :
+                                        (gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle)
+
+                                }
+
                             >
 
-                                {gameMode.gameModeMultiplayer == true ?
-                                    <FontAwesomeIcon icon={faChess}
-                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
-                                    :
-                                    <FontAwesomeIcon icon={faChessPawn}
-                                                     style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>}
+                                {
+                                    gameMode.gameModeMultiplayer == true ?
+                                        <FontAwesomeIcon icon={faChess}
+                                                         style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
+                                        :
+                                        <FontAwesomeIcon icon={faChessPawn}
+                                                         style={gameMode.gameModeId === currGameMode ? inQStyle : idleStyle}/>
+                                }
                                 <h1 style={gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle}>{gameMode.gameModeName}</h1>
                             </button>
                         );
@@ -229,7 +240,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                 </div>
 
                 <div className="positionList">
-                    {positions===[] ?
+                    {positions === [] ?
                         <Dots>Loading</Dots>
                         :
                         positions.map(
@@ -239,8 +250,8 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                         key={"position" + index}
                                         onClick={() => joinSinglePlayerGame(currGameMode, index)}
                                     >
-                                    Position{index}
-                                </span>
+                    <FenDisplayingBoard FEN={position}/>
+                    </span>
                                 )
                             }
                         )

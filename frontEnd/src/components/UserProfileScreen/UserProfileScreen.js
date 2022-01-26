@@ -15,16 +15,15 @@ function UserProfileScreen(props) {
     const [email, setEmail] = useState(undefined);
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
-    const [accountUpdatedTime, setAccountUpdatedTime] = useState(undefined);
+    const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
 
     useEffect(async () => {
         const response = (await getUserData())
         console.log(response)
         setEmail(response['Email'])
         setIs2FaEnabled(response['2FA'])
-        setAccountUpdatedTime(response['UpdatedAt'])
+        setAccountUpdatedTime(response['UpdatedAt']? response['UpdatedAt']:"--:--:---")
         setAccountCreatedTime(response['CreatedAt'])
-
     }, [])
 
     const are_fields_correct = () => {

@@ -48,8 +48,21 @@ User profile widget with username and profile pic
     transition: 200ms;
 }
 
-
+.ProfileWidget .ProfileWidget-container{
+    display: flex;
+    flex-direction: row;
+}
 .ProfileWidget-info-container svg:hover{
     transform: scale(1.1);
     color: black;
+}
+.ProfileWidget img{
+    width: 5rem;
+    height: 5rem;
+    filter: drop-shadow(0 0 0.2rem var(--fail-color));
+    cursor: pointer;
+    transition: 200ms;
+}
+.ProfileWidget img:hover{
+   transform: scale(1.1);
 }
