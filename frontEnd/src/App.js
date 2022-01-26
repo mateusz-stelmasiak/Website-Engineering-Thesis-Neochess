@@ -1,5 +1,5 @@
 import './App.css';
-import LogRegScreen from "./components/LogRegScreen/LogRegScreen";
+import LogRegScreen from "./components/LogRegScreen/LogRegScreen/LogRegScreen";
 import MainPageScreen from "./components/MainPageScreen/MainPageScreen";
 import PlayGameScreen from "./components/PlayGameScreen/PlayGameScreen";
 import {Switch, Route, Redirect, useHistory} from 'react-router-dom';

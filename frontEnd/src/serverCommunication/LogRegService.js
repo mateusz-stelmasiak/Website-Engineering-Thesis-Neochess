@@ -178,7 +178,7 @@ export async function reSentActivationEmail(data) {
     }
 }
 
-export async function check2FaCode(code, username) {
+export async function check2FaCode(code, username, email) {
     try {
         const requestOptions = {
             method: 'POST',
@@ -186,6 +186,7 @@ export async function check2FaCode(code, username) {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 username,
+                email,
                 code
             })
         };

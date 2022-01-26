@@ -1,4 +1,4 @@
-import FenDisplayingBoard from "../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
+import FenDisplayingBoard from "../../CommonComponents/FENDisplayingBoard/FenDisplayingBoard";
 import React from "react";
 import "./AboutNeoChess.css"
 
