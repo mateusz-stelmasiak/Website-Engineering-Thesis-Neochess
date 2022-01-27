@@ -120,7 +120,7 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def add_user(self, username, password, email, is2FaEnabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
+    def add_user(self, username, password, email, is_2_fa_enabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
@@ -129,14 +129,14 @@ class ChessDB:
 
         date = self.get_curr_date()
         salt = self.get_salt()
-        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
+        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is_2_fa_enabled,
                      otp_secret, date, elo, elo_dv, elo_v)
 
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()
 
-        if is2FaEnabled:
+        if is_2_fa_enabled:
             self.add_recovery_codes(mycursor.lastrowid, recovery_codes)
 
     def remove_user(self, user_id):

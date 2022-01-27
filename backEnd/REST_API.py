@@ -572,7 +572,7 @@ def confirm_email(token):
 
     try:
         email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
-    except SignatureExpired as ex:
+    except Exception as ex:
         print(ex)
         return generate_response(request, {
             "response": "The confirmation link is invalid or has expired."
