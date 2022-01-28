@@ -15,6 +15,10 @@ input[type=number] {
     margin-top: 25px;
 }
 
+.updateLoadingContainer {
+    display: flex;
+}
+
 .UserEditForm {
    display: flex;
     flex-direction: column;
