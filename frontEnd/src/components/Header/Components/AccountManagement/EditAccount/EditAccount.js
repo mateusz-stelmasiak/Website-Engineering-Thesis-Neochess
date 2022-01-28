@@ -398,7 +398,7 @@ function UserEditForm(props) {
                         <Button
                             onClick={handleSubmit} type="submit"
                             style={{marginLeft: "20px"}}
-                            disabled={props.is2FaEnabled}
+                            // disabled={props.is2FaEnabled}
                         >Change 2FA</Button>
                     </div>
 

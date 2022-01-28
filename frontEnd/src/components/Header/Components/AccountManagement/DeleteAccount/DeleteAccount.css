@@ -24,6 +24,10 @@
     margin-left: 15px !important;
 }
 
+.AccountDeleteButtons {
+    display: contents;
+}
+
 @media (max-width: 1050px) {
     .DeleteAccountContainer {
         width: 50%;
