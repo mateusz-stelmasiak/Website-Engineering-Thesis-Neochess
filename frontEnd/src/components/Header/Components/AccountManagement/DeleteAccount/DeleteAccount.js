@@ -48,7 +48,7 @@ function DeleteAccount(props) {
                     window.location.reload(true); //reload to reroute to loginpage
 
                     history.push('/')
-                }, 4000);
+                }, 2000);
             } else {
                 setErrorMessage(response['response'])
             }
