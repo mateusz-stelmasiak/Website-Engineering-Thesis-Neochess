@@ -456,18 +456,24 @@ def finish_game(game_info, win_color):
 
     # if it was a single player game
     if not game_multiplayer:
+        player_color= 'W'
 
         if game_info.white_player.id in authorized_sockets:
             player_sid = authorized_sockets[game_info.white_player.id]
         elif game_info.black_player.id in authorized_sockets:
             player_sid = authorized_sockets[game_info.black_player.id]
+            player_color = 'B'
 
-        if win_color_upper_letter == "W":
-            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=player_sid)
-        elif win_color_upper_letter == "B":
-            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=player_sid)
-        else:
+        if win_color_upper_letter == 'N':
             emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=player_sid)
+            return
+
+        if win_color_upper_letter == player_color:
+            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=player_sid)
+        else:
+            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=player_sid)
+
+
 
         return
 
@@ -857,8 +863,21 @@ def make_move(data):
         opp_turn = 'b'
     games[game_room_id].curr_turn = opp_turn
 
+
+    is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
+    if is_checkmate:
+        finish_game(game_info, curr_turn)
+        return
+
+    is_stalemate = ChessLogic.is_stalemate(games[game_room_id].curr_FEN)
+    if is_stalemate:
+        finish_game(game_info, 'N')
+        return
+
     # make AI move in positions gamemode
     if str(game_info.game_mode_id) == "2" and opp_turn != player_color:
+        computer_color = games[game_room_id].curr_turn
+
         newFEN , move_AN_notation = make_AI_move(request.sid,games[game_room_id].curr_FEN)
         # update FEN after AI move
         new_FEN = ChessLogic.update_FEN_by_AN_move(games[game_room_id].curr_FEN, move_AN_notation)
@@ -871,19 +890,20 @@ def make_move(data):
         #change turn back to players
         games[game_room_id].curr_turn = player_color
 
+        # check for checkmates after AI MOVE
+        if game_room_id not in games:
+            print("NO_SUCH_GAME_EXISTS")
+            return
 
-    # check for checkmates
-    if game_room_id not in games:
-        print("NO_SUCH_GAME_EXISTS")
-        return
+        is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
+        if is_checkmate:
+            finish_game(game_info, computer_color)
+            return
 
-    is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
-    if is_checkmate:
-        finish_game(game_info, curr_turn)
-
-    is_stalemate = ChessLogic.is_stalemate(games[game_room_id].curr_FEN)
-    if is_stalemate:
-        finish_game(game_info, 'N')
+        is_stalemate = ChessLogic.is_stalemate(games[game_room_id].curr_FEN)
+        if is_stalemate:
+            finish_game(game_info, 'N')
+            return
 
 
 def add_move_to_db(game_id, move_AN_notation, curr_turn, move_order):
