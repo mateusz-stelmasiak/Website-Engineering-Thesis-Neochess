@@ -29,7 +29,7 @@
     align-items: center;
 }
 .CurrentInfo-container .lastGameContainer h3{
-    color:var(--sec-color-dark);
+    color:var(--primary-color-dark);
     font-size: 1.6rem;
 }
 

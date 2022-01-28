@@ -486,7 +486,7 @@ def get_user_details():
             'user': user
         }, 200)
 
-    generate_response(request, {
+    return generate_response(request, {
         'user': user,
         'lastPlayedFEN': last_FEN
     }, 200)
