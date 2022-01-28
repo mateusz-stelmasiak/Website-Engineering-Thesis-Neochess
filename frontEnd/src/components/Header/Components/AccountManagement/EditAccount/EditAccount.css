@@ -19,10 +19,6 @@ input[type=number] {
     display: flex;
 }
 
-.emailField {
-    margin-bottom: 30px !important;
-}
-
 .UserEditForm {
    display: flex;
     flex-direction: column;

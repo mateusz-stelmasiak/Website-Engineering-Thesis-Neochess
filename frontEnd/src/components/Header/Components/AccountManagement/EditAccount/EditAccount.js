@@ -349,7 +349,9 @@ function UserEditForm(props) {
                     <div className="InfoContainer EmailAddressContainer">
                         <h2>Change Email Address</h2>
                         <Form.Control
-                            className="emailField"
+                            style={{
+                                marginBottom: '30px'
+                            }}
                             required
                             placeholder="New e-mail address..."
                             type="text"
