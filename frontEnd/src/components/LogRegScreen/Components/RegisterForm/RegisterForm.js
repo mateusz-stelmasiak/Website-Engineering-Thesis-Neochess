@@ -215,7 +215,7 @@ function RegisterForm({dispatch}) {
         if (response === undefined) return;
         if (response.error !== undefined) {
             setErrorMessage(response.error);
-            toast.error("ERROR:" + response.error, {duration: 10000});
+            toast.error("ERROR: " + response.error, {duration: 10000});
             setIsLoadingShown(false);
             return;
         }

@@ -475,12 +475,21 @@ def get_user_details():
     try:
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
-
-        return generate_response(request, user, 200)
+        last_FEN = db.get_last_game_FEN(user_id)
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
+
+    if last_FEN is None:
+        return generate_response(request, {
+            'user': user
+        }, 200)
+
+    generate_response(request, {
+        'user': user,
+        'lastPlayedFEN': last_FEN
+    }, 200)
 
 
 @app.route('/update', methods=['POST', 'OPTIONS'])

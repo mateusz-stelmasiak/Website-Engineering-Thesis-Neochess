@@ -8,7 +8,9 @@ if platform == "win32":
 elif platform == "linux":
     engine = chess.engine.SimpleEngine.popen_uci("./StockFish/stockfish_13_linux")
 
-limit = chess.engine.Limit(time=1.0)
+
+limit = chess.engine.Limit(time=2.0)
+#limit = chess.engine.Limit(time=2.0,depth=10)
 
 
 def generate_pos_to_stocknot_dict():
