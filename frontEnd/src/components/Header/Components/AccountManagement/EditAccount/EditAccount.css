@@ -19,6 +19,10 @@ input[type=number] {
     display: flex;
 }
 
+.emailField {
+    margin-bottom: 30px !important;
+}
+
 .UserEditForm {
    display: flex;
     flex-direction: column;
@@ -202,7 +206,13 @@ input[type=number] {
     color: var(--sec-color);
 }
 
-.errorMessage:before {
+.currentPasswordErrorMessage {
+    flex: 1 1 100%;
+    margin-bottom: 25px;
+    color: var(--sec-color);
+}
+
+.errorMessage:before, .currentPasswordErrorMessage:before {
     content: "Operation failed: ";
     color: var(--fail-color);
     margin-right: 0.2rem;
@@ -214,7 +224,7 @@ input[type=number] {
     margin-right: 0.2rem;
 }
 
-.errorMessage ul {
+.errorMessage ul, .currentPasswordErrorMessage ul {
     margin: 0;
     text-align: left;
 }
