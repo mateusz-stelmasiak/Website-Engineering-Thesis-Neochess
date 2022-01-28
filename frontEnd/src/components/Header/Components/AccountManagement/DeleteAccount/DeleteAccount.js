@@ -83,10 +83,10 @@ function DeleteAccount(props) {
                     onChange={(e) => setTwoFaCode(e.target.value)}
                 /> : null}
             <p>{deleteResult}</p>
-            <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
-                <ul>{errorMessage}</ul>
-            </div>
             <Button onClick={onDeleteClicked} type="submit">DELETE ACCOUNT</Button>
+        </div>
+        <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
+            <ul>{errorMessage}</ul>
         </div>
     </>
 }

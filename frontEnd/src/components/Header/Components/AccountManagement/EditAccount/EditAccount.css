@@ -58,7 +58,9 @@ input[type=number] {
     margin-right: 1rem;
 }
 
-
+.DeleteContainer {
+    margin-top: 50px !important;
+}
 
 :root {
     --textfield-bg-color: #0b0b0b;
@@ -112,8 +114,6 @@ input[type=number] {
 .notActivatedAccountContainer {
     display: flow-root !important;
 }
-
-
 
 .UserEditForm h1 {
     all: unset;
@@ -259,5 +259,13 @@ input[type=number] {
         margin-top: 75px;
         width: 100%;
         justify-content: space-around;
+    }
+
+    .EmailAddressContainer {
+        margin-top: 75px;
+    }
+
+    .TwoFaContainer {
+        margin-top: 75px;
     }
 }

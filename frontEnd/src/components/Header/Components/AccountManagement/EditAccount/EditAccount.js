@@ -1,15 +1,15 @@
-import "./UserEdit.css";
+import "./EditAccount.css";
 import {connect} from "react-redux";
 import Form from "react-bootstrap/Form";
 import React, {useEffect, useState} from "react";
 import validator from "validator";
 import Button from "react-bootstrap/Button";
-import "../../../CommonComponents/CircleWidget/CircleWidget.css";
+import "../../../../CommonComponents/CircleWidget/CircleWidget.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
-import DeleteAccount from "./DeleteAccount/DeleteAccount";
-import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {check2FaCode, generateRecoveryCodes, logout, updateUser} from "../../../../serverCommunication/LogRegService";
+import DeleteAccount from "../DeleteAccount/DeleteAccount";
+import {get2FaCode} from "../../../../../serverCommunication/DataFetcher";
+import {check2FaCode, generateRecoveryCodes, logout, updateUser} from "../../../../../serverCommunication/LogRegService";
 import {Modal} from "react-bootstrap";
 
 
@@ -328,8 +328,6 @@ function UserEditForm(props) {
                             className="ButtonStyle"
                             onClick={handlePasswordChange} type="submit"
                         >Change password</Button>
-
-
                     </div>
 
                     <div className="InfoContainer EmailAddressContainer">
@@ -343,7 +341,6 @@ function UserEditForm(props) {
                             onChange={(e) => checkEmail(e.target.value)}
                         />
                         <Form.Control
-                            className="emailField"
                             required
                             placeholder="Confirm new e-mail address..."
                             type="text"
@@ -395,7 +392,6 @@ function UserEditForm(props) {
                             is2FaEnabled={props.is2FaEnabled}
                         />
                     </div>
-
 
                 </div>
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">

@@ -1,6 +1,6 @@
 import React, {Component, useEffect, useState} from 'react';
 import "./Header.css";
-import ProfileWidget from "./Components/ProfileWidget"
+import ProfileWidget from "./Components/ProfileWidget/ProfileWidget"
 import {useHistory, useLocation} from "react-router-dom";
 
 //buttons on different subpages
