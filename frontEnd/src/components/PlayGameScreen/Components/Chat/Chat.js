@@ -8,7 +8,7 @@ import {faPaperPlane} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {getCurrentTimestamp} from "../../../../serverCommunication/Utils";
 import ChatMessages from "../ChatMessages";
-import DrawProposal from "../DrawProposal";
+import DrawProposal from "../DrawProposal/DrawProposal";
 import {playingAs} from "../../Game/Main";
 import {emit} from "../../../../redux/actions/socketActions";
 

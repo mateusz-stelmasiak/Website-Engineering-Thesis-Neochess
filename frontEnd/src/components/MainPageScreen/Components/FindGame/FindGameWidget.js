@@ -200,10 +200,10 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                                 onClick={() => {
                                     findGame(gameMode.gameModeId)
                                 }}
-                                style={gameMode.gameModeId === 1 ? {'margin-top': '2rem'} :
+                                style={gameMode.gameModeId === 1 ? {'marginTop': '2rem'} :
                                     gameMode.gameModeId === currGameMode && gameMode.gameModeId === 1
                                         ?
-                                        {'margin-top': '1rem'}
+                                        {'marginTop': '1rem'}
                                         :
                                         (gameMode.gameModeId === currGameMode ? inQGameModeTextStyle : idleStyle)
 

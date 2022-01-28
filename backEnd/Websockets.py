@@ -413,8 +413,9 @@ def find_match(game_mode_id, player):
             try:
                 # create game in db
                 db = ChessDB.ChessDB()
-                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],
-                                      game_mode_id)
+                starting_FEN = game_modes[int(game_mode_id)].game_mode_starting_FEN
+                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), [],
+                                      game_mode_id,starting_FEN)
                 game_id_hash = hashlib.sha256(str(game_id).encode())
                 game_room_id = str(game_id_hash.hexdigest())
 
@@ -440,17 +441,35 @@ def find_match(game_mode_id, player):
         player[2] = scope
         emit("update_scope", {'scope': scope}, to=player_sid)
 
-
+#end game
 def finish_game(game_info, win_color):
     game_id = game_info.game_id
     game_mode_id = games[game_info.game_room_id].game_mode_id
     game_multiplayer = game_modes[int(game_mode_id)].game_mode_multiplayer
+    game_end_FEN = games[game_info.game_room_id].curr_FEN
 
     # delete game
     if str(game_info.game_room_id) in games:
         games.pop(str(game_info.game_room_id), None)
 
     win_color_upper_letter = str(win_color).upper()
+
+    # if it was a single player game
+    if not game_multiplayer:
+
+        if game_info.white_player.id in authorized_sockets:
+            player_sid = authorized_sockets[game_info.white_player.id]
+        elif game_info.black_player.id in authorized_sockets:
+            player_sid = authorized_sockets[game_info.black_player.id]
+
+        if win_color_upper_letter == "W":
+            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=player_sid)
+        elif win_color_upper_letter == "B":
+            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=player_sid)
+        else:
+            emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=player_sid)
+
+        return
 
     # update in database
     try:
@@ -478,29 +497,15 @@ def finish_game(game_info, win_color):
                                                                                                    white_result)
 
         white_elo_change = db.update_elo(white_id, white_ELO, white_dv, white_v)
-        white_elo_change_int = int(white_elo_change)
+        white_elo_change_int = math.ceil(white_elo_change)
         black_elo_change = int(db.update_elo(black_id, black_ELO, black_dv, black_v))
-        black_elo_change_int = int(black_elo_change)
+        black_elo_change_int = math.ceil(black_elo_change)
+
+        #update game FEN
+        db.update_FEN(game_id,game_end_FEN)
 
     except Exception as ex:
         print("DB ERROR " + str(ex))
-
-    # if it was a single player game
-    if not game_multiplayer:
-
-        if game_info.white_player.id in authorized_sockets:
-            player_sid = authorized_sockets[game_info.white_player.id]
-        elif game_info.black_player.id in authorized_sockets:
-            player_sid = authorized_sockets[game_info.black_player.id]
-
-        if win_color_upper_letter == "W":
-            emit("game_ended", {'result': 'win', 'eloChange': 0}, to=player_sid)
-        elif win_color_upper_letter == "B":
-            emit("game_ended", {'result': 'lost', 'eloChange': 0}, to=player_sid)
-        else:
-            emit("game_ended", {'result': 'draw', 'eloChange': 0}, to=player_sid)
-
-        return
 
     # notify players of their respective results
     white_sid = authorized_sockets[game_info.white_player.id]

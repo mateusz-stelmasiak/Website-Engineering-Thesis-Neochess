@@ -70,18 +70,10 @@ export function Generate_moves(grid, check, gtype) {
 
         }
     }
-
     if (gtype !== "future" && gtype !== "future2") {
         simulate_moves_for_ally(board.grid, ally_moves);
         // simulate_moves_for_opponent(board.grid,ally_moves);
     }
-    if (check === 1 && ally_moves.length === 0) {
-
-        if (check === 1 && ally_moves.length === 0 && board.color_to_move === playingAs) {
-            console.log("tu szachmat");
-        }
-    }
-
 
     if (board.check === 1 && ally_moves.length !== 0) {
         board.check = 0;
@@ -91,12 +83,19 @@ export function Generate_moves(grid, check, gtype) {
     } else if (gtype === "future2") {
         future_moves2 = ally_moves;
     } else {
-        moves = ally_moves;
+        //moves = ally_moves
+        moves = ally_moves.filter((value, index, self) =>
+            index === self.findIndex((t) => (
+                t.StartSquare === value.StartSquare && t.EndSquare === value.EndSquare
+            ))
+        )
+        console.log("ruchy")
+        console.log(moves)
     }
     if (playingAs !== board.color_to_move) {
         moves = [];
     }
-
+console.log(moves)
 }
 
 
@@ -131,7 +130,6 @@ export function Generate_opponent_moves(grid, gtype) { //used for checks
 
 function Get_Pawn_moves(startSquare, piece, grid, t_moves) {
     let Squares_to_end = Numbers_of_squares_to_edge[startSquare][0];
-    //TODO can go up to tak naprawde ile jeest do konca krawedzi squarow muszE to zmienic xD
     piece.color === 'w' ? Squares_to_end = Numbers_of_squares_to_edge[startSquare][1] : Squares_to_end = Numbers_of_squares_to_edge[startSquare][0];
     let Target = 0;
     if (Squares_to_end > 1 && piece.did_move === 0) {
@@ -227,8 +225,6 @@ function is_square_save(targetSquare) {
 }
 
 function Get_king_moves(startSquare, piece, grid, t_moves) {
-    //TODO
-    //Jak juz bede mial all to musze sprawdzac czy krol nie chce sie ruszyc na czyjes miejsce
     for (let i = 0; i < Directions.length; i++) {
         if (Numbers_of_squares_to_edge[startSquare][i] > 0) {
             let Target = startSquare + Directions[i];
@@ -278,8 +274,6 @@ function Get_king_moves(startSquare, piece, grid, t_moves) {
 
 
 function Get_Knight_moves(startSquare, piece, grid, t_moves) {
-    //TODO
-    //to mozna skrocic forem, ale trzeba dac te *2+1 *2-1 etc do jakiegos dictonary i tez iterowac zzz dodaj tutaj tez move type C jak bedzie bicie, ale to jak juz zrobisz for
     if (Numbers_of_squares_to_edge[startSquare][0] > 1 && Numbers_of_squares_to_edge[startSquare][3] > 0) {
         let Target = startSquare + Directions[0] * 2 + 1;
         let Piece_on_target = grid[Target];
@@ -633,7 +627,7 @@ export function make_a_move() {
                         }
 
                         if (piece.type_letter === 'p' || piece.type_letter === 'P') {
-                            if(check_if_promotion(piece, TargetSquare)){
+                            if (check_if_promotion(piece, TargetSquare)) {
                                 isPromotion = 1
                             }
                             board.lastPawnMoveOrCapture = 0;
@@ -641,7 +635,6 @@ export function make_a_move() {
                         //kolejnosc wazna
 
                         board.set_FEN_by_move(StartingSquare, TargetSquare, true);
-
 
 
                         piece.snap();
@@ -655,7 +648,7 @@ export function make_a_move() {
                             'startingSquare': StartingSquare,
                             'targetSquare': TargetSquare,
                             'mtype': move.type,
-                            'isPromotion':isPromotion
+                            'isPromotion': isPromotion
                         }
                         sendMoveToServer(data, board.FEN);
                     }

@@ -1,28 +1,28 @@
 import "./CookiesPreferences.css"
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import Switch from "react-switch";
-import {cookies} from "../CookiesPage/CookiesPage";
-import ShowOnClick from "../../CommonComponents/ShowOnClick/ShowOnClick.js"
+import { cookies } from "../CookiesPage/CookiesPage";
+import ShowOnClick from "../../CommonComponents/Scroll/ShowOnClick.js"
 import CookieTable from "../CookieTable/CookieTable";
-import React, {useEffect, useState} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faTimes} from "@fortawesome/free-solid-svg-icons";
-import {connect} from "react-redux";
-import {setPreferencesOpen, toogleConsent, updateBehaviour} from "../../../redux/actions/cookieActions";
+import React, { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { connect } from "react-redux";
+import { setPreferencesOpen, toogleConsent, updateBehaviour } from "../../../redux/actions/cookieActions";
 
 
-function CookiesPreferences({dispatch,prefOpen,consented}) {
+function CookiesPreferences({ dispatch, prefOpen, consented }) {
     const [analysisConsent, setAnalysisConsent] = useState(false);
 
     let closeCookiePref = () => {
         dispatch(setPreferencesOpen(false));
         dispatch(updateBehaviour());
     }
-    useEffect(()=>{
+    useEffect(() => {
         setAnalysisConsent(consented.includes('analizy'));
-    },[prefOpen])
+    }, [prefOpen])
 
-    let crossIcon = <FontAwesomeIcon icon={faTimes} onClick={closeCookiePref}/>;
+    let crossIcon = <FontAwesomeIcon icon={faTimes} onClick={closeCookiePref} />;
 
     const handleChange = nextChecked => {
         setAnalysisConsent(nextChecked);
@@ -33,63 +33,63 @@ function CookiesPreferences({dispatch,prefOpen,consented}) {
     return (
         <>
             {prefOpen &&
-            <>
-                <div className='CookiePreferences-overlay' onClick={closeCookiePref}/>
-                <div className='CookiePreferences'>
-                    {crossIcon}
-                    <h1>Preferencje dotyczące przechowywania danych</h1>
-                    <p>
-                        Kiedy odwiedzasz witryny, mogą one przechowywać lub pobierać dane w Twojej przeglądarce. Takie
-                        przechowywanie danych jest często niezbędne, by zapewnić dostęp do podstawowych funkcjonalności
-                        witryny. Przechowywanie to może być też wykorzystywane na potrzeby marketingu, analiz i
-                        personalizacji witryny (na przykład do przechowywania informacji o Twoich preferencjach).
-                        Prywatność
-                        jest dla nas ważna, masz zatem możliwość wyłączenia niektórych opcji przechowywania, które nie
-                        są
-                        niezbędne do zapewnienia podstawowych funkcjonalności witryny. Blokowanie kategorii może wpłynąć
-                        na
-                        Twoje wrażenia dotyczące korzystania z witryny.
-                        <br/><br/><Link to={'/pliki-cookie'}>Polityka Cookie</Link>
-                    </p>
-
-                    <div className='CookiePrefContainer'>
-                        <div className='cookietype-and-switch'>
-
-                            <h2>Podstawowe</h2>
-                            <Switch
-                                checked={true}
-                                disabled={true}
-                            />
-                        </div>
+                <>
+                    <div className='CookiePreferences-overlay' onClick={closeCookiePref} />
+                    <div className='CookiePreferences'>
+                        {crossIcon}
+                        <h1>Preferencje dotyczące przechowywania danych</h1>
                         <p>
-                            {cookies.podstawowe.desc}
+                            Kiedy odwiedzasz witryny, mogą one przechowywać lub pobierać dane w Twojej przeglądarce. Takie
+                            przechowywanie danych jest często niezbędne, by zapewnić dostęp do podstawowych funkcjonalności
+                            witryny. Przechowywanie to może być też wykorzystywane na potrzeby marketingu, analiz i
+                            personalizacji witryny (na przykład do przechowywania informacji o Twoich preferencjach).
+                            Prywatność
+                            jest dla nas ważna, masz zatem możliwość wyłączenia niektórych opcji przechowywania, które nie
+                            są
+                            niezbędne do zapewnienia podstawowych funkcjonalności witryny. Blokowanie kategorii może wpłynąć
+                            na
+                            Twoje wrażenia dotyczące korzystania z witryny.
+                            <br /><br /><Link to={'/pliki-cookie'}>Polityka Cookie</Link>
                         </p>
 
-                        <ShowOnClick
-                            toShow={<CookieTable cookies={cookies.podstawowe.list}/>}
-                            text={'Pokaż ciasteczka'}
-                        />
-                        <div className='cookietype-and-switch'>
+                        <div className='CookiePrefContainer'>
+                            <div className='cookietype-and-switch'>
 
-                            <h2>Analizy</h2>
-                            <Switch
-                                checked={analysisConsent}
-                                onChange={handleChange}
+                                <h2>Podstawowe</h2>
+                                <Switch
+                                    checked={true}
+                                    disabled={true}
+                                />
+                            </div>
+                            <p>
+                                {cookies.podstawowe.desc}
+                            </p>
+
+                            <ShowOnClick
+                                toShow={<CookieTable cookies={cookies.podstawowe.list} />}
+                                text={'Pokaż ciasteczka'}
+                            />
+                            <div className='cookietype-and-switch'>
+
+                                <h2>Analizy</h2>
+                                <Switch
+                                    checked={analysisConsent}
+                                    onChange={handleChange}
+                                />
+                            </div>
+                            <p>
+                                {cookies.analizy.desc}
+                            </p>
+
+                            <ShowOnClick
+                                toShow={<CookieTable cookies={cookies.analizy.list} />}
+                                text={'Pokaż ciasteczka'}
                             />
                         </div>
-                        <p>
-                            {cookies.analizy.desc}
-                        </p>
 
-                        <ShowOnClick
-                            toShow={<CookieTable cookies={cookies.analizy.list}/>}
-                            text={'Pokaż ciasteczka'}
-                        />
+
                     </div>
-
-
-                </div>
-            </>
+                </>
             }
         </>);
 }
@@ -97,7 +97,7 @@ function CookiesPreferences({dispatch,prefOpen,consented}) {
 const mapStateToProps = (state) => {
     return {
         prefOpen: state.cookie.prefOpen,
-        consented:state.cookie.consented
+        consented: state.cookie.consented
     };
 };
 

@@ -3,7 +3,7 @@ import LogRegScreen from "./components/LogRegScreen/LogRegScreen/LogRegScreen";
 import MainPageScreen from "./components/MainPageScreen/MainPageScreen";
 import PlayGameScreen from "./components/PlayGameScreen/PlayGameScreen";
 import {Switch, Route, Redirect, useHistory} from 'react-router-dom';
-import ScrollToTop from "./components/CommonComponents/ScrollToTop";
+import ScrollToTop from "./components/CommonComponents/Scroll/ScrollToTop";
 import React, {useEffect, useState,} from "react";
 import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'

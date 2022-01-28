@@ -4,7 +4,7 @@ import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
 import Section from "../Layout/Section/Section";
 import SectionTitle from "../Layout/Section/SectionTitle";
 import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
-import UserEditForm from "../Header/Components/UserEdit/UserEdit";
+import UserEditForm from "../Header/Components/AccountManagement/EditAccount/EditAccount";
 import React, {useEffect, useState} from "react";
 import {getUserData} from "../../serverCommunication/LogRegService";
 import Dots from "../CommonComponents/Dots/Dots";
@@ -17,20 +17,29 @@ function UserProfileScreen(props) {
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
     const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
 
+    const [lastGameFEN,setLastGameFEN] = useState(undefined);
+    const [loginTime, setLoginTime] = useState(undefined);
+    const [lastLoginTime, setLastLoginTime] = useState(undefined);
+
     useEffect(async () => {
         const response = (await getUserData())
         console.log(response)
-        setEmail(response['Email'])
-        setIs2FaEnabled(response['2FA'])
-        setAccountUpdatedTime(response['UpdatedAt']? response['UpdatedAt']:"--:--:---")
-        setAccountCreatedTime(response['CreatedAt'])
+        if (response['lastPlayedFEN']) setLastGameFEN(response['lastPlayedFEN'])
+        setEmail(response['user']['Email'])
+        setIs2FaEnabled(response['user']['2FA'])
+        setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
+        setAccountCreatedTime(response['user']['CreatedAt'])
+        setLoginTime(response['user']['LoggedInAt']);
+        setLastLoginTime(response['user']['LastLoggedInAt']);
     }, [])
 
     const are_fields_correct = () => {
         return props.username !== undefined &&
             email !== undefined &&
             is2FaEnabled !== undefined &&
-            accountCreatedTime !== undefined
+            accountCreatedTime !== undefined &&
+            lastLoginTime !== undefined &&
+            loginTime !== undefined;
     }
 
     let glowingStyle = {
@@ -45,12 +54,13 @@ function UserProfileScreen(props) {
 
     let sectionStyle = {
         'display': 'flex',
-        'alignItems': 'flex-start',
+        'alignItems': 'center',
         'flexDirection': 'row',
         'columnGap': '3rem',
         'justifyContent': 'space-between',
         'alignContent': 'space-between',
-        'width': '70%'
+        'width': '70%',
+        'align-items':'center'
     }
 
     let containerStyle = {
@@ -85,8 +95,20 @@ function UserProfileScreen(props) {
                             <h3>Email address</h3>
                             <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
                         </span>
+                        <span className="container">
+                            <h3>Last login time</h3>
+                            <span>{are_fields_correct() ? lastLoginTime : <Dots>loading</Dots>}</span>
+                        </span>
+                        <span className="container">
+                            <h3>Login time</h3>
+                            <span>{are_fields_correct() ? loginTime : <Dots>loading</Dots>}</span>
+                        </span>
                     </div>
-                    <FenDisplayingBoard/>
+                    <div className="lastGameContainer">
+                        {are_fields_correct() && <FenDisplayingBoard FEN={lastGameFEN}/>}
+                        <h3>- Last played game -</h3>
+                    </div>
+
                 </div>
             </Section>
             <Section id="UserProfileEdition">

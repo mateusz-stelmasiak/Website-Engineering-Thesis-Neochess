@@ -60,7 +60,6 @@
     "react-facebook-pixel": "^1.0.4",
     "react-google-recaptcha": "^2.1.0",
     "react-redux": "^7.2.4",
-    "react-reel": "^1.2.3",
     "react-super-responsive-table": "^5.2.0",
     "p5": "^1.4.0"
   },

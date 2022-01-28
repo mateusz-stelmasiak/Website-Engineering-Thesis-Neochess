@@ -150,12 +150,15 @@ def login():
     user_2fa = True if str(user['2FA']) == '1' else False
     user_elo = str(user['ELO'])
     user_account_activated = True if str(user['AccountConfirmed']) == "1" else False
+    login_time = user['LoggedInAt']
 
     # actual user's password doesn't match given
     if user_pass != sha256(str.encode(f"{request_data['hashedPassword']}{user['Salt']}")).hexdigest():
         return generate_response(request, {
             "error": "Incorrect password"
         }, 403)
+
+    db.update_login_times(user_id, login_time)
 
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
@@ -472,12 +475,21 @@ def get_user_details():
     try:
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
-
-        return generate_response(request, user, 200)
+        last_FEN = db.get_last_game_FEN(user_id)
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
+
+    if last_FEN is None:
+        return generate_response(request, {
+            'user': user
+        }, 200)
+
+    return generate_response(request, {
+        'user': user,
+        'lastPlayedFEN': last_FEN
+    }, 200)
 
 
 @app.route('/update', methods=['POST', 'OPTIONS'])
@@ -572,7 +584,7 @@ def confirm_email(token):
 
     try:
         email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
-    except SignatureExpired as ex:
+    except Exception as ex:
         print(ex)
         return generate_response(request, {
             "response": "The confirmation link is invalid or has expired."
