@@ -13,6 +13,7 @@ import {
 import Piece from "./Piece";
 import {Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
 import {store} from "../../../index";
+import {defenderMoves} from "./gameMode2_moves";
 
 
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -181,19 +182,19 @@ export default class Board {
                 }
             }
         }
-        if (isCastlePossible && isCastlePossible.includes('K')){
+        if (isCastlePossible && isCastlePossible.includes('K')) {
             this.grid[60].did_move = 0 //king                         //setting king and rook did_move to zero because if they can castle they for sure werent moved
             this.grid[63].did_move = 0 //rook
         }
-        if (isCastlePossible && isCastlePossible.includes('Q')){
+        if (isCastlePossible && isCastlePossible.includes('Q')) {
             this.grid[60].did_move = 0
             this.grid[56].did_move = 0
         }
-        if (isCastlePossible && isCastlePossible.includes('k')){
+        if (isCastlePossible && isCastlePossible.includes('k')) {
             this.grid[4].did_move = 0
             this.grid[7].did_move = 0
         }
-        if (isCastlePossible && isCastlePossible.includes('q')){
+        if (isCastlePossible && isCastlePossible.includes('q')) {
             this.grid[4].did_move = 0
             this.grid[0].did_move = 0
         }
@@ -253,21 +254,7 @@ export default class Board {
         }
     }
 
-    drawLastPlayedMove(){
-
-    }
-
-    draw_board() {
-        let i = 0;
-        let dragged_index = -1;
-        let dragged_index2 = -1;
-        let j = 0;
-
-        if (currentTurn === playingAs) {
-            let color = {r: 105, g: 172, b: 162};
-            //this.highlightBoardSide(playingAs,color);
-        }
-
+    drawLastPlayedMove() {
         if (currentTurn === playingAs && this.lastmove[0] !== -1) {
             this.p5.push()
             this.p5.noStroke();
@@ -280,8 +267,9 @@ export default class Board {
             this.p5.rect(endHighlight[0], endHighlight[1], size, size)
             this.p5.pop();
         }
+    }
 
-
+    drawPossibleMoves() {
         for (let i = 0; i < moves.length; i++) {
             let type = moves[i].type;
             if (board.grid[moves[i].StartSquare].dragging) {
@@ -304,8 +292,11 @@ export default class Board {
                 }
             }
         }
+    }
 
-
+    drawPieces() {
+        let dragged_index = -1;
+        let i = 0;
         for (let k = 0; k < this.grid.length; k++) {
             let piece = this.grid[k];
             if (piece.type_letter !== 'e') {
@@ -329,6 +320,9 @@ export default class Board {
         if (dragged_index !== -1) {
             this.grid[dragged_index].draw_piece();
         }
+    }
+
+    drawDefenderShelf() {
         //images "hidden" under pieces, will apear when piece is dragged or when state is low enough
         let rew = 0;
         for (var texture in textures) {
@@ -351,7 +345,10 @@ export default class Board {
 
         }
         rew = 0;
+    }
 
+    drawDefenderPieces() {
+        let dragged_index2 = -1;
         //making pieces for gamemode2 purposes they only appear above the image for setupstate
         if (this.SetupState > -1) {
 
@@ -384,7 +381,33 @@ export default class Board {
         } else if (this.SetupState < 0 && this.gameMode2_grid.length === 1) {
             this.gameMode2_grid = [];
         }
+    }
 
+    highlightDefenderMoves() {
+        if (this.SetupState > -1) {
+            for (let j = 0; j < this.gameMode2_grid.length; j++) {
+                if(this.gameMode2_grid[j].dragging) {
+                    for (let i = 0; i < defenderMoves.length; i++) {
+                        let highlight = pixel_positions[defenderMoves[i]];
+                        this.p5.push()
+                        this.p5.translate(size / 2, size / 2);
+                        this.p5.noStroke();
+                        this.p5.fill(this.p5.color(66, 129, 74));
+                        this.p5.circle(highlight[0], highlight[1], size / 3);
+                        this.p5.pop();
+                    }
+                }
+            }
+        }
+    }
+
+    draw_board() {
+        this.drawLastPlayedMove()
+        this.drawPossibleMoves()
+        this.highlightDefenderMoves()
+        this.drawPieces()
+        this.drawDefenderShelf()
+        this.drawDefenderPieces()
     }
 
     change_Turn() {
@@ -393,32 +416,29 @@ export default class Board {
         let gameMode = storeVars.gameMode;
         if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
             this.color_to_move = 'w';
-        } else if(gameMode == 1  && storeVars.whiteScore <0) {
+        } else if (gameMode == 1 && storeVars.whiteScore < 0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-        }else if(gameMode == 1  && storeVars.blackScore <0){
+        } else if (gameMode == 1 && storeVars.blackScore < 0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-        } else if (gameMode == 1  && (storeVars.blackScore == 0)) {
+        } else if (gameMode == 1 && (storeVars.blackScore == 0)) {
             this.color_to_move = 'w'
-        } else if (gameMode == 1  && (storeVars.whiteScore == 0)) {
+        } else if (gameMode == 1 && (storeVars.whiteScore == 0)) {
             this.color_to_move = 'b'
-        } else if(gameMode==1){
+        } else if (gameMode == 1) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }
 
-        if (gameMode == 2 && this.SetupState>=0){
-            this.color_to_move=playingAs
-        }
-        else if(gameMode == 2)
-        {
-            if(this.phase !== 0){
+        if (gameMode == 2 && this.SetupState >= 0) {
+            this.color_to_move = playingAs
+        } else if (gameMode == 2) {
+            if (this.phase !== 0) {
                 this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
-            }else{
-                this.phase=1;
+            } else {
+                this.phase = 1;
             }
 
         }
-        if(gameMode == 0)
-        {
+        if (gameMode == 0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
         }
     }

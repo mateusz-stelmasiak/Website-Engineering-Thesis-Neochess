@@ -181,6 +181,11 @@ export default function sketch(p5) {
         }
 
         board.load_FEN();
+        if(gameMode==='0'){
+
+        }else{
+            generateDefenderMoves(board.grid)
+        }
         calculatePixelPositions();
         count_squares_to_edge();
         Generate_moves(board.grid, board.check, "setup");

@@ -85,24 +85,22 @@ function Is_On_Good_Square(TargetSquare) {
     }
 }
 
-export function generateDefenderMoves(board){
+export function generateDefenderMoves(grid){
     defenderMoves = []
-    if(playingAs==='b'){
-        for(let i =0;i<24;i++)
-        {
-            if(board[i].type_letter==='e') {
-                defenderMoves.push(i)
-            }
+        if (playingAs === 'b') {
+            for (let i = 0; i < grid.length - 40; i++) {
+                if (grid[i].type_letter === 'e') {
+                    defenderMoves.push(i)
+                }
 
-        }
-        console.log(defenderMoves)
-    }else{
-        for(let i =39;i<64;i++)
-        {
-            if(board[i].type_letter==='e') {
-                defenderMoves.push(i)
             }
+            console.log(defenderMoves)
+        } else {
+            for (let i = 40; i < grid.length; i++) {
+                if (grid[i].type_letter === 'e') {
+                    defenderMoves.push(i)
+                }
+            }
+            console.log(defenderMoves)
         }
-        console.log(defenderMoves)
-    }
 }
