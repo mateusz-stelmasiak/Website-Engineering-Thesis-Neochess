@@ -16,7 +16,10 @@ function UserProfileScreen(props) {
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
     const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
+
     const [lastGameFEN,setLastGameFEN] = useState(undefined);
+    const [loginTime, setLoginTime] = useState(undefined);
+    const [lastLoginTime, setLastLoginTime] = useState(undefined);
 
     useEffect(async () => {
         const response = (await getUserData())
@@ -24,15 +27,19 @@ function UserProfileScreen(props) {
         setIs2FaEnabled(response['user']['2FA'])
         setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
         setAccountCreatedTime(response['user']['CreatedAt'])
+        setLoginTime(response['LoggedInAt']);
+        setLastLoginTime(response['LastLoggedInAt']);
         if (response['lastPlayedFEN']) setLastGameFEN(response['lastPlayedFEN'])
-
+        
     }, [])
 
     const are_fields_correct = () => {
         return props.username !== undefined &&
             email !== undefined &&
             is2FaEnabled !== undefined &&
-            accountCreatedTime !== undefined
+            accountCreatedTime !== undefined &&
+            lastLoginTime !== undefined &&
+            loginTime !== undefined;
     }
 
     let glowingStyle = {
@@ -47,7 +54,7 @@ function UserProfileScreen(props) {
 
     let sectionStyle = {
         'display': 'flex',
-        'alignItems': 'flex-start',
+        'alignItems': 'center',
         'flexDirection': 'row',
         'columnGap': '3rem',
         'justifyContent': 'space-between',
@@ -87,6 +94,14 @@ function UserProfileScreen(props) {
                         <span className="container">
                             <h3>Email address</h3>
                             <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
+                        </span>
+                        <span className="container">
+                            <h3>Last login time</h3>
+                            <span>{are_fields_correct() ? lastLoginTime : <Dots>loading</Dots>}</span>
+                        </span>
+                        <span className="container">
+                            <h3>Login time</h3>
+                            <span>{are_fields_correct() ? loginTime : <Dots>loading</Dots>}</span>
                         </span>
                     </div>
                     <div className="lastGameContainer">

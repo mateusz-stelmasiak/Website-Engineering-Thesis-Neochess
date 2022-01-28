@@ -8,7 +8,6 @@
     color: var(--sec-color);
 }
 
-
 .CurrentInfo-container .container{
     background-color: var(--body-color);
     padding: 0.2rem 2rem;
@@ -42,7 +41,6 @@
 }
 
 .CurrentInfo-container .container span{
-
     color:var(--text-color);
     font-weight: bold;
     animation: none;
