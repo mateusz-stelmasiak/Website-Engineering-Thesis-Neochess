@@ -45,6 +45,8 @@ class ChessDB:
                             AccountConfirmed boolean not null DEFAULT false,
                             CreatedAt DATETIME not null,
                             UpdatedAt DATETIME,
+                            LoggedInAt DATETIME,
+                            LastLoggedInAt DATETIME,
                             ELO int not null DEFAULT ''' + str(RatingSystem.starting_ELO) + ''', 
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             ELOVolatility FLOAT not null DEFAULT ''' + str(
@@ -118,11 +120,23 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
+    def update_login_times(self, user_id, last_login_time):
+        mycursor = self.mydb.cursor(dictionary=True)
+
+        sql_update = ("""UPDATE Users SET LastLoggedInAt = %s, LoggedInAt = %s WHERE userID = %s""")
+
+        date = self.get_curr_date()
+        data_update = (last_login_time if last_login_time is not None else date, date, user_id)
+        mycursor.execute(sql_update, data_update)
+        self.mydb.commit()
+        mycursor.close()
+
     def add_user(self, username, password, email, is_2_fa_enabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
-                    "(Username, Password, Salt, Email, 2FA, OTPSecret, CreatedAt, Elo, EloDeviation, EloVolatility)"
+                    "(Username, Password, Salt, Email, 2FA, OTPSecret, CreatedAt, Elo, EloDeviation,"
+                    "EloVolatility)"
                     "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)")
 
         date = self.get_curr_date()

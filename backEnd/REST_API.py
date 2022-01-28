@@ -150,12 +150,15 @@ def login():
     user_2fa = True if str(user['2FA']) == '1' else False
     user_elo = str(user['ELO'])
     user_account_activated = True if str(user['AccountConfirmed']) == "1" else False
+    login_time = user['LoggedInAt']
 
     # actual user's password doesn't match given
     if user_pass != sha256(str.encode(f"{request_data['hashedPassword']}{user['Salt']}")).hexdigest():
         return generate_response(request, {
             "error": "Incorrect password"
         }, 403)
+
+    db.update_login_times(user_id, login_time)
 
     # generate session and refresh token for user
     session_token = generate_session_token(user_id)
