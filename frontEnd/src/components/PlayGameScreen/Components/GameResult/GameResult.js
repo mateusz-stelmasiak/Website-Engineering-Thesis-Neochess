@@ -1,11 +1,11 @@
 import {useHistory} from "react-router-dom";
 import "./GameResult.css"
-import SectionTitle from "../../Layout/Section/SectionTitle";
+import SectionTitle from "../../../Layout/Section/SectionTitle";
 import Reel from "react-reel";
 import {connect} from "react-redux";
-import React, {useEffect, useState} from "react";
+import React from "react";
 
-function GameResult({gameResult,eloChange}) {
+function GameResult({gameResult, eloChange}) {
     const history = useHistory();
     const returnToMain = () => history.push('/');
 
@@ -36,7 +36,6 @@ function GameResult({gameResult,eloChange}) {
         color: 'var(--fail-color)'
     }
 
-
     return (
         <div className="GameResult">
             <h4>GAME ENDED</h4>
@@ -52,7 +51,6 @@ function GameResult({gameResult,eloChange}) {
                 </h3>
                 <span>{eloChange >= 0 ? "WAS GAINED" : "WAS LOST"}</span>
             </div>
-
 
             <button onClick={returnToMain}>MAIN MENU</button>
         </div>

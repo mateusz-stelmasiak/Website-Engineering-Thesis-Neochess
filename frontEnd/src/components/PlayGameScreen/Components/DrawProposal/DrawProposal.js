@@ -1,8 +1,8 @@
-import {emit} from "../../../redux/actions/socketActions";
+import {emit} from "../../../../redux/actions/socketActions";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
+import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import "./DrawProposal.css"
-import {setDrawProposedColor} from "../../../redux/actions/gameActions";
+import {setDrawProposedColor} from "../../../../redux/actions/gameActions";
 import React from "react";
 
 function DrawProposal({gameId, userId, dispatch, show, setShow}) {
