@@ -1,6 +1,6 @@
 import * as actions from '../actions/cookieActions'
 import ReactPixel from "react-facebook-pixel";
-import {cookieTypes} from "../../components/Cookies/CookiesPage"
+import {cookieTypes} from "../../components/Cookies/CookiesPage/CookiesPage"
 
 // Set a Cookie
 export function setCookie(cName, cValue, expDays) {
