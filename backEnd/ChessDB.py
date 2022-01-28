@@ -17,7 +17,6 @@ class ChessDB:
                                             password="Serek123",
                                             database="neo-chess-database")
 
-
         # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
         #                                     password="YhuuFd6Z",
         #                                     database="13748919_neochess")
@@ -164,7 +163,7 @@ class ChessDB:
 
         sql_game = ("INSERT INTO Games "
                     "(played,GameMode) "
-                    "VALUES (%s, %s,%s)")
+                    "VALUES (%s, %s)")
 
         date = self.get_curr_date_time()
         data_game = (date, game_mode_id)
@@ -233,7 +232,7 @@ class ChessDB:
         salt = self.get_salt() if new_user_data_json['hashedNewPassword'] is not None else user['Salt']
 
         new_password = sha256(str.encode(f"{new_user_data_json['hashedNewPassword']}{salt}")).hexdigest() \
-            if new_user_data_json['hashedNewPassword'] is not None\
+            if new_user_data_json['hashedNewPassword'] is not None \
             else user['Password']
 
         email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
@@ -451,13 +450,12 @@ class ChessDB:
             sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                                               WHERE UserID = %s AND Games.GameID = Participants.GameID) t1 
                                               WHERE Score = 1;""")
-            data_count = (self.get_user_by_id(user_id)['userID'], )
+            data_count = (self.get_user_by_id(user_id)['userID'],)
         else:
             sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                                WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                                WHERE Score = 1;""")
             data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
-
 
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
@@ -477,7 +475,6 @@ class ChessDB:
                                 WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                                 WHERE Score = 0.5;""")
             data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
-
 
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
