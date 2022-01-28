@@ -478,9 +478,9 @@ def finish_game(game_info, win_color):
                                                                                                    white_result)
 
         white_elo_change = db.update_elo(white_id, white_ELO, white_dv, white_v)
-        white_elo_change_int = int(white_elo_change)
+        white_elo_change_int = math.ceil(white_elo_change)
         black_elo_change = int(db.update_elo(black_id, black_ELO, black_dv, black_v))
-        black_elo_change_int = int(black_elo_change)
+        black_elo_change_int = math.ceil(black_elo_change)
 
     except Exception as ex:
         print("DB ERROR " + str(ex))
