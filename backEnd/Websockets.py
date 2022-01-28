@@ -413,7 +413,7 @@ def find_match(game_mode_id, player):
             try:
                 # create game in db
                 db = ChessDB.ChessDB()
-                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],
+                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), [],
                                       game_mode_id)
                 game_id_hash = hashlib.sha256(str(game_id).encode())
                 game_room_id = str(game_id_hash.hexdigest())
@@ -478,9 +478,9 @@ def finish_game(game_info, win_color):
                                                                                                    white_result)
 
         white_elo_change = db.update_elo(white_id, white_ELO, white_dv, white_v)
-        white_elo_change_int = int(white_elo_change)
+        white_elo_change_int = math.ceil(white_elo_change)
         black_elo_change = int(db.update_elo(black_id, black_ELO, black_dv, black_v))
-        black_elo_change_int = int(black_elo_change)
+        black_elo_change_int = math.ceil(black_elo_change)
 
     except Exception as ex:
         print("DB ERROR " + str(ex))

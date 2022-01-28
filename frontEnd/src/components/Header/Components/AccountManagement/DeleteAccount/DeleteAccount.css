@@ -4,7 +4,7 @@
 
 .errorMessage {
     flex: 1 1 100%;
-    margin-top: 1rem;
+    margin-top: 2rem;
     color: var(--sec-color);
 }
 
@@ -17,6 +17,15 @@
 .errorMessage ul {
     margin: 0;
     text-align: left;
+}
+
+.TwoFaCodeInput {
+    margin-top: 25px !important;
+    margin-left: 15px !important;
+}
+
+.AccountDeleteButtons {
+    display: contents;
 }
 
 @media (max-width: 1050px) {

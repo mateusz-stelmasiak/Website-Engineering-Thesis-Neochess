@@ -1,13 +1,13 @@
 import React, {Component} from "react";
 import "./ProfileWidget.css";
 import {connect} from "react-redux";
-import {mapAllStateToProps} from "../../../redux/reducers/rootReducer";
+import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSignOutAlt, faCog} from "@fortawesome/free-solid-svg-icons";
 
-import {logout} from "../../../serverCommunication/LogRegService";
+import {logout} from "../../../../serverCommunication/LogRegService";
 import {useHistory} from "react-router-dom";
-import logo from '../../../assets/neochess-logo.png'; // Tell webpack this JS file uses this image
+import logo from '../../../../assets/neochess-logo.png'; // Tell webpack this JS file uses this image
 
 
 function ProfileWidget(props) {
