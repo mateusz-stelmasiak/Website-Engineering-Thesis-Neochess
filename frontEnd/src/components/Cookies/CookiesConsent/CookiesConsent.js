@@ -1,8 +1,8 @@
 import './CookiesConsent.css'
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {getCookie} from "../../redux/reducers/cookieReducer";
-import {acceptAllCookies, setPreferencesOpen, updateBehaviour} from "../../redux/actions/cookieActions";
+import {getCookie} from "../../../redux/reducers/cookieReducer";
+import {acceptAllCookies, setPreferencesOpen, updateBehaviour} from "../../../redux/actions/cookieActions";
 import {toast} from "react-hot-toast";
 
 

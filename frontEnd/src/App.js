@@ -1,9 +1,9 @@
 import './App.css';
-import LogRegScreen from "./components/LogRegScreen/LogRegScreen";
+import LogRegScreen from "./components/LogRegScreen/LogRegScreen/LogRegScreen";
 import MainPageScreen from "./components/MainPageScreen/MainPageScreen";
 import PlayGameScreen from "./components/PlayGameScreen/PlayGameScreen";
 import {Switch, Route, Redirect, useHistory} from 'react-router-dom';
-import ScrollToTop from "./components/CommonComponents/ScrollToTop";
+import ScrollToTop from "./components/CommonComponents/Scroll/ScrollToTop";
 import React, {useEffect, useState,} from "react";
 import {mapAllStateToProps} from './redux/reducers/rootReducer'
 import {connect} from 'react-redux'
@@ -11,8 +11,8 @@ import PrivateRoute from "./components/CommonComponents/PrivateRouter";
 import {getSessionToken} from "./serverCommunication/DataFetcher";
 import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen";
 import {Toaster} from "react-hot-toast";
-import CookiesPreferences from "./components/Cookies/CookiesPreferences";
-import CookiesPage from "./components/Cookies/CookiesPage";
+import CookiesPreferences from "./components/Cookies/CookiesPreferences/CookiesPreferences";
+import CookiesPage from "./components/Cookies/CookiesPage/CookiesPage";
 import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
 
 

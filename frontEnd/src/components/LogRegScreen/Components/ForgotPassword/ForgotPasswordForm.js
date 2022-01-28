@@ -72,7 +72,8 @@ function ForgotPasswordForm({dispatch}) {
         }
 
         setIsLoadingShown(false);
-        setPasswordRequestResult(response['response'] === "OK" ? "Reset password email has been successfully sent"
+        setPasswordRequestResult(response['response'] === "OK" ? "If the email address you provided belongs to an account, "
+        + "you'll receive an email with instructions on how to reset your password."
             : `Error occurred while trying to send password reset message: ${response['result']}`);
 
         setTimeout(() => {

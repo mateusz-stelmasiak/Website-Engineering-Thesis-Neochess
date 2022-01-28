@@ -10,7 +10,7 @@ import {setGameId, setGameMode, setOpponentUsername, setPlayingAs} from "../../r
 import {connect} from "react-redux";
 import {authorizeSocket} from "../../redux/actions/socketActions";
 import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
-import CookiesConsent from "../Cookies/CookiesConsent";
+import CookiesConsent from "../Cookies/CookiesConsent/CookiesConsent";
 import FindGameWidget from "./Components/FindGame/FindGameWidget";
 
 

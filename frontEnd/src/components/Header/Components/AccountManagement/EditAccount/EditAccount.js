@@ -1,16 +1,22 @@
-import "./UserEdit.css";
+import "./EditAccount.css";
 import {connect} from "react-redux";
 import Form from "react-bootstrap/Form";
 import React, {useEffect, useState} from "react";
 import validator from "validator";
 import Button from "react-bootstrap/Button";
-import "../../../CommonComponents/CircleWidget/CircleWidget.css";
+import "../../../../CommonComponents/CircleWidget/CircleWidget.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
-import DeleteAccount from "./DeleteAccount/DeleteAccount";
-import {get2FaCode} from "../../../../serverCommunication/DataFetcher";
-import {check2FaCode, generateRecoveryCodes, logout, updateUser} from "../../../../serverCommunication/LogRegService";
+import DeleteAccount from "../DeleteAccount/DeleteAccount";
+import {get2FaCode} from "../../../../../serverCommunication/DataFetcher";
+import {
+    check2FaCode,
+    generateRecoveryCodes,
+    logout,
+    updateUser
+} from "../../../../../serverCommunication/LogRegService";
 import {Modal} from "react-bootstrap";
+import {toast} from "react-hot-toast";
 
 
 function UserEditForm(props) {
@@ -20,6 +26,7 @@ function UserEditForm(props) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [recoveryCodes, setRecoveryCodes] = useState([]);
     const [showRecoveryCodes, setShowRecoveryCodes] = useState(false);
+    const [currentPasswordError, setCurrentPasswordError] = useState("");
 
     const [email, setEmail] = useState("");
     const [confirmEmail, setConfirmEmail] = useState("");
@@ -169,6 +176,7 @@ function UserEditForm(props) {
 
     async function handleSubmit(event) {
         event.preventDefault();
+
         if (currentPassword !== "") {
             if (is2FaEnabled && !props.is2FaEnabled) {
                 if (!(await CheckTwoFaCode())) {
@@ -194,26 +202,29 @@ function UserEditForm(props) {
                 setTimeout(async () => {
                     await logout();
                 }, 2000)
+            } else if (response['response'] === "Incorrect password") {
+                setCurrentPasswordError("Incorrect current password")
             } else {
                 setErrorMessage(response['response']);
             }
         } else {
-            setErrorMessage("Current password cannot be empty");
+            setCurrentPasswordError("Current password cannot be empty");
         }
 
         setIsLoadingShown(false);
 
         setTimeout(() => {
             setErrorMessage("");
+            setCurrentPasswordError("");
         }, 3000);
     }
 
     async function CheckTwoFaCode() {
-        const response = await check2FaCode(twoFaCode, props.username)
-        if (!response['result']) {
+        const response = await check2FaCode(twoFaCode, props.username, props.email)
+        if (!response['response']) {
             setErrorMessage("Two authentication code is incorrect");
         }
-        return response['result'];
+        return response['response'];
     }
 
     function AssignTwoFaCode(value) {
@@ -271,11 +282,10 @@ function UserEditForm(props) {
                 <div className="EditFormContainer">
 
                     <div className="EditContainer InfoContainer">
-                        <h2>Change Password</h2>
-
+                        <h2>Current Password</h2>
                         <div className="pass-wrapper mt2">
                             <Form.Control
-                                style={{marginBottom: "25px"}}
+                                style={{marginBottom: "50px"}}
                                 required
                                 placeholder="Current password..."
                                 type={passwordShown ? "text" : "password"}
@@ -289,6 +299,12 @@ function UserEditForm(props) {
                                 {eye}
                             </i>
                         </div>
+                        <div style={{display: currentPasswordError !== "" ? 'flex' : 'none'}}
+                             className="currentPasswordErrorMessage">
+                            <ul>{currentPasswordError}</ul>
+                        </div>
+
+                        <h2>Change Password</h2>
                         <div className="pass-wrapper mt2">
                             <Form.Control
                                 required
@@ -328,14 +344,14 @@ function UserEditForm(props) {
                             className="ButtonStyle"
                             onClick={handlePasswordChange} type="submit"
                         >Change password</Button>
-
-
                     </div>
 
                     <div className="InfoContainer EmailAddressContainer">
                         <h2>Change Email Address</h2>
                         <Form.Control
-                            className="emailField"
+                            style={{
+                                marginBottom: '30px'
+                            }}
                             required
                             placeholder="New e-mail address..."
                             type="text"
@@ -343,7 +359,6 @@ function UserEditForm(props) {
                             onChange={(e) => checkEmail(e.target.value)}
                         />
                         <Form.Control
-                            className="emailField"
                             required
                             placeholder="Confirm new e-mail address..."
                             type="text"
@@ -365,7 +380,6 @@ function UserEditForm(props) {
                             onChange={(_) => enable2FA()}
                             checked={is2FaEnabled}
                         />
-
                         {is2FaEnabled ?
                             <>
                                 {!props.is2FaEnabled ?
@@ -386,6 +400,7 @@ function UserEditForm(props) {
                         <Button
                             onClick={handleSubmit} type="submit"
                             style={{marginLeft: "20px"}}
+                            // disabled={props.is2FaEnabled}
                         >Change 2FA</Button>
                     </div>
 
@@ -395,7 +410,6 @@ function UserEditForm(props) {
                             is2FaEnabled={props.is2FaEnabled}
                         />
                     </div>
-
 
                 </div>
                 <div style={{display: errorMessage !== "" ? 'flex' : 'none'}} className="errorMessage">
@@ -407,7 +421,8 @@ function UserEditForm(props) {
                             UPDATING USER
                         </p>
                         <div className="loader"/>
-                    </div> : null}
+                    </div>
+                    : null}
             </Form>
         </div>
     </>

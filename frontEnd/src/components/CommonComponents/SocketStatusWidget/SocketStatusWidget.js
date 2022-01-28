@@ -28,7 +28,7 @@ class SocketStatusWidget extends Component {
         return (
             <Tooltip title={displayedSocketStatus.name} id='socket_widget'>
                 <div className={`SocketStatus ` + this.props.className}
-                     style={{'background-color': displayedSocketStatus.color}}/>
+                     style={{'backgroundColor': displayedSocketStatus.color}}/>
             </Tooltip>
         );
     }

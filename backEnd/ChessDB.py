@@ -13,14 +13,13 @@ server_time_difference = '02:00:00'
 
 class ChessDB:
     def __init__(self):
-        # self.mydb = mysql.connector.connect(host="localhost", user="user",
-        #                                     password="Serek123",
-        #                                     database="neo-chess-database")
+        self.mydb = mysql.connector.connect(host="localhost", user="user",
+                                            password="Serek123",
+                                            database="neo-chess-database")
 
-
-        self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
-                                            password="YhuuFd6Z",
-                                            database="13748919_neochess")
+        # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
+        #                                     password="YhuuFd6Z",
+        #                                     database="13748919_neochess")
 
         self.alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*;?"
 
@@ -31,8 +30,7 @@ class ChessDB:
         mycursor = self.mydb.cursor()
 
         mycursor.execute('''create table if not exists Games
-                             (GameID integer primary key AUTO_INCREMENT, 
-                             win_type varchar(100), 
+                             (GameID integer primary key AUTO_INCREMENT,
                              played DATETIME,
                              GameMode int not null DEFAULT 0);''')
 
@@ -120,7 +118,7 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def add_user(self, username, password, email, is2FaEnabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
+    def add_user(self, username, password, email, is_2_fa_enabled, otp_secret, elo, elo_dv, elo_v, recovery_codes=None):
         mycursor = self.mydb.cursor(dictionary=True)
 
         sql_user = ("INSERT INTO Users "
@@ -129,14 +127,14 @@ class ChessDB:
 
         date = self.get_curr_date()
         salt = self.get_salt()
-        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is2FaEnabled,
+        data_user = (username, sha256(str.encode(f"{password}{salt}")).hexdigest(), salt, email, is_2_fa_enabled,
                      otp_secret, date, elo, elo_dv, elo_v)
 
         mycursor.execute(sql_user, data_user)
         self.mydb.commit()
         mycursor.close()
 
-        if is2FaEnabled:
+        if is_2_fa_enabled:
             self.add_recovery_codes(mycursor.lastrowid, recovery_codes)
 
     def remove_user(self, user_id):
@@ -160,15 +158,15 @@ class ChessDB:
         mycursor.close()
 
     # gdzie moves to lista list gdzie move = (Color, move_order, move)
-    def add_game(self, w_id, w_score, b_id, b_score, win_type, moves, game_mode_id):
+    def add_game(self, w_id, w_score, b_id, b_score, moves, game_mode_id):
         mycursor = self.mydb.cursor()
 
         sql_game = ("INSERT INTO Games "
-                    "(win_type, played,GameMode) "
-                    "VALUES (%s, %s,%s)")
+                    "(played,GameMode) "
+                    "VALUES (%s, %s)")
 
         date = self.get_curr_date_time()
-        data_game = (win_type, date, game_mode_id)
+        data_game = (date, game_mode_id)
         mycursor.execute(sql_game, data_game)
         game_id = mycursor.lastrowid
 
@@ -234,7 +232,7 @@ class ChessDB:
         salt = self.get_salt() if new_user_data_json['hashedNewPassword'] is not None else user['Salt']
 
         new_password = sha256(str.encode(f"{new_user_data_json['hashedNewPassword']}{salt}")).hexdigest() \
-            if new_user_data_json['hashedNewPassword'] is not None\
+            if new_user_data_json['hashedNewPassword'] is not None \
             else user['Password']
 
         email = new_user_data_json['email'] if new_user_data_json['email'] != "" else user['Email']
@@ -452,13 +450,12 @@ class ChessDB:
             sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                                               WHERE UserID = %s AND Games.GameID = Participants.GameID) t1 
                                               WHERE Score = 1;""")
-            data_count = (self.get_user_by_id(user_id)['userID'], )
+            data_count = (self.get_user_by_id(user_id)['userID'],)
         else:
             sql_count = ("""SELECT COUNT(t1.GameID) FROM (SELECT Games.GameID, Score FROM Games, Participants 
                                WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                                WHERE Score = 1;""")
             data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
-
 
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()
@@ -478,7 +475,6 @@ class ChessDB:
                                 WHERE UserID = %s AND Games.GameMode = %s AND Games.GameID = Participants.GameID) t1 
                                 WHERE Score = 0.5;""")
             data_count = (self.get_user_by_id(user_id)['userID'], game_mode)
-
 
         mycursor.execute(sql_count, data_count)
         result = mycursor.fetchone()

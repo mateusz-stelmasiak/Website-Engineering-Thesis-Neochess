@@ -1,5 +1,6 @@
 import json
 
+import requests
 from flask import Flask, request, jsonify, make_response, url_for, redirect
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from hashlib import sha256
@@ -19,7 +20,8 @@ dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
-allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1', '127.0.0.1:' + local_port, 'localhost']
+allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1',
+                   '127.0.0.1:' + local_port, 'localhost']
 # add http:// before each allowed domain to get orgin
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
@@ -31,6 +33,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
+app.config['CAPTCHA_KEY'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
@@ -97,6 +100,19 @@ def get_domain_from_url(url):
         dom = '127.0.0.1'
 
     return dom
+
+
+def verify_recaptcha(token):
+    recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
+    recaptcha_secret_key = app.config['CAPTCHA_KEY']
+    payload = {
+        'secret': recaptcha_secret_key,
+        'response': token,
+        'remoteip': request.remote_addr,
+    }
+    response = requests.post(recaptcha_url, data=payload)
+    result = response.json()
+    return result.get('success', False)
 
 
 @app.route('/login', methods=['POST', 'OPTIONS'])
@@ -263,6 +279,7 @@ def check_2_fa():
 
     request_data = request.get_json()
     username = request_data['username']
+    email = request_data['email']
     two_fa_code = request_data['code']
 
     if debug_mode:
@@ -272,19 +289,26 @@ def check_2_fa():
         db = ChessDB.ChessDB()
         user = db.get_user(username)
 
-        otp_secret = user['OTPSecret']
-        otp = pyotp.totp.TOTP(otp_secret)
+        if user is not None:
+            otp_secret = user['OTPSecret']
+            otp = pyotp.totp.TOTP(otp_secret)
 
-        verify_result = otp.verify(two_fa_code)
+            verify_result = otp.verify(two_fa_code)
 
-        if not verify_result:
-            user_codes = db.get_user_recovery_codes_by_id(user['userID'])
+            if not verify_result:
+                user_codes = db.get_user_recovery_codes_by_id(user['userID'])
 
-            recovery_code = sha256(str.encode(two_fa_code)).hexdigest()
-            verify_result = recovery_code in [codes['Code'] for codes in user_codes]
+                recovery_code = sha256(str.encode(two_fa_code)).hexdigest()
+                verify_result = recovery_code in [codes['Code'] for codes in user_codes]
+        else:
+            # generate OTP data
+            otp_secret = base64.b32encode(email.encode('ascii'))
+            otp = pyotp.totp.TOTP(otp_secret)
+
+            verify_result = otp.verify(two_fa_code)
 
         return generate_response(request, {
-            "result": verify_result
+            "response": verify_result
         }, 200 if verify_result else 403)
 
     except Exception as ex:
@@ -307,53 +331,59 @@ def register():
     email = request_data['email']
     is2FaEnabled = request_data['is2FaEnabled']
     hashed_recovery_codes = request_data['hashedRecoveryCodes']
+    captcha_token = request_data['captcha']
 
     if debug_mode:
         print("REGISTER REQUEST " + str(request_data))
 
-    try:
-        # handle username taken
-        db = ChessDB.ChessDB()
+    if verify_recaptcha(captcha_token):
+        try:
+            # handle username taken
+            db = ChessDB.ChessDB()
 
-        if db.user_exists(username):
+            if db.user_exists(username):
+                return generate_response(request, {
+                    "error": "Username already taken"
+                }, 403)
+
+            if db.user_exists(email):
+                return generate_response(request, {
+                    "error": "Email already taken"
+                }, 403)
+
+            # generate OTP data
+            otp_secret = base64.b32encode(email.encode('ascii'))
+            otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
+
+            # add to database
+            db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
+                        RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility,
+                        hashed_recovery_codes if is2FaEnabled else None)
+
+            token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
+            link = url_for('confirm_email', token=token, _external=True)
+
+            if is2FaEnabled:
+                mail.send_qr_code(username, email, otp_url, otp_secret.decode('utf-8'))
+
+            mail.send_welcome_message(username, email, link)
+
+        except Exception as ex:
+            if debug_mode:
+                ("DB ERROR " + str(ex))
+
             return generate_response(request, {
-                "error": "Username already taken"
-            }, 403)
-
-        if db.user_exists(email):
-            return generate_response(request, {
-                "error": "Email already taken"
-            }, 403)
-
-        # generate OTP data
-        otp_secret = base64.b32encode(email.encode('ascii'))
-        otp_url = pyotp.totp.TOTP(otp_secret).provisioning_uri(email, issuer_name="NeoChess")
-
-        # add to database
-        db.add_user(username, hashed_password, email, is2FaEnabled, otp_secret, RatingSystem.starting_ELO,
-                    RatingSystem.starting_ELO_deviation, RatingSystem.starting_ELO_volatility,
-                    hashed_recovery_codes if is2FaEnabled else None)
-
-        token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
-        link = url_for('confirm_email', token=token, _external=True)
-
-        if is2FaEnabled:
-            mail.send_qr_code(login, email, otp_url, otp_secret.decode('utf-8'))
-
-        mail.send_welcome_message(login, email, link)
-
-    except Exception as ex:
-        if debug_mode:
-            ("DB ERROR " + str(ex))
+                "error": "Database error"
+            }, 503)
 
         return generate_response(request, {
-            "error": "Database error"
-        }, 503)
+            "registration": 'successful'
+        }, 200)
 
-    return generate_response(request,
-                             {
-                                 "registration": 'successful'
-                             }, 200)
+    else:
+        return generate_response(request, {
+            "error": "Captcha verification failed"
+        }, 403)
 
 
 @app.route('/delete', methods=['DELETE', 'OPTIONS'])
@@ -514,25 +544,25 @@ def resent_activation_email():
 
     data = request.args['data']
 
-    if "@" not in data:
+    try:
         db = ChessDB.ChessDB()
         user = db.get_user(data)
-        data = user['Email']
 
-    try:
+        if "@" not in data:
+            data = user['Email']
+
         token = account_serializer.dumps(data, salt=app.config['SECRET_KEY'])
         link = url_for('confirm_email', token=token, _external=True)
 
-        mail.send_welcome_message(login, data, link)
+        mail.send_welcome_message(user['Username'], data, link)
 
         return generate_response(request, {
             "response": "OK"
         }, 200)
     except Exception as ex:
         return generate_response(request, {
-            "result": ex
+            "response": ex
         }, 503)
-
 
 
 @app.route('/confirm/<token>', methods=['GET', 'OPTIONS'])
@@ -542,10 +572,10 @@ def confirm_email(token):
 
     try:
         email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
-    except SignatureExpired as ex:
+    except Exception as ex:
         print(ex)
         return generate_response(request, {
-            "activation_result": "The confirmation link is invalid or has expired."
+            "response": "The confirmation link is invalid or has expired."
         }, 400)
 
     db = ChessDB.ChessDB()
@@ -609,7 +639,7 @@ def forgot_password():
             token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
             reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
 
-            mail.send_reset_password_token(user['userID'], email, reset_url)
+            mail.send_reset_password_token(user['Username'], email, reset_url)
         except Exception as ex:
             return generate_response(request, {
                 "response": f"Password reset error: {ex}"
@@ -729,8 +759,8 @@ def get_game_info():
                 'drawProposedColor': game.draw_proposed,
                 'currentPhase': game.defender_state.phase
                 }
-        
-#   print("currphase :" + str(data['currentPhase']))
+
+    #   print("currphase :" + str(data['currentPhase']))
     return generate_response(request, data, 200)
 
 
@@ -969,7 +999,6 @@ def get_history():
             result = possible_results[black_score]
             if str(white[2]) == user_id:
                 result = possible_results[white_score]
-
 
             # extract date info from given string
             day_mont_year = str(game['played'])[:10]
