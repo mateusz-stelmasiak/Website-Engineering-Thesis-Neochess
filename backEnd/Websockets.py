@@ -413,7 +413,7 @@ def find_match(game_mode_id, player):
             try:
                 # create game in db
                 db = ChessDB.ChessDB()
-                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), "none", [],
+                game_id = db.add_game(white_player.id, float(0.5), black_player.id, float(0.5), [],
                                       game_mode_id)
                 game_id_hash = hashlib.sha256(str(game_id).encode())
                 game_room_id = str(game_id_hash.hexdigest())

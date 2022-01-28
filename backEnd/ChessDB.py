@@ -31,8 +31,7 @@ class ChessDB:
         mycursor = self.mydb.cursor()
 
         mycursor.execute('''create table if not exists Games
-                             (GameID integer primary key AUTO_INCREMENT, 
-                             win_type varchar(100), 
+                             (GameID integer primary key AUTO_INCREMENT,
                              played DATETIME,
                              GameMode int not null DEFAULT 0);''')
 
@@ -160,15 +159,15 @@ class ChessDB:
         mycursor.close()
 
     # gdzie moves to lista list gdzie move = (Color, move_order, move)
-    def add_game(self, w_id, w_score, b_id, b_score, win_type, moves, game_mode_id):
+    def add_game(self, w_id, w_score, b_id, b_score, moves, game_mode_id):
         mycursor = self.mydb.cursor()
 
         sql_game = ("INSERT INTO Games "
-                    "(win_type, played,GameMode) "
+                    "(played,GameMode) "
                     "VALUES (%s, %s,%s)")
 
         date = self.get_curr_date_time()
-        data_game = (win_type, date, game_mode_id)
+        data_game = (date, game_mode_id)
         mycursor.execute(sql_game, data_game)
         game_id = mycursor.lastrowid
 
