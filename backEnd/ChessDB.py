@@ -13,7 +13,7 @@ server_time_difference = '02:00:00'
 
 class ChessDB:
     def __init__(self):
-        # self.mydb = mysql.connector.connect(host="localhost", user="user",
+        # self.mydb = mysql.connector.connect(host="127.0.0.1", user="user",
         #                                     password="Serek123",
         #                                     database="neo-chess-database")
 

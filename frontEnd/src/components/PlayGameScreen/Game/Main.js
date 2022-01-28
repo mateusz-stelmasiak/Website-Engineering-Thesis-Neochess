@@ -115,6 +115,7 @@ export default function sketch(p5) {
     }
     p5.mouseReleased = function () {
         if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
+            generateDefenderMoves(board.grid);
             add_piece();
         }
         make_a_move();
@@ -122,8 +123,6 @@ export default function sketch(p5) {
             Generate_opponent_moves(board.grid);
             check_if_check();
             Generate_moves(board.grid, board.check, "released");
-        }else{
-            generateDefenderMoves(board.grid);
         }
     }
 
