@@ -89,11 +89,13 @@ export function Generate_moves(grid, check, gtype) {
                 t.StartSquare === value.StartSquare && t.EndSquare === value.EndSquare
             ))
         )
+        console.log("ruchy")
+        console.log(moves)
     }
-    if (playingAs !== board.color_to_move || board.SetupState != -1) {
+    if (playingAs !== board.color_to_move) {
         moves = [];
     }
-
+console.log(moves)
 }
 
 
