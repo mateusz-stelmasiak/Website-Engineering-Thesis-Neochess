@@ -1,14 +1,14 @@
 import "./CookiesPreferences.css"
 import {Link} from "react-router-dom";
 import Switch from "react-switch";
-import {cookies} from "./CookiesPage";
-import ShowOnClick from "../CommonComponents/ShowOnClick.js"
-import CookieTable from "./CookieTable";
+import {cookies} from "../CookiesPage/CookiesPage";
+import ShowOnClick from "../../CommonComponents/Scroll/ShowOnClick.js"
+import CookieTable from "../CookieTable/CookieTable";
 import React, {useEffect, useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faTimes} from "@fortawesome/free-solid-svg-icons";
 import {connect} from "react-redux";
-import {setPreferencesOpen, toogleConsent, updateBehaviour} from "../../redux/actions/cookieActions";
+import {setPreferencesOpen, toogleConsent, updateBehaviour} from "../../../redux/actions/cookieActions";
 
 
 function CookiesPreferences({dispatch,prefOpen,consented}) {

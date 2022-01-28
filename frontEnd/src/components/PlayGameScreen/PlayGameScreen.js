@@ -26,7 +26,7 @@ import {useHistory} from "react-router-dom"
 import {authorizeSocket, emit} from "../../redux/actions/socketActions";
 import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
 import {SocketStatus} from "../../serverCommunication/WebSocket";
-import GameResult from "./Components/GameResult";
+import GameResult from "./Components/GameResult/GameResult";
 import PlayersInfo from "./Components/PlayersInfo/PlayersInfo";
 import GameContainer from "./Components/GameContainer/GameContainer";
 import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
