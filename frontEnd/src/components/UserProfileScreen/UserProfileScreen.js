@@ -16,14 +16,16 @@ function UserProfileScreen(props) {
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
     const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
+    const [lastGameFEN,setLastGameFEN] = useState(undefined);
 
     useEffect(async () => {
         const response = (await getUserData())
-        console.log(response)
-        setEmail(response['Email'])
-        setIs2FaEnabled(response['2FA'])
-        setAccountUpdatedTime(response['UpdatedAt']? response['UpdatedAt']:"--:--:---")
-        setAccountCreatedTime(response['CreatedAt'])
+        setEmail(response['user']['Email'])
+        setIs2FaEnabled(response['user']['2FA'])
+        setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
+        setAccountCreatedTime(response['user']['CreatedAt'])
+        if (response['lastPlayedFEN']) setLastGameFEN(response['lastPlayedFEN'])
+
     }, [])
 
     const are_fields_correct = () => {
@@ -50,7 +52,8 @@ function UserProfileScreen(props) {
         'columnGap': '3rem',
         'justifyContent': 'space-between',
         'alignContent': 'space-between',
-        'width': '70%'
+        'width': '70%',
+        'align-items':'center'
     }
 
     let containerStyle = {
@@ -86,7 +89,11 @@ function UserProfileScreen(props) {
                             <span>{are_fields_correct() ? email : <Dots>loading</Dots>}</span>
                         </span>
                     </div>
-                    <FenDisplayingBoard/>
+                    <div className="lastGameContainer">
+                        {are_fields_correct() && <FenDisplayingBoard FEN={lastGameFEN}/>}
+                        <h3>Last played game</h3>
+                    </div>
+
                 </div>
             </Section>
             <Section id="UserProfileEdition">

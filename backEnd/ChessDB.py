@@ -32,7 +32,8 @@ class ChessDB:
         mycursor.execute('''create table if not exists Games
                              (GameID integer primary key AUTO_INCREMENT,
                              played DATETIME,
-                             GameMode int not null DEFAULT 0);''')
+                             GameMode int not null DEFAULT 0,
+                             FEN varchar(84) not null DEFAULT "");''')
 
         mycursor.execute('''create table if not exists Users
                             (userID integer primary key AUTO_INCREMENT,
@@ -158,15 +159,15 @@ class ChessDB:
         mycursor.close()
 
     # gdzie moves to lista list gdzie move = (Color, move_order, move)
-    def add_game(self, w_id, w_score, b_id, b_score, moves, game_mode_id):
+    def add_game(self, w_id, w_score, b_id, b_score, moves, game_mode_id, FEN):
         mycursor = self.mydb.cursor()
 
         sql_game = ("INSERT INTO Games "
-                    "(played,GameMode) "
-                    "VALUES (%s, %s)")
+                    "(played,GameMode,FEN) "
+                    "VALUES (%s, %s,%s)")
 
         date = self.get_curr_date_time()
-        data_game = (date, game_mode_id)
+        data_game = (date, game_mode_id,FEN)
         mycursor.execute(sql_game, data_game)
         game_id = mycursor.lastrowid
 
@@ -282,6 +283,34 @@ class ChessDB:
         mycursor.execute(sql_update, data_update)
         self.mydb.commit()
         mycursor.close()
+
+    def update_FEN(self, game_id, new_FEN):
+        mycursor = self.mydb.cursor()
+
+        sql_update = ("""UPDATE Games SET FEN = %s WHERE GameID = %s""")
+        data_update = (new_FEN, game_id)
+        mycursor.execute(sql_update, data_update)
+
+        self.mydb.commit()
+        mycursor.close()
+
+    def get_last_game_FEN(self,user_id):
+        mycursor = self.mydb.cursor(buffered=True, dictionary=True)
+
+        sql_find = ("""SELECT Games.FEN FROM Games, Participants
+                             WHERE Participants.UserID = %s AND Games.GameID = Participants.GameID
+                             ORDER BY Games.GameID DESC
+                             LIMIT 1""")
+
+        data_find = (user_id, )
+        mycursor.execute(sql_find, data_find)
+        last_game_FEN = mycursor.fetchone()
+        mycursor.close()
+
+        if 'FEN' in last_game_FEN.keys():
+            return last_game_FEN['FEN']
+
+        return None
 
     def update_scores(self, Color, game_id):
         mycursor = self.mydb.cursor()
