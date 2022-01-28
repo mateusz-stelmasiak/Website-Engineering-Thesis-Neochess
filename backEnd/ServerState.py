@@ -93,7 +93,7 @@ authorized_sockets = {}
 # Matchmaking variables
 queues = {}
 q_max_wait_time = 10000  # in ms
-initial_scope = 1000  # +-elo when looking for opponents
+initial_scope = 50  # +-elo when looking for opponents
 scope_update_interval = 10000  # time it takes for scope to widen (in ms)
 scope_update_ammount = 50  # ammount by which scope widens every scope_update_interval
 
