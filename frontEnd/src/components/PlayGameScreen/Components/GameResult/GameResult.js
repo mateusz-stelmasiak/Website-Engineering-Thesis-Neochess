@@ -1,33 +1,12 @@
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import "./GameResult.css"
 import SectionTitle from "../../../Layout/Section/SectionTitle";
-import Reel from "react-reel";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 import React from "react";
 
-function GameResult({gameResult, eloChange}) {
+function GameResult({ gameResult, eloChange }) {
     const history = useHistory();
     const returnToMain = () => history.push('/');
-
-    //used for reel (the elo spinning up)
-    const theme = {
-        reel: {
-            height: "1em",
-            display: "flex",
-            alignItems: "flex-end",
-            overflowY: "hidden",
-            lineHeight: "0.95em"
-        },
-        group: {
-            transitionDelay: "0ms",
-            transitionTimingFunction: "ease-in-out",
-            transform: "translate(0, 0)",
-            height: "1em"
-        },
-        number: {
-            height: "1em"
-        }
-    };
 
     let gainEloStyle = {
         color: 'var(--success-color)'
@@ -46,7 +25,7 @@ function GameResult({gameResult, eloChange}) {
             <div className="GameResult-eloChange">
                 <h3 style={eloChange >= 0 ? gainEloStyle : lossEloStyle}>
                     {eloChange > 0 && "+"}
-                    <Reel theme={theme} text={eloChange.toString()}/>
+                    <span>{eloChange}</span>
                     <span>&nbsp;ELO</span>
                 </h3>
                 <span>{eloChange >= 0 ? "WAS GAINED" : "WAS LOST"}</span>
