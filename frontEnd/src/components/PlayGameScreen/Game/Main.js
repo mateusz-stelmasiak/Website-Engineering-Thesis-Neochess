@@ -3,12 +3,11 @@ import {
     check_if_check,
     count_squares_to_edge, Generate_opponent_moves,
     Generate_moves,
-    make_a_move, generate_pos_to_stocknot_dict
+    make_a_move, generate_pos_to_stocknot_dict,
 } from "./moves";
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
-import {add_piece} from "./gameMode2_moves";
-import {store} from "../../../index";
+import {add_piece,generateDefenderMoves} from "./gameMode2_moves";
 
 
 export var Font;
@@ -123,6 +122,8 @@ export default function sketch(p5) {
             Generate_opponent_moves(board.grid);
             check_if_check();
             Generate_moves(board.grid, board.check, "released");
+        }else{
+            generateDefenderMoves(board.grid);
         }
     }
 
@@ -183,6 +184,7 @@ export default function sketch(p5) {
         calculatePixelPositions();
         count_squares_to_edge();
         Generate_moves(board.grid, board.check, "setup");
+
         canvas.style('width', '100%');
         canvas.style('height', '100%');
         readjustCanvas(); //weird but fixes canvas always setting up as game defender DO NOT TOUCH

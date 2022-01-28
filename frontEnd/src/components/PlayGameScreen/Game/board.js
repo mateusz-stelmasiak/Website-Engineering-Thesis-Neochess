@@ -253,6 +253,10 @@ export default class Board {
         }
     }
 
+    drawLastPlayedMove(){
+
+    }
+
     draw_board() {
         let i = 0;
         let dragged_index = -1;
