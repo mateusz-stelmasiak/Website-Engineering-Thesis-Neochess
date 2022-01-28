@@ -476,8 +476,6 @@ def get_user_details():
         db = ChessDB.ChessDB()
         user = db.get_user_by_id(user_id)
         last_FEN = db.get_last_game_FEN(user_id)
-
-
     except Exception as ex:
         return generate_response(request, {
             "response": f"Database error: {ex}"

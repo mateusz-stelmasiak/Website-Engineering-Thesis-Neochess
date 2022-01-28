@@ -321,10 +321,10 @@ class ChessDB:
         last_game_FEN = mycursor.fetchone()
         mycursor.close()
 
-        if 'FEN' in last_game_FEN.keys():
+        if last_game_FEN is not None:
             return last_game_FEN['FEN']
 
-        return None
+        return last_game_FEN
 
     def update_scores(self, Color, game_id):
         mycursor = self.mydb.cursor()

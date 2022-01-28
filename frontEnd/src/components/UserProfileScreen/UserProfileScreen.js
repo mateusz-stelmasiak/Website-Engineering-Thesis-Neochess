@@ -23,14 +23,15 @@ function UserProfileScreen(props) {
 
     useEffect(async () => {
         const response = (await getUserData())
+        console.log(response)
         setEmail(response['user']['Email'])
         setIs2FaEnabled(response['user']['2FA'])
         setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
         setAccountCreatedTime(response['user']['CreatedAt'])
-        setLoginTime(response['LoggedInAt']);
-        setLastLoginTime(response['LastLoggedInAt']);
+        setLoginTime(response['user']['LoggedInAt']);
+        setLastLoginTime(response['user']['LastLoggedInAt']);
         if (response['lastPlayedFEN']) setLastGameFEN(response['lastPlayedFEN'])
-        
+
     }, [])
 
     const are_fields_correct = () => {
