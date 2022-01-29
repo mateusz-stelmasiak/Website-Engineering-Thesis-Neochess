@@ -30,15 +30,11 @@ export function count_squares_to_edge() {
             let Down = j;
             let Right = 7 - i;
             let Left = i;
-
             let matrix_to_index = j * 8 + i;
-
             Numbers_of_squares_to_edge[matrix_to_index] =
                 [Up, Down, Left, Right, Math.min(Up, Left), Math.min(Down, Right), Math.min(Up, Right), Math.min(Down, Left)];
         }
-
     }
-
 }
 
 
@@ -89,13 +85,10 @@ export function Generate_moves(grid, check, gtype) {
                 t.StartSquare === value.StartSquare && t.EndSquare === value.EndSquare
             ))
         )
-        console.log("ruchy")
-        console.log(moves)
     }
     if (playingAs !== board.color_to_move) {
         moves = [];
     }
-console.log(moves)
 }
 
 
@@ -441,8 +434,6 @@ function Get_long_moves(startSquare, piece, grid, t_moves) {
 }
 
 export function get_move(StartSquare, TargetSquare) {
-    console.log(opponent_moves)
-    console.log(future_opponent_moves)
     for (let i = 0; i < moves.length; i++) {
         if (moves[i].StartSquare === StartSquare && moves[i].EndSquare === TargetSquare) {
             return moves[i];

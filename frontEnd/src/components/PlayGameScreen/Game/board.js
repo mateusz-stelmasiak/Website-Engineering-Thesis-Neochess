@@ -8,12 +8,12 @@ import {
     Font,
     textures,
     scalar,
-    shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn,
+    shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn, requestAIMove,
 } from "./Main";
 import Piece from "./Piece";
-import {Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
+import {count_squares_to_edge, Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
 import {store} from "../../../index";
-import {defenderMoves} from "./gameMode2_moves";
+import {defenderMoves, generateDefenderMoves} from "./gameMode2_moves";
 
 
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -21,6 +21,7 @@ export const default_FEN_Gamemode_2 = "8/8/8/8/8/8/8/8 w - - 0 1";
 export default class Board {
 
     constructor(p5) {
+        count_squares_to_edge()
         this.p5 = p5;
         this.grid = [];
         for (let i = 0; i < 64; i++) {
@@ -177,7 +178,7 @@ export default class Board {
                     } else {
                         this.grid[file * 8 + rank].did_move = 1;
                     }
-                    console.log()
+
                     rank++;
                 }
             }
@@ -198,7 +199,7 @@ export default class Board {
             this.grid[4].did_move = 0
             this.grid[0].did_move = 0
         }
-
+        if(this.SetupState<0)Generate_moves(this.grid,this.check,"setup")
 
     }
 
@@ -414,6 +415,7 @@ export default class Board {
 
         let storeVars = store.getState().game;
         let gameMode = storeVars.gameMode;
+
         if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
             this.color_to_move = 'w';
         } else if (gameMode == 1 && storeVars.whiteScore < 0) {
@@ -435,11 +437,20 @@ export default class Board {
                 this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
             } else {
                 this.phase = 1;
+                this.color_to_move = 'w'
+                if (playingAs === 'b'){
+                    requestAIMove();
+                }
             }
 
         }
         if (gameMode == 0) {
             this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+        }
+
+        if((gameMode == 2 || gameMode == 1 ) && this.SetupState>-1)
+        {
+            generateDefenderMoves(this.grid)
         }
     }
 

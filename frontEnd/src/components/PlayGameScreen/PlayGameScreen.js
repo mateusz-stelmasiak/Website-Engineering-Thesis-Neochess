@@ -100,7 +100,7 @@ function PlayGameScreen({
             //get game info for game setup
             let response = await getGameInfo(gameId, sessionToken);
             if (response === undefined) return
-
+            console.log(response)
             await dispatch(setGameMode(response.gameMode));
             await dispatch(setCurrentFEN(response.FEN));
             await dispatch(setCurrentPhase(response.currentPhase));
@@ -169,6 +169,23 @@ function PlayGameScreen({
         store.dispatch(flipCurrentTurn());
     }
 
+    let requestAIMove = async () =>{
+        const storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+        let socketStatus = storeState.socket.status;
+
+        //if socket is not connected, don't allow the move to be made locally
+        if (socketStatus !== SocketStatus.authorized) return;
+
+        let requestAIMove = {
+            event: 'request_AI_move',
+            msg: JSON.stringify({gameroomId, playerId})
+        }
+
+        await store.dispatch(emit(requestAIMove));
+    }
+
     return (
         <FooterHeaderLayout>
             <div className="PlayGameScreenContainer">
@@ -192,6 +209,7 @@ function PlayGameScreen({
                             <P5Wrapper
                                 sketch={sketch}
                                 sendMoveToServer={sendMove}
+                                requestAIMove={requestAIMove}
                                 placeDefenderPiece={placeDefenderPiece}
                                 playingAs={playingAs}
                                 startingFEN={currentFEN}
