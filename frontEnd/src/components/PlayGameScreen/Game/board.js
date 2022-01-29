@@ -18,6 +18,8 @@ import {defenderMoves, generateDefenderMoves} from "./gameMode2_moves";
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 export const default_FEN_Gamemode_2 = "8/8/8/8/8/8/8/8 w - - 0 1";
 
+let defender_points = ["0","1","3","3","5","9"]
+
 export default class Board {
 
     constructor(p5) {
@@ -320,6 +322,16 @@ export default class Board {
                 this.p5.tint(200, 127);
                 this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
                 this.p5.pop()
+            }
+
+            for(let z=0;z<defender_points.length;z++) {
+                this.p5.push();
+                this.p5.textFont(Font);
+                this.p5.textSize(textsize);
+                this.p5.fill(0, 0, 0);//storeVars.whiteScore.toString() + " | " + storeVars.blackScore.toString() <--- show both scores
+                this.p5.text(defender_points[z], Checkboard_size + shelf_size / 4 - textsize * 0.666, size *(z+2)*1.111-40); // -> scalar if both scores 1.63
+                this.p5.pop();
+                this.p5.push();
             }
         }
         rew = 0;
