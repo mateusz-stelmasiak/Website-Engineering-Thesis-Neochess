@@ -100,7 +100,7 @@ function PlayGameScreen({
             //get game info for game setup
             let response = await getGameInfo(gameId, sessionToken);
             if (response === undefined) return
-
+            console.log(response)
             await dispatch(setGameMode(response.gameMode));
             await dispatch(setCurrentFEN(response.FEN));
             await dispatch(setCurrentPhase(response.currentPhase));

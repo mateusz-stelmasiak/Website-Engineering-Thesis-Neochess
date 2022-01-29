@@ -771,7 +771,6 @@ def get_game_info():
                 'drawProposedColor': game.draw_proposed,
                 'currentPhase': game.defender_state.phase
                 }
-
     #   print("currphase :" + str(data['currentPhase']))
     return generate_response(request, data, 200)
 

@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import {API_URL} from "./APIConfig";
-import {make_opponents_move,get_move} from "../components/PlayGameScreen/Game/moves";
+import {make_opponents_move, get_move, Generate_moves} from "../components/PlayGameScreen/Game/moves";
 import {store} from "../index";
 import {setSocketStatus} from "../redux/actions/socketActions";
 import {
@@ -12,6 +12,7 @@ import {
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
 import {toast} from "react-hot-toast";
+import {generateDefenderMoves} from "../components/PlayGameScreen/Game/gameMode2_moves";
 
 const socketPath = '';
 
@@ -122,9 +123,6 @@ export default class SocketClient {
 
     gameListeners() {
         this.on("make_move_local_ai", data => {
-            console.log(data)
-            console.log("check")
-            console.log(get_move(data.startingSquare,data.targetSquare))
             make_opponents_move(data.startingSquare,data.targetSquare,data.mType)
         });
 
@@ -132,6 +130,7 @@ export default class SocketClient {
             if (data === undefined) return;
             make_opponents_move(data.startingSquare, data.targetSquare, data.mtype);
             store.dispatch(flipCurrentTurn());
+
         });
 
         this.on("illegal_move", data => {
@@ -154,6 +153,7 @@ export default class SocketClient {
             store.dispatch(setWhiteScore(data.whiteScore));
             store.dispatch(setBlackScore(data.blackScore));
             store.dispatch(flipCurrentTurn());
+            generateDefenderMoves(board.grid);
 
 
         });

@@ -153,7 +153,7 @@ export default function sketch(p5) {
         }
 
 
-        if(gameMode=="2" && currentPhaseFromServer){
+        if(gameMode=="2" && currentPhaseFromServer!== undefined){
             board.phase = currentPhaseFromServer;
         }
 
@@ -180,15 +180,15 @@ export default function sketch(p5) {
         }
 
         board.load_FEN();
-        if(gameMode==='0'){
 
+        calculatePixelPositions();
+        count_squares_to_edge();
+
+        if(gameMode==='0' || board.SetupState<0){
+            Generate_moves(board.grid, board.check, "setup");
         }else{
             generateDefenderMoves(board.grid)
         }
-        calculatePixelPositions();
-        count_squares_to_edge();
-        Generate_moves(board.grid, board.check, "setup");
-
         canvas.style('width', '100%');
         canvas.style('height', '100%');
         readjustCanvas(); //weird but fixes canvas always setting up as game defender DO NOT TOUCH
