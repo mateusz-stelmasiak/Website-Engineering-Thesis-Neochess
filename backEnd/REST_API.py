@@ -583,7 +583,11 @@ def confirm_email(token):
         return generate_response(request, {}, 200)
 
     try:
-        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
+        email = account_serializer.loads(
+            token,
+            salt=app.config['SECRET_KEY'],
+            max_age=3600
+        )
     except Exception as ex:
         print(ex)
         return generate_response(request, {
@@ -614,7 +618,11 @@ def reset():
         print("SET_NEW_PASSWORD REQUEST " + str(request.args))
 
     try:
-        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
+        email = account_serializer.loads(
+            token,
+            salt=app.config['SECRET_KEY'],
+            max_age=3600
+        )
 
         db = ChessDB.ChessDB()
         db.update_password(password, email)
@@ -622,9 +630,14 @@ def reset():
         return generate_response(request, {
             "response": "OK"
         }, 200)
+    except SignatureExpired:
+        return generate_response(request, {
+            "error": f"Token expired",
+            "token": token
+        }, 503)
     except Exception as ex:
         return generate_response(request, {
-            "response": f"Database error: {ex}"
+            "error": f"Database error: {ex}"
         }, 503)
 
 
@@ -648,7 +661,10 @@ def forgot_password():
 
     if user is not None:
         try:
-            token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
+            token = account_serializer.dumps(
+                email,
+                salt=app.config['SECRET_KEY'],
+            )
             reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
 
             mail.send_reset_password_token(user['Username'], email, reset_url)

@@ -1,8 +1,8 @@
 import React from "react";
-import CircleWidget from "../../../CommonComponents/CircleWidget/CircleWidget";
+import CircleWidget from "../../../../CommonComponents/CircleWidget/CircleWidget";
 import "./SetNewPassword.css";
 import SetNewPasswordForm from "./SetNewPasswordForm";
-import OrbitContainer from "../OrbitContainer/OrbitContainer";
+import OrbitContainer from "../../../../LogRegScreen/Components/OrbitContainer/OrbitContainer";
 
 
 export default function SetNewPasswordScreen() {
