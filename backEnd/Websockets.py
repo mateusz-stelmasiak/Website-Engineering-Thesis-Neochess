@@ -838,6 +838,9 @@ def make_move(data):
     if str(game_info.game_mode_id) == "2" and opp_turn != player_color:
         make_AI_move(request.sid, game_room_id, player_color)
 
+        computer_color = 'w'
+        if player_color == 'w':
+            computer_color = 'b'
 
         is_checkmate = ChessLogic.is_checkmate(games[game_room_id].curr_FEN)
         if is_checkmate:

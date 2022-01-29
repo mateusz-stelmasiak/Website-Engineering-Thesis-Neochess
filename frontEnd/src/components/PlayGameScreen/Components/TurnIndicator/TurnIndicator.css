@@ -15,4 +15,9 @@
     all: unset;
     font-size: 1.7rem;
     color:var(--text-color);
+    text-align: center;
+}
+
+.TurnIndicator span{
+    text-align: center;
 }
