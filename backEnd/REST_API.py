@@ -588,21 +588,22 @@ def confirm_email(token):
             salt=app.config['SECRET_KEY'],
             max_age=3600
         )
+
+        db = ChessDB.ChessDB()
+        user = db.get_user_by_email(email)
+
+        if user is not None:
+            if user['AccountConfirmed']:
+                return redirect(f"{origin_prefix}{local_domain}/")
+            else:
+                db.activate_user_account(email)
+                return redirect(f"{origin_prefix}{local_domain}/")
+    except SignatureExpired:
+        return redirect(f"{origin_prefix}{local_domain}/invalidToken?token={token}")
     except Exception as ex:
-        print(ex)
         return generate_response(request, {
-            "response": "The confirmation link is invalid or has expired."
+            "response": f"Error occurred {ex}"
         }, 400)
-
-    db = ChessDB.ChessDB()
-    user = db.get_user_by_email(email)
-
-    if user is not None:
-        if user['AccountConfirmed']:
-            return redirect(f"{origin_prefix}{local_domain}/")
-        else:
-            db.activate_user_account(email)
-            return redirect(f"{origin_prefix}{local_domain}/")
 
 
 @app.route('/reset', methods=['POST'])
