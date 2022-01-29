@@ -46,7 +46,7 @@ function SetNewPasswordForm({dispatch}) {
 
     useEffect(() => {
         if (token === null) {
-            // routeToNext();
+            routeToNext();
         }
     }, [])
 

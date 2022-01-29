@@ -3,24 +3,28 @@ import OrbitContainer from "../LogRegScreen/Components/OrbitContainer/OrbitConta
 import React from "react";
 import InvalidTokenContainer from "./InvalidTokenContainer";
 import "./InvalidToken.css"
+import {useHistory} from "react-router-dom";
 
 
 export default function InvalidTokenScreen() {
-    let centerViews = [
+
+    const history = useHistory();
+    const centerViews = [
         <InvalidTokenContainer/>
     ]
 
-    let centerContainer = <CircleWidget
+    const centerContainer = <CircleWidget
         title={"neoCHESS"}
         basecolor={"var(--primary-color)"}
         secColor={"var(--sec-color)"}
         size={'large'}
         views={centerViews}
         renderWithContent={true}
+        goBackArrow={<a onClick={() => history.push('/')}>{"< BACK TO MENU >"}</a>}
     >
     </CircleWidget>;
 
-    let outerContainer = <CircleWidget
+    const outerContainer = <CircleWidget
         title={""}
         basecolor={"var(--sec-color)"}
         size={'small'}

@@ -13,7 +13,7 @@ export default function InvalidTokenContainer({dispatch}) {
 
     useEffect(() => {
         if (token === null) {
-            // routeToNext();
+            routeToNext();
         }
     }, [])
 
