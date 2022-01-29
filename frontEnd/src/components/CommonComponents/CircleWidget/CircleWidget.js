@@ -57,7 +57,9 @@ export default function CircleWidget(props) {
         }
     }
 
-    const goBackArrow = <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
+    const goBackArrow = props.goBackArrow === undefined
+        ? <a onClick={() => changeView(-1)}>{"< BACK TO MENU >"}</a>
+        : props.goBackArrow
 
     //assing on click change view on widget load
     useEffect(() => {

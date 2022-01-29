@@ -6,7 +6,7 @@ import "./SetNewPassword.css";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faEye} from "@fortawesome/free-solid-svg-icons";
 import {useHistory, useLocation} from "react-router-dom";
-import {setNewPassword} from "../../../../serverCommunication/LogRegService";
+import {setNewPassword} from "../../../../../serverCommunication/LogRegService";
 
 
 function SetNewPasswordForm({dispatch}) {
@@ -120,7 +120,10 @@ function SetNewPasswordForm({dispatch}) {
                 setNewPasswordRequestResult("");
                 routeToNext();
             }, 5000);
-        } else {
+        } else if (response['error'].indexOf("Token") >= 0) {
+            history.push(`/invalidToken?token=${response['token']}`)
+        }
+        else {
             setErrorMessage(response['error'])
         }
     }

@@ -9,7 +9,7 @@ import {useHistory} from 'react-router-dom';
 import {check2FaCode, login, logout, reSentActivationEmail} from "../../../serverCommunication/LogRegService"
 import {connect} from 'react-redux'
 import {setSessionToken, setUserElo, setUserId, setUsername} from "../../../redux/actions/userActions";
-import ForgotPasswordForm from "./ForgotPassword/ForgotPasswordForm";
+import ForgotPasswordForm from "../../Header/Components/AccountManagement/ForgotPassword/ForgotPasswordForm";
 import {toast} from "react-hot-toast";
 import "./ActivateAccountPopup.css"
 
