@@ -32,6 +32,7 @@ import GameContainer from "./Components/GameContainer/GameContainer";
 import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
 import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
 import Chat from "./Components/Chat/Chat";
+import {toast} from "react-hot-toast";
 
 
 function PlayGameScreen({
@@ -61,6 +62,7 @@ function PlayGameScreen({
 
 
     useEffect(() => {
+        toast.dismiss();
         dispatch(authorizeSocket(userId, sessionToken));
         fetchGameData();
 

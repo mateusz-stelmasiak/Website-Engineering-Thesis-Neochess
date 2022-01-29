@@ -85,13 +85,13 @@ def authorize(data):
         join_room(game.game_room_id, request.sid)
 
         # game rejoin communicate (in case player was in queue when disconnected)
-        emit("game_found",
-             {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
-
-              'gameMode': game.game_mode_id, 'whiteScore': game.defender_state.white_score,
-              'blackScore': game.defender_state.black_score},
-
-             to=request.sid)
+        # emit("game_found",
+        #      {'gameId': game.game_room_id, 'playingAs': playing_as, 'FEN': game.curr_FEN,
+        # 
+        #       'gameMode': game.game_mode_id, 'whiteScore': game.defender_state.white_score,
+        #       'blackScore': game.defender_state.black_score},
+        #
+        #      to=request.sid)
 
         # notify opponent that the player reconnected
         print("SENDING SOCKET STATUS UPDATE")

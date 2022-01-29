@@ -20,7 +20,6 @@ export const GAME_DEBUGING_MODE = false;
 
 
 function App({socket, sessionToken, userId, gameId, isInGame}) {
-    const history = useHistory();
     const [loading, setLoading] = useState(true);
 
     //try to regenerate the session on reload
