@@ -1,0 +1,59 @@
+:root{
+    --textfield-bg-color: #0b0b0b;
+}
+
+.invalidTokenScreen {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+
+    overflow-y: hidden;
+}
+
+.InvalidTokenContainer {
+    width: 55%;
+    display: flow-root !important;
+}
+
+.InvalidTokenEntrance {
+    margin-top: 25px !important;
+}
+
+.InvalidTokenContainer h1 {
+    margin-bottom: 3rem !important;
+}
+
+.InvalidTokenContainer p{
+    font-size: 1.3rem;
+    color: var(--text-color);
+    margin: 0.4rem 0;
+    align-self: flex-start;
+}
+
+.Token {
+    width: 60%;
+    word-wrap: break-word;
+}
+
+.ProvidedToken {
+    margin-top: 50px;
+}
+
+/* Animate the color text glow */
+@keyframes text_glow {
+    from {
+        text-shadow: 2px 2px 15px
+    }
+
+    50% {
+        text-shadow: 2px 2px 20px
+    }
+
+    to {
+        text-shadow: 2px 2px 15px
+    }
+}

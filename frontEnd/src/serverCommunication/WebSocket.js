@@ -1,10 +1,10 @@
 import io from 'socket.io-client';
 import {API_URL} from "./APIConfig";
-import {make_opponents_move,get_move} from "../components/PlayGameScreen/Game/moves";
+import {makeOpponentMove, getMove, generateMoves} from "../components/PlayGameScreen/Game/moves";
 import {store} from "../index";
 import {setSocketStatus} from "../redux/actions/socketActions";
 import {
-    flipCurrentTurn, setBlackScore,
+    setBlackScore,
     setBlackTime,
     setCurrentFEN, setDrawProposedColor,
     setOpponentStatus, setWhiteScore,
@@ -12,6 +12,7 @@ import {
 } from "../redux/actions/gameActions";
 import {board} from "../components/PlayGameScreen/Game/Main";
 import {toast} from "react-hot-toast";
+import {generateDefenderMoves} from "../components/PlayGameScreen/Game/gameMode2_moves";
 
 const socketPath = '';
 
@@ -122,40 +123,33 @@ export default class SocketClient {
 
     gameListeners() {
         this.on("make_move_local_ai", data => {
-            console.log(data)
-            console.log("check")
-            console.log(get_move(data.startingSquare,data.targetSquare))
-            make_opponents_move(data.startingSquare,data.targetSquare,data.mType)
+            makeOpponentMove(data.startingSquare,data.targetSquare,data.mType)
         });
 
         this.on("make_move_local", data => {
             if (data === undefined) return;
-            make_opponents_move(data.startingSquare, data.targetSquare, data.mtype);
-            store.dispatch(flipCurrentTurn());
+            makeOpponentMove(data.startingSquare, data.targetSquare, data.mtype);
         });
 
         this.on("illegal_move", data => {
             if (data === undefined) return;
 
-            board.set_FEN_by_rejected_move(data.startingSquare, data.targetSquare)
+            board.setFenByRejectedMove(data.startingSquare, data.targetSquare)
         })
 
         this.on("make_AI_move_local", data => {
             if (data === undefined) return;
-            board.set_FEN_by_rejected_move(data.startingSquare, data.targetSquare)
-            store.dispatch(flipCurrentTurn());
+            board.setFenByRejectedMove(data.startingSquare, data.targetSquare)
         })
 
         this.on("place_defender_piece_local", data => {
             if (data === undefined) return;
             board.FEN = data.FEN;
-            board.load_FEN();
+            board.loadFen();
             store.dispatch(setCurrentFEN(data.FEN))
             store.dispatch(setWhiteScore(data.whiteScore));
             store.dispatch(setBlackScore(data.blackScore));
-            store.dispatch(flipCurrentTurn());
-
-
+            generateDefenderMoves(board.grid);
         });
 
         this.on('update_opponents_socket_status', data => {

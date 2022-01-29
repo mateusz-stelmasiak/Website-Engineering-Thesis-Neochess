@@ -55,7 +55,7 @@ export async function getUserData() {
         const userId = storeState.user.userId;
         const sessionToken = storeState.user.sessionToken;
 
-        if (sessionToken == 'none' || !userId) {
+        if (sessionToken == 'none' || userId===undefined) {
             localStorage.clear();
             sessionStorage.clear();
             window.location.reload(true);
@@ -86,7 +86,7 @@ export async function deleteUserAccount(password, twoFaCode, isTwoFaEnabled) {
 
         const hashedPassword = sha256(password);
 
-        if (sessionToken == 'none' || !userId) {
+        if (sessionToken == 'none' || userId===undefined) {
             localStorage.clear();
             sessionStorage.clear();
             window.location.reload(true);
@@ -123,7 +123,7 @@ export async function updateUser(newPassword, currentPassword, is2FaEnabled, two
         let userId = storeState.user.userId;
         let sessionToken = storeState.user.sessionToken;
 
-        if (sessionToken == 'none' || !userId) {
+        if (sessionToken == 'none' || userId===undefined) {
             localStorage.clear();
             sessionStorage.clear();
             window.location.reload(true);
@@ -281,7 +281,7 @@ export async function logout() {
     let userId = storeState.user.userId;
     let sessionToken = storeState.user.sessionToken;
 
-    if (sessionToken == 'none' || !userId) {
+    if (sessionToken == 'none' || userId===undefined) {
         localStorage.clear();
         sessionStorage.clear();
         window.location.reload(true);

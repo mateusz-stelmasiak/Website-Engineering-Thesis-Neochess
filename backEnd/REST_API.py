@@ -2,7 +2,7 @@ import json
 
 import requests
 from flask import Flask, request, jsonify, make_response, url_for, redirect
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature, BadSignature
 from hashlib import sha256
 
 import ChessDB
@@ -20,8 +20,10 @@ dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
+email_link = f"{origin_prefix}{local_domain}"
 allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1',
                    '127.0.0.1:' + local_port, 'localhost']
+
 # add http:// before each allowed domain to get orgin
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
@@ -33,7 +35,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['CAPTCHA_KEY'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+app.config['CAPTCHA_KEY'] = '6LcX50QeAAAAAEhNXGnsslVs9FCGBKEg203o7jzG'
 
 account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
@@ -583,22 +585,27 @@ def confirm_email(token):
         return generate_response(request, {}, 200)
 
     try:
-        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
+        email = account_serializer.loads(
+            token,
+            salt=app.config['SECRET_KEY'],
+            max_age=3600
+        )
+
+        db = ChessDB.ChessDB()
+        user = db.get_user_by_email(email)
+
+        if user is not None:
+            if user['AccountConfirmed']:
+                return redirect(f"{email_link}/")
+            else:
+                db.activate_user_account(email)
+                return redirect(f"{email_link}/")
+    except (SignatureExpired, BadTimeSignature, BadSignature):
+        return redirect(f"{email_link}/invalidToken?token={token}")
     except Exception as ex:
-        print(ex)
         return generate_response(request, {
-            "response": "The confirmation link is invalid or has expired."
+            "response": f"Error occurred {ex}"
         }, 400)
-
-    db = ChessDB.ChessDB()
-    user = db.get_user_by_email(email)
-
-    if user is not None:
-        if user['AccountConfirmed']:
-            return redirect(f"{origin_prefix}{local_domain}/")
-        else:
-            db.activate_user_account(email)
-            return redirect(f"{origin_prefix}{local_domain}/")
 
 
 @app.route('/reset', methods=['POST'])
@@ -614,7 +621,11 @@ def reset():
         print("SET_NEW_PASSWORD REQUEST " + str(request.args))
 
     try:
-        email = account_serializer.loads(token, salt=app.config['SECRET_KEY'], max_age=3600)
+        email = account_serializer.loads(
+            token,
+            salt=app.config['SECRET_KEY'],
+            max_age=3600
+        )
 
         db = ChessDB.ChessDB()
         db.update_password(password, email)
@@ -622,9 +633,19 @@ def reset():
         return generate_response(request, {
             "response": "OK"
         }, 200)
+    except SignatureExpired:
+        return generate_response(request, {
+            "error": "Token expired",
+            "token": token
+        }, 400)
+    except (BadTimeSignature, BadSignature):
+        return generate_response(request, {
+            "error": "Token invalid",
+            "token": token
+        }, 400)
     except Exception as ex:
         return generate_response(request, {
-            "response": f"Database error: {ex}"
+            "error": f"Database error: {ex}"
         }, 503)
 
 
@@ -648,8 +669,11 @@ def forgot_password():
 
     if user is not None:
         try:
-            token = account_serializer.dumps(email, salt=app.config['SECRET_KEY'])
-            reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
+            token = account_serializer.dumps(
+                email,
+                salt=app.config['SECRET_KEY'],
+            )
+            reset_url = f"{email_link}/forgotPassword?token={token}"
 
             mail.send_reset_password_token(user['Username'], email, reset_url)
         except Exception as ex:
@@ -771,7 +795,6 @@ def get_game_info():
                 'drawProposedColor': game.draw_proposed,
                 'currentPhase': game.defender_state.phase
                 }
-
     #   print("currphase :" + str(data['currentPhase']))
     return generate_response(request, data, 200)
 

@@ -27,6 +27,7 @@
     flex-direction: column;
     row-gap: 0.3rem;
     align-items: center;
+
 }
 .CurrentInfo-container .lastGameContainer h3{
     color:var(--primary-color-dark);

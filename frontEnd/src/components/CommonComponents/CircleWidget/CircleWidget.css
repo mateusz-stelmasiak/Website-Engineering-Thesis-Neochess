@@ -1,22 +1,24 @@
-:root{
-    --ring-color:var(--primary-color-dark);
-    --ring-speed:4s;
+:root {
+    --ring-color: var(--primary-color-dark);
+    --ring-speed: 4s;
 }
 
-.CircleWidget{
+.CircleWidget {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     flex-direction: column;
     justify-content: flex-start;
 }
-.CircleWidget-container{
+
+.CircleWidget-container {
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
 
 }
-.CircleWidget-container button{
+
+.CircleWidget-container button {
     all: unset;
     padding: 0.7rem 4.5rem;
     background-color: var(--sec-color);
@@ -24,7 +26,7 @@
     margin-top: 1rem;
 }
 
-.CircleWidget-container button:hover{
+.CircleWidget-container button:hover {
     transition: 200ms;
     transform: scale(1.1);
     background-color: var(--sec-color-dark);
@@ -32,12 +34,12 @@
     cursor: pointer;
 }
 
-.CircleWidget-container button:hover svg{
+.CircleWidget-container button:hover svg {
     transform: scale(1.2);
 
 }
 
-.CircleStatus{
+.CircleStatus {
     display: flex;
     background-color: var(--section-color);
     align-items: center;
@@ -48,7 +50,7 @@
     transition: 200ms;
 }
 
-.CircleStatus .statusBand{
+.CircleStatus .statusBand {
     display: flex;
     width: 90%;
     height: 90%;
@@ -61,31 +63,32 @@
 }
 
 
-.CircleStatus h1{
-    all:unset;
+.CircleStatus h1 {
+    all: unset;
     text-align: center;
     font-weight: bold;
-    font-size: min(2em,3vw);
+    font-size: min(2em, 3vw);
     animation: text_glow 5s infinite;
     display: flex;
     flex-direction: column;
 }
 
-.CircleStatus h2{
-    all:unset;
+.CircleStatus h2 {
+    all: unset;
     text-decoration: line-through;
     display: block;
     text-align: center;
     font-size: 1.2em;
 }
 
-.CircleStatus h3{
-    all:unset;
+.CircleStatus h3 {
+    all: unset;
     display: block;
     text-align: center;
     font-size: 1.2em;
 }
-.CircleStatus .contentContainer{
+
+.CircleStatus .contentContainer {
     display: flex;
     width: 98%;
     height: 98%;
@@ -103,19 +106,20 @@
     background-size: cover;
 }
 
-.CircleStatus .contentContainer h1{
+.CircleStatus .contentContainer h1 {
     margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color:var(--sec-color)
+    color: var(--sec-color)
 }
-.CircleStatus .contentContainer div{
+
+.CircleStatus .contentContainer div {
     font-size: 1.1rem;
 }
 
-.CircleStatus .contentContainer .navContainer{
+.CircleStatus .contentContainer .navContainer {
     display: flex;
     row-gap: 1rem;
     column-gap: 1rem;
@@ -123,21 +127,37 @@
 
 /* Animate the color text glow */
 @keyframes text_glow {
-    from {text-shadow: 2px 2px 15px}
-    50% {text-shadow: 2px 2px 20px}
-    to {text-shadow: 2px 2px 15px }
+    from {
+        text-shadow: 2px 2px 15px
+    }
+
+    50% {
+        text-shadow: 2px 2px 20px
+    }
+
+    to {
+        text-shadow: 2px 2px 15px
+    }
 }
 
 /* Animate the color ring glow */
 @keyframes glow {
-    from {box-shadow: inset 0 0 15px 1px}
-    50% {box-shadow: inset 0 0 15px 6px }
-    to {box-shadow: inset 0 0 15px 1px }
+    from {
+        box-shadow: inset 0 0 15px 1px
+    }
+
+    50% {
+        box-shadow: inset 0 0 15px 6px
+    }
+
+    to {
+        box-shadow: inset 0 0 15px 1px
+    }
 }
 
 
 
-.CircleWidget{
+.CircleWidget {
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -145,16 +165,16 @@
 
 }
 
-.CircleWidget h2{
+.CircleWidget h2 {
     margin-top: 0.5rem;
     font-size: 1.2rem;
     color: rgba(250, 251, 250, 0.85);
 }
 
 
-.CircleWidget a{
-    all:unset;
-    color:var(--primary-color);
+.CircleWidget a {
+    all: unset;
+    color: var(--primary-color);
     cursor: pointer;
     transition: 0.3s;
     font-size: 1rem;
@@ -176,40 +196,46 @@
     transition: width 0.3s ease 0s, left 0.3s ease 0s;
     width: 0;
 }
+
 .CircleWidget a:hover:after {
     width: 100%;
     left: 0;
 }
 
-.CircleWidget a:hover{
-    color:var(--primary-color-dark);
+.CircleWidget a:hover {
+    color: var(--primary-color-dark);
     cursor: pointer;
 }
 
-.CircleWidget .feedback{
+.CircleWidget .feedback {
     margin-top: 0.5rem;
     margin-left: 0.5rem;
     color: var(--text-color);
     text-align: left;
 }
-.CircleWidget .error span{
+
+.CircleWidget .error span {
     color: var(--fail-color);
-}
-.CircleWidget .error span{
-    color: var(--fail-color);
-}
-.CircleWidget .success span{
-    color: var(--success-color);
-}
-.CircleStatus .contentContainer h1{
-    position: relative;
-}
-.CircleStatus .contentContainer h1 img{
-    width: min(40vw,6rem);
-    height: min(40vw,6rem);
 }
 
-.CircleStatus .contentContainer hr{
+.CircleWidget .error span {
+    color: var(--fail-color);
+}
+
+.CircleWidget .success span {
+    color: var(--success-color);
+}
+
+.CircleStatus .contentContainer h1 {
+    position: relative;
+}
+
+.CircleStatus .contentContainer h1 img {
+    width: min(40vw, 6rem);
+    height: min(40vw, 6rem);
+}
+
+.CircleStatus .contentContainer hr {
     border: unset;
     position: relative;
     width: 130%;
@@ -223,18 +249,20 @@
 }
 
 @media (max-width:750px) {
-    .statusBand{
-        all:unset;
+    .statusBand {
+        all: unset;
     }
-    .CircleStatus{
+
+    .CircleStatus {
         all: unset;
 
     }
-    #outer-orbit-circles{
-        filter:drop-shadow(0 0 50px var(--primary-color-dark)) blur(25px);
+
+    #outer-orbit-circles {
+        filter: drop-shadow(0 0 50px var(--primary-color-dark)) blur(25px);
     }
 
-    .CircleStatus .contentContainer .navContainer{
+    .CircleStatus .contentContainer .navContainer {
         flex-direction: column;
 
     }

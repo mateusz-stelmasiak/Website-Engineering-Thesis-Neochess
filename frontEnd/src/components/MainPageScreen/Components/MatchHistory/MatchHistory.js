@@ -79,7 +79,8 @@ function MatchHistory(props) {
                 let p1Info = new PlayerInfo(item.p1Username, item.p1PlayedAs, item.p1ELO);
                 let p2Info = new PlayerInfo(item.p2Username, item.p2PlayedAs, item.p2ELO);
                 let date = new MatchDate(item.hour, item.dayMonthYear);
-                let matchItemInfo = new MatchItemInfo(result, formatedMoves, p1Info, p2Info, date);
+                let gameMode = item.gameMode;
+                let matchItemInfo = new MatchItemInfo(result, formatedMoves, p1Info, p2Info, date,gameMode);
                 return <MatchHistoryItem key={keyGenerator} matchItemInfo={matchItemInfo}/>;
             })
 

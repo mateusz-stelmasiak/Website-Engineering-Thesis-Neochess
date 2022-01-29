@@ -17,7 +17,7 @@ class Player:
 class Game:
 
     def __init__(self, game_id, game_room_id, game_mode_id, white_player, black_player, curr_turn, curr_FEN,
-                 num_of_moves, timer, draw_proposed='null',defender_state = False):
+                 num_of_moves, timer, draw_proposed='null', defender_state=False):
         self.game_id = game_id
         self.game_room_id = game_room_id
         self.game_mode_id = game_mode_id
@@ -30,7 +30,7 @@ class Game:
         self.draw_proposed = draw_proposed
 
         if not defender_state:
-            self.defender_state =DefenderState()
+            self.defender_state = DefenderState()
         else:
             self.defender_state = defender_state
 
@@ -114,10 +114,11 @@ defender_FEN = "8/8/8/8/8/8/8/8 w - - 0 1"
 defender_desc = "Chess defender desc"
 defender_starting_score = 20
 
+
 # state 0- placing pieces stage, 1- making them movesss
 class DefenderState:
 
-    def __init__(self,white_score=defender_starting_score,black_score=defender_starting_score,phase=0):
+    def __init__(self, white_score=defender_starting_score, black_score=defender_starting_score, phase=0):
         self.white_score = white_score
         self.black_score = black_score
         self.phase = phase
@@ -152,8 +153,11 @@ class DefenderState:
 
 
 # Positions? (vs computer)
-positions_FENS = ["8/8/8/8/8/8/8/8 w - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
-                  "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1"]
+positions_FENS = ["8/8/8/8/2P5/1PPP4/R1P5/KR6 b - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
+                  "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
+                  "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1","1kr3r1/ppp5/8/6p1/6pp/8/8/8 w - - 0 1",
+                  "8/8/8/1Q6/3P4/4P3/1R3PPP/1R3BK1 b - - 0 1","2r1r1k1/2r1r1b1/5pbp/6p1/8/8/8/8 w - - 0 1"
+                  ]
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
@@ -162,7 +166,6 @@ game_modes = [
     GameMode(2, "Positions", positions_desc, 600, positions_FENS, 'chess-pawn', game_mode_multiplayer=False)
     # defender mode, time in S
 ]
-
 
 
 #################

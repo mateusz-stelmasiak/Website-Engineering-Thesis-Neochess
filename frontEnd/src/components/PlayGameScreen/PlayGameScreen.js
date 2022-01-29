@@ -32,6 +32,7 @@ import GameContainer from "./Components/GameContainer/GameContainer";
 import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
 import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
 import Chat from "./Components/Chat/Chat";
+import {toast} from "react-hot-toast";
 
 
 function PlayGameScreen({
@@ -61,6 +62,7 @@ function PlayGameScreen({
 
 
     useEffect(() => {
+        toast.dismiss();
         dispatch(authorizeSocket(userId, sessionToken));
         fetchGameData();
 
@@ -100,7 +102,7 @@ function PlayGameScreen({
             //get game info for game setup
             let response = await getGameInfo(gameId, sessionToken);
             if (response === undefined) return
-
+            console.log(response)
             await dispatch(setGameMode(response.gameMode));
             await dispatch(setCurrentFEN(response.FEN));
             await dispatch(setCurrentPhase(response.currentPhase));
@@ -140,7 +142,6 @@ function PlayGameScreen({
         }
 
         await store.dispatch(emit(makeMoveEvent));
-        await store.dispatch(flipCurrentTurn());
         storeState = store.getState();
         store.dispatch(setWhiteScore(storeState.game.whiteScore));
         store.dispatch(setBlackScore(storeState.game.blackScore))
@@ -155,7 +156,7 @@ function PlayGameScreen({
         //if socket is not connected, don't allow the move to be made locally
         if (socketStatus !== SocketStatus.authorized) {
             store.dispatch(authorizeSocket(playerId, storeState.user.sessionToken))
-            board.set_FEN_by_rejected_move(move.startingSquare, move.targetSquare)
+            board.setFenByRejectedMove(move.startingSquare, move.targetSquare)
             return;
         }
 
@@ -166,7 +167,23 @@ function PlayGameScreen({
         }
 
         await store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
+    }
+
+    let requestAIMove = async () =>{
+        const storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+        let socketStatus = storeState.socket.status;
+
+        //if socket is not connected, don't allow the move to be made locally
+        if (socketStatus !== SocketStatus.authorized) return;
+
+        let requestAIMove = {
+            event: 'request_AI_move',
+            msg: JSON.stringify({gameroomId, playerId})
+        }
+
+        await store.dispatch(emit(requestAIMove));
     }
 
     return (
@@ -192,6 +209,7 @@ function PlayGameScreen({
                             <P5Wrapper
                                 sketch={sketch}
                                 sendMoveToServer={sendMove}
+                                requestAIMove={requestAIMove}
                                 placeDefenderPiece={placeDefenderPiece}
                                 playingAs={playingAs}
                                 startingFEN={currentFEN}

@@ -23,7 +23,6 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
             dispatch(setIsInGame(false));
             return;
         }
-
         await dispatch(setGameId(resp.gameId));
         await dispatch(setPlayingAs(resp.playingAs));
         await dispatch(setGameMode(resp.gameMode));
@@ -40,7 +39,6 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
         toast.custom((t) => (<CookiesConsent toastId={t.id}/>), {
             duration: Infinity
         });
-
         dispatch(authorizeSocket(userId, sessionToken));
         checkIfIsInGame();
     }, []);

@@ -16,21 +16,22 @@ function UserProfileScreen(props) {
     const [is2FaEnabled, setIs2FaEnabled] = useState(undefined);
     const [accountCreatedTime, setAccountCreatedTime] = useState(undefined);
     const [accountUpdatedTime, setAccountUpdatedTime] = useState('----');
-
     const [lastGameFEN,setLastGameFEN] = useState(undefined);
     const [loginTime, setLoginTime] = useState(undefined);
     const [lastLoginTime, setLastLoginTime] = useState(undefined);
+    const [lastGameFENLoaded,setLastGameFENLoaded] = useState(false)
 
     useEffect(async () => {
         const response = (await getUserData())
         console.log(response)
-        if (response['lastPlayedFEN']) setLastGameFEN(response['lastPlayedFEN'])
-        setEmail(response['user']['Email'])
-        setIs2FaEnabled(response['user']['2FA'])
-        setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
-        setAccountCreatedTime(response['user']['CreatedAt'])
-        setLoginTime(response['user']['LoggedInAt']);
-        setLastLoginTime(response['user']['LastLoggedInAt']);
+        if (response['lastPlayedFEN']) await setLastGameFEN(response['lastPlayedFEN'])
+        await setEmail(response['user']['Email'])
+        await setIs2FaEnabled(response['user']['2FA'])
+        await setAccountUpdatedTime(response['user']['UpdatedAt']? response['user']['UpdatedAt']:"--:--:---")
+        await setAccountCreatedTime(response['user']['CreatedAt'])
+        await setLoginTime(response['user']['LoggedInAt']);
+        await setLastLoginTime(response['user']['LastLoggedInAt']);
+        await setLastGameFENLoaded(true)
     }, [])
 
     const are_fields_correct = () => {
@@ -60,7 +61,8 @@ function UserProfileScreen(props) {
         'justifyContent': 'space-between',
         'alignContent': 'space-between',
         'width': '70%',
-        'align-items':'center'
+        'flexWrap': 'wrap',
+        'rowGap':'2rem'
     }
 
     let containerStyle = {
@@ -70,6 +72,7 @@ function UserProfileScreen(props) {
         'rowGap': '2rem',
         'flexWrap': 'wrap',
         'color': 'var(--text-color)',
+
     }
 
     return (
@@ -105,7 +108,7 @@ function UserProfileScreen(props) {
                         </span>
                     </div>
                     <div className="lastGameContainer">
-                        {are_fields_correct() && <FenDisplayingBoard FEN={lastGameFEN}/>}
+                        {lastGameFENLoaded && <FenDisplayingBoard FEN={lastGameFEN}/>}
                         <h3>- Last played game -</h3>
                     </div>
 

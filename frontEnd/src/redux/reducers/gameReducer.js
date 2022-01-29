@@ -20,7 +20,7 @@ export const gameInitialState = {
     whiteScore:'0',
     blackScore:'0',
     drawProposedColor:null,
-    currentPhase:sessionStorage.getItem('currentPhase')
+    currentPhase: sessionStorage.getItem('currentPhase'),
 };
 
 export default function gameInfoReducer(state = gameInitialState, action) {
@@ -50,30 +50,6 @@ export default function gameInfoReducer(state = gameInitialState, action) {
         case actions.SET_CURRENT_PHASE:
             sessionStorage.setItem('currentPhase', action.payload)
             return {...state, currentPhase: action.payload}
-        case actions.FLIP_CURRENT_TURN:
-            let nextTurn;
-
-            if (state.currentTurn == 'w' && state.blackScore == 0 && state.gameMode == 1 && state.whiteScore != 0) {
-                nextTurn = 'w';
-            } else if (state.currentTurn == 'b' && state.whiteScore == 0 && state.gameMode == 1 && state.blackScore != 0) {
-                nextTurn = 'b';
-            } else {
-                state.currentTurn == 'w' ? nextTurn = 'b' : nextTurn = 'w';
-            }
-
-            let playing_as_score= state.whiteScore
-            if (state.playingAs == 'b') playing_as_score= state.blackScore
-
-            if (state.gameMode == 2 && playing_as_score>=0){
-                nextTurn= playingAs
-            }
-            else
-            {
-                state.currentTurn == 'w' ? nextTurn = 'b' : nextTurn = 'w';
-            }
-
-            sessionStorage.setItem('currentTurn', nextTurn)
-            return {...state, currentTurn: nextTurn}
         case actions.SET_WHITE_TIME:
             return {...state, whiteTime: action.payload}
         case actions.SET_BLACK_TIME:

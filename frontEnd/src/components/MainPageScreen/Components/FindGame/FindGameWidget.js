@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import "./FindGameWidget.css"
 import {useHistory} from "react-router-dom";
 import {connect} from "react-redux";
-import {faChessPawn, faChess} from "@fortawesome/free-solid-svg-icons";
+import {faChessPawn, faChess, faCaretLeft, faCaretRight} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {toast} from "react-hot-toast";
 import useTimer from "../../../CommonComponents/Timer";
@@ -26,8 +26,15 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     const [gameModeButtons, setGameModeButtons] = useState(undefined);
 
     //positions vars
-    const [positions, setPositions] = useState([]);
+    const [positions, setPositions] = useState(undefined);
+    const [positionsLoading, setPositionsLoading] = useState(true)
     const [posStartingScore, setPosStartingScore] = useState(30)
+    const [currPage, setCurrPage] = useState(0);
+    const [shownPositions, setShownPositions] = useState(undefined);
+    const [maxPage, setMaxPage] = useState(1)
+    let perPage = 4; //positions per page
+    const iconLeft = <FontAwesomeIcon icon={faCaretLeft}/>;
+    const iconRight = <FontAwesomeIcon icon={faCaretRight}/>;
 
     //queue info
     const [isInQ, setIsInQ] = useState(false);
@@ -71,6 +78,11 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         socket.on("positions_info", data => {
             setPositions(data);
+            let maxPage = Math.ceil(data.length / perPage)
+            setMaxPage(maxPage);
+            setCurrPage(0);
+            showPage(data, 0);
+            setPositionsLoading(false)
         })
 
         // Anything in here is fired on component unmount.
@@ -125,7 +137,8 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         //Positions game mode
         if (gameModeId === 2) {
             setSelectedText(2);
-            getPositionsInfo();
+            console.log(positions)
+            if (positions === undefined) getPositionsInfo();
             return;
         }
 
@@ -135,6 +148,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
     }
 
     let getPositionsInfo = () => {
+        setPositionsLoading(true)
         let getPositionsEvent = {
             event: 'get_positions_info',
             msg: JSON.stringify({playerId})
@@ -178,6 +192,48 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
 
         dispatch(emit(leaveQEvent));
         setIsInQ(false);
+    }
+
+    let scrollToTop = () => {
+        const yOffset = -300;
+        const section = document.getElementById('positionsContainer');
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+        if (typeof section !== 'undefined' && section !== null) {
+            window.scrollTo({top: y, behavior: 'smooth'});
+        }
+    }
+
+    let flipPage = (direction) => {
+        let newPage = (currPage + direction) % maxPage;
+        if (newPage < 0) newPage = maxPage - 1;
+        setCurrPage(newPage);
+        showPage(positions, newPage);
+        scrollToTop()
+    }
+
+
+
+    let showPage = (positions, pageNumber) => {
+        let minIndex = pageNumber * perPage;
+        let maxIndex = (pageNumber + 1) * perPage
+
+        let shownP = positions.map(
+            (position, index) => {
+                if (index >= minIndex && index < maxIndex) {
+                    return (
+                        <span
+                            key={"position" + index}
+                            onClick={() => joinSinglePlayerGame(2, index)}
+                        >
+                    <FenDisplayingBoard FEN={position}/>
+                    </span>
+                    )
+                }
+                return <></>
+            }
+        );
+        setShownPositions(shownP)
     }
 
     return (
@@ -227,7 +283,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             </div>
 
             {currGameMode === 2 &&
-            <div className="FindGameWidget-positionsContainer">
+            <div id={'positionsContainer'} className="FindGameWidget-positionsContainer">
                 <div className="scoreInput">
                     <h2>Starting score</h2>
                     <Form.Control
@@ -238,26 +294,20 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
                         onChange={(e) => updatePosStartingScore(e.target.value)}
                     />
                 </div>
+                {!positionsLoading &&
+                <>
+                    <div className="positionList">
+                        {shownPositions}
+                    </div>
+                    <div className="positionList-pages">
+                        <button id='prev' onClick={() => flipPage(-1)}>{iconLeft}</button>
+                        <span>{currPage + 1}/{maxPage}</span>
+                        <button id='next' onClick={() => flipPage(1)}>{iconRight}</button>
+                    </div>
+                </>
+                }
 
-                <div className="positionList">
-                    {positions === [] ?
-                        <Dots>Loading</Dots>
-                        :
-                        positions.map(
-                            (position, index) => {
-                                return (
-                                    <span
-                                        key={"position" + index}
-                                        onClick={() => joinSinglePlayerGame(currGameMode, index)}
-                                    >
-                    <FenDisplayingBoard FEN={position}/>
-                    </span>
-                                )
-                            }
-                        )
-                    }
 
-                </div>
             </div>
             }
 

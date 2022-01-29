@@ -13,14 +13,14 @@ import UserProfileScreen from "./components/UserProfileScreen/UserProfileScreen"
 import {Toaster} from "react-hot-toast";
 import CookiesPreferences from "./components/Cookies/CookiesPreferences/CookiesPreferences";
 import CookiesPage from "./components/Cookies/CookiesPage/CookiesPage";
-import SetNewPasswordScreen from "./components/LogRegScreen/Components/SetNewPassword/SetNewPasswordScreen";
+import SetNewPasswordScreen from "./components/Header/Components/AccountManagement/SetNewPassword/SetNewPasswordScreen";
+import InvalidTokenScreen from "./components/InvalidTokenScreen/InvalidTokenScreen";
 
 
 export const GAME_DEBUGING_MODE = false;
 
 
 function App({socket, sessionToken, userId, gameId, isInGame}) {
-    const history = useHistory();
     const [loading, setLoading] = useState(true);
 
     //try to regenerate the session on reload
@@ -42,8 +42,8 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
     return (
         <div>
             {!loading &&
-            <div className="App">
-                <ScrollToTop/>
+                <div className="App">
+                    <ScrollToTop/>
                     <Switch>
                         {<PrivateRoute path="/" exact component={MainPageScreen}/>}
                         {<PrivateRoute path="/play" component={PlayGameScreen}/>}
@@ -51,14 +51,15 @@ function App({socket, sessionToken, userId, gameId, isInGame}) {
                         <Route path="/login" component={LogRegScreen}/>
                         <Route path="/forgotPassword" component={SetNewPasswordScreen}/>
                         <Route path="/cookies" component={CookiesPage}/>
+                        <Route path="/invalidToken" component={InvalidTokenScreen}/>
                         <Redirect from="*" to="/"/>
                     </Switch>
-                <CookiesPreferences/>
-                <Toaster
-                    position="top-right"
-                    reverseOrder={false}
-                />
-            </div>
+                    <CookiesPreferences/>
+                    <Toaster
+                        position="top-right"
+                        reverseOrder={false}
+                    />
+                </div>
             }
         </div>
     );
