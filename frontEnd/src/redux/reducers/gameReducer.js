@@ -20,7 +20,7 @@ export const gameInitialState = {
     whiteScore:'0',
     blackScore:'0',
     drawProposedColor:null,
-    currentPhase:sessionStorage.getItem('currentPhase')
+    currentPhase: sessionStorage.getItem('currentPhase'),
 };
 
 export default function gameInfoReducer(state = gameInitialState, action) {
