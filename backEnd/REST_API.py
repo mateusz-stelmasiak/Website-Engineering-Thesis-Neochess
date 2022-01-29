@@ -2,7 +2,7 @@ import json
 
 import requests
 from flask import Flask, request, jsonify, make_response, url_for, redirect
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadTimeSignature
 from hashlib import sha256
 
 import ChessDB
@@ -598,7 +598,7 @@ def confirm_email(token):
             else:
                 db.activate_user_account(email)
                 return redirect(f"{origin_prefix}{local_domain}/")
-    except SignatureExpired:
+    except (SignatureExpired, BadTimeSignature):
         return redirect(f"{origin_prefix}{local_domain}/invalidToken?token={token}")
     except Exception as ex:
         return generate_response(request, {
@@ -631,7 +631,7 @@ def reset():
         return generate_response(request, {
             "response": "OK"
         }, 200)
-    except SignatureExpired:
+    except (SignatureExpired, BadTimeSignature):
         return generate_response(request, {
             "error": f"Token expired",
             "token": token
