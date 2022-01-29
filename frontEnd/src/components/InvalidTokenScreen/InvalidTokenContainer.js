@@ -24,7 +24,7 @@ export default function InvalidTokenContainer({dispatch}) {
             <br/>
             <p>Your request cannot be completed</p>
             <br/>
-            <p>Please request new token for your request and try again</p>
+            <p>Please request a new token for your inquiry and try again</p>
         </div>
         <p className="ProvidedToken">Provided token:</p>
         <div className="Token">{token}</div>
