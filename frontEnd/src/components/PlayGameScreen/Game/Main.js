@@ -8,7 +8,7 @@ import {
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
 import {add_piece,generateDefenderMoves} from "./gameMode2_moves";
-import {tests} from "./tests";
+
 
 
 export var Font;
