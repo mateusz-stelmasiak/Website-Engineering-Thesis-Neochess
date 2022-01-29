@@ -681,10 +681,6 @@ def place_defender_piece(data):
         if your_score < 0:
             if games[game_room_id].defender_state.phase == 0:
                 opp_turn = 'w'
-                if player_color == 'b':
-                    player_sid = authorized_sockets[player_id]
-                    emit('123', {}, to=player_sid)
-                    make_AI_move(player_sid, game_room_id, player_color)
             else:
                 if curr_turn == 'b':
                     opp_turn = 'w'
@@ -714,6 +710,31 @@ def place_defender_piece(data):
     emit('place_defender_piece_local',
          {'FEN': updated_FEN, 'spentPoints': spent_points, 'whiteScore': games[game_room_id].defender_state.white_score,
           'blackScore': games[game_room_id].defender_state.black_score}, to=opponent_sid)
+
+
+@socketio.on('request_AI_move')
+def request_AI_move(data):
+    data_obj = json.loads(data)
+    print(data_obj)
+
+    game_room_id = data_obj['gameroomId']
+    player_id = data_obj['playerId']
+
+    # authorize player
+    if not check_auth(request.sid, data_obj['playerId']):
+        print("Unathorized!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    # check if is in the game
+    players_game = get_is_player_in_game(player_id)
+    if not players_game or players_game[0].game_room_id != game_room_id:
+        print("Player doesn't play in this game!! ")
+        emit('unauthorized', {'error': 'Unauthorized access'})
+        return
+
+    player_color = players_game[1]
+    make_AI_move(request.sid, game_room_id, player_color)
 
 
 @socketio.on('make_move')

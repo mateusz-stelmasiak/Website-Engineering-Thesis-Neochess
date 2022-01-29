@@ -8,7 +8,7 @@ import {
     Font,
     textures,
     scalar,
-    shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn,
+    shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn, requestAIMove,
 } from "./Main";
 import Piece from "./Piece";
 import {count_squares_to_edge, Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
@@ -438,6 +438,9 @@ export default class Board {
             } else {
                 this.phase = 1;
                 this.color_to_move = 'w'
+                if (playingAs === 'b'){
+                    requestAIMove();
+                }
             }
 
         }

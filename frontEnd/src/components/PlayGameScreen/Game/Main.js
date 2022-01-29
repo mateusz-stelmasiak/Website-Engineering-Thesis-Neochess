@@ -8,6 +8,7 @@ import {
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
 import {add_piece,generateDefenderMoves} from "./gameMode2_moves";
+import {tests} from "./tests";
 
 
 export var Font;
@@ -50,6 +51,7 @@ export let whiteScore;
 export let blackScore;
 export let currentTurn;
 export let currentPhaseFromServer;
+export let requestAIMove;
 
 
 export default function sketch(p5) {
@@ -63,6 +65,9 @@ export default function sketch(p5) {
         }
         if (props.sendMoveToServer) {
             sendMoveToServer = props.sendMoveToServer;
+        }
+        if (props.requestAIMove) {
+            requestAIMove = props.requestAIMove;
         }
         if (props.startingFEN) {
             startingFEN = props.startingFEN
