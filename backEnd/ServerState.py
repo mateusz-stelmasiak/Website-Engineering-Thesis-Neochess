@@ -153,14 +153,10 @@ class DefenderState:
 
 
 # Positions? (vs computer)
-positions_FENS = ["8/4p3/8/8/8/8/8/8 w - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
+positions_FENS = ["8/8/8/8/2P5/1PPP4/R1P5/KR6 w - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
                   "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
-                  "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
-                  "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
-                  "8/8/8/8/8/8/8/8 w - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
-                  "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
-                  "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
-                  "4p3/4p3/8/8/8/8/8/8 w - - 0 1"
+                  "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1","1kr3r1/ppp5/8/6p1/6pp/8/8/8 w - - 0 1",
+                  "8/8/8/1Q6/3P4/4P3/1R3PPP/1R3BK1 w - - 0 1","2r1r1k1/2r1r1b1/5pbp/6p1/8/8/8/8 w - - 0 1"
                   ]
 positions_desc = "Start from given position and outplay a computer"
 
