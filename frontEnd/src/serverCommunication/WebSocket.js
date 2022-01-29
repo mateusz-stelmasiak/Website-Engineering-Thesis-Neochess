@@ -4,7 +4,7 @@ import {makeOpponentMove, getMove, generateMoves} from "../components/PlayGameSc
 import {store} from "../index";
 import {setSocketStatus} from "../redux/actions/socketActions";
 import {
-    flipCurrentTurn, setBlackScore,
+    setBlackScore,
     setBlackTime,
     setCurrentFEN, setDrawProposedColor,
     setOpponentStatus, setWhiteScore,
@@ -129,8 +129,6 @@ export default class SocketClient {
         this.on("make_move_local", data => {
             if (data === undefined) return;
             makeOpponentMove(data.startingSquare, data.targetSquare, data.mtype);
-            store.dispatch(flipCurrentTurn());
-
         });
 
         this.on("illegal_move", data => {
@@ -142,7 +140,6 @@ export default class SocketClient {
         this.on("make_AI_move_local", data => {
             if (data === undefined) return;
             board.setFenByRejectedMove(data.startingSquare, data.targetSquare)
-            store.dispatch(flipCurrentTurn());
         })
 
         this.on("place_defender_piece_local", data => {
@@ -152,10 +149,7 @@ export default class SocketClient {
             store.dispatch(setCurrentFEN(data.FEN))
             store.dispatch(setWhiteScore(data.whiteScore));
             store.dispatch(setBlackScore(data.blackScore));
-            store.dispatch(flipCurrentTurn());
             generateDefenderMoves(board.grid);
-
-
         });
 
         this.on('update_opponents_socket_status', data => {
