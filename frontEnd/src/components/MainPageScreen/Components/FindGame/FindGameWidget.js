@@ -194,13 +194,25 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
         setIsInQ(false);
     }
 
+    let scrollToTop = () => {
+        const yOffset = -300;
+        const section = document.getElementById('positionsContainer');
+        const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+        if (typeof section !== 'undefined' && section !== null) {
+            window.scrollTo({top: y, behavior: 'smooth'});
+        }
+    }
 
     let flipPage = (direction) => {
         let newPage = (currPage + direction) % maxPage;
         if (newPage < 0) newPage = maxPage - 1;
         setCurrPage(newPage);
         showPage(positions, newPage);
+        scrollToTop()
     }
+
+
 
     let showPage = (positions, pageNumber) => {
         let minIndex = pageNumber * perPage;
@@ -271,7 +283,7 @@ function FindGameWidget({playerId, sessionToken, socket, isInGame, dispatch}) {
             </div>
 
             {currGameMode === 2 &&
-            <div className="FindGameWidget-positionsContainer">
+            <div id={'positionsContainer'} className="FindGameWidget-positionsContainer">
                 <div className="scoreInput">
                     <h2>Starting score</h2>
                     <Form.Control
