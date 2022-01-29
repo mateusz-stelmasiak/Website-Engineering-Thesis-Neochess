@@ -1,4 +1,4 @@
-import {cols, rows,size,playingAs} from "./Main";
+import {cols, rows, size, playingAs} from "./Main";
 
 function index(i, j) {
     if (i < 0 || j < 0 || i > cols - 1 || j > rows - 1) {
@@ -6,9 +6,10 @@ function index(i, j) {
     }
     return i + j * cols; //changing two dimensional index to one dimensional
 }
+
 export default class CSquare {
-    constructor(x, y, size,p5) {
-        this.p5=p5;
+    constructor(x, y, size, p5) {
+        this.p5 = p5;
         this.size = size;
         this.i = x;
         this.j = y;
@@ -18,14 +19,11 @@ export default class CSquare {
         this.x2 = this.x + size;
         let parityFlag = this.j % 2;
 
-            if (index(this.i, this.j) % 2 === 0) {
-                parityFlag === 0 ? this.state = "white" : this.state = "black";
-            } else {
-                parityFlag === 0 ? this.state = "black" : this.state = "white";
-            }
-
-
-
+        if (index(this.i, this.j) % 2 === 0) {
+            parityFlag === 0 ? this.state = "white" : this.state = "black";
+        } else {
+            parityFlag === 0 ? this.state = "black" : this.state = "white";
+        }
     }
 
 
@@ -44,6 +42,5 @@ export default class CSquare {
             this.p5.square(this.x, this.y, size);
             this.p5.pop();
         }
-
     }
 }

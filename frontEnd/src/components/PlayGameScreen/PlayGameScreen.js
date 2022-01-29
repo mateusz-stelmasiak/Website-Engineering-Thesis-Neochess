@@ -157,7 +157,7 @@ function PlayGameScreen({
         //if socket is not connected, don't allow the move to be made locally
         if (socketStatus !== SocketStatus.authorized) {
             store.dispatch(authorizeSocket(playerId, storeState.user.sessionToken))
-            board.set_FEN_by_rejected_move(move.startingSquare, move.targetSquare)
+            board.setFenByRejectedMove(move.startingSquare, move.targetSquare)
             return;
         }
 

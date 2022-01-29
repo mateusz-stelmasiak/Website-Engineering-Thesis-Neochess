@@ -1,15 +1,13 @@
 import Board, {default_FEN, default_FEN_Gamemode_2} from "./board";
 import {
-    check_if_check,
-    count_squares_to_edge, Generate_opponent_moves,
-    Generate_moves,
-    make_a_move, generate_pos_to_stocknot_dict,
+    checkIfCheck,
+    countSquaresToEdge, generateOpponentMoves,
+    generateMoves,
+    makeMove, generatePosToStocknotDict,
 } from "./moves";
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
-import {add_piece,generateDefenderMoves} from "./gameMode2_moves";
-
-
+import {addPiece, generateDefenderMoves} from "./gameMode2_moves";
 
 export var Font;
 export var pos_to_stocknot_dict = [];
@@ -84,7 +82,7 @@ export default function sketch(p5) {
         if (props.currentTurn) {
             currentTurn = props.currentTurn;
         }
-        if(props.currentPhase){
+        if (props.currentPhase) {
             currentPhaseFromServer = props.currentPhase
         }
     }
@@ -121,13 +119,13 @@ export default function sketch(p5) {
     p5.mouseReleased = function () {
         if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
             generateDefenderMoves(board.grid);
-            add_piece();
+            addPiece();
         }
-        make_a_move();
+        makeMove();
         if (board.SetupState === -1) {
-            Generate_opponent_moves(board.grid);
-            check_if_check();
-            Generate_moves(board.grid, board.check, "released");
+            generateOpponentMoves(board.grid);
+            checkIfCheck();
+            generateMoves(board.grid, board.check, "released");
         }
     }
 
@@ -150,7 +148,7 @@ export default function sketch(p5) {
 
     p5.setup = function () {
         board = new Board(p5);
-        generate_pos_to_stocknot_dict();
+        generatePosToStocknotDict();
         console.log("SETTING UP")
 
         if (gameMode === "1" || gameMode == "2" !== undefined) {
@@ -158,7 +156,7 @@ export default function sketch(p5) {
         }
 
 
-        if(gameMode=="2" && currentPhaseFromServer!== undefined){
+        if (gameMode == "2" && currentPhaseFromServer !== undefined) {
             board.phase = currentPhaseFromServer;
         }
 
@@ -184,14 +182,14 @@ export default function sketch(p5) {
             }
         }
 
-        board.load_FEN();
+        board.loadFen();
 
         calculatePixelPositions();
-        count_squares_to_edge();
+        countSquaresToEdge();
 
-        if(gameMode==='0' || board.SetupState<0){
-            Generate_moves(board.grid, board.check, "setup");
-        }else{
+        if (gameMode === '0' || board.SetupState < 0) {
+            generateMoves(board.grid, board.check, "setup");
+        } else {
             generateDefenderMoves(board.grid)
         }
         canvas.style('width', '100%');
@@ -234,7 +232,7 @@ export default function sketch(p5) {
 
         canvas.resize(canvas_width, canvas_height);
         calculatePixelPositions();
-        board.load_FEN();
+        board.loadFen();
         canvas.style('width', '100%');
         canvas.style('height', '100%');
     }
@@ -253,6 +251,4 @@ export default function sketch(p5) {
         board.draw_board();
 
     };
-
-
 };
