@@ -439,7 +439,7 @@ export default class Board {
             generateDefenderMoves(this.grid)
         }
 
-        store.dispatch(setCurrentTurn(this.color_to_move));
+        store.dispatch(setCurrentTurn(this.colorToMove));
     }
 
     GameMode2_checkState() {
