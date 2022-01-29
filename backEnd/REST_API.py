@@ -33,7 +33,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['CAPTCHA_KEY'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+app.config['CAPTCHA_KEY'] = '6LcX50QeAAAAAEhNXGnsslVs9FCGBKEg203o7jzG'
 
 account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
