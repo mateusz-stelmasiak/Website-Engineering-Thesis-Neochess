@@ -20,8 +20,10 @@ dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
+email_link = f"{origin_prefix}{local_domain}"
 allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1',
                    '127.0.0.1:' + local_port, 'localhost']
+
 # add http:// before each allowed domain to get orgin
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
@@ -594,12 +596,12 @@ def confirm_email(token):
 
         if user is not None:
             if user['AccountConfirmed']:
-                return redirect(f"{origin_prefix}{local_domain}/")
+                return redirect(f"{email_link}/")
             else:
                 db.activate_user_account(email)
-                return redirect(f"{origin_prefix}{local_domain}/")
+                return redirect(f"{email_link}/")
     except (SignatureExpired, BadTimeSignature, BadSignature):
-        return redirect(f"{origin_prefix}{local_domain}/invalidToken?token={token}")
+        return redirect(f"{email_link}/invalidToken?token={token}")
     except Exception as ex:
         return generate_response(request, {
             "response": f"Error occurred {ex}"
@@ -671,7 +673,7 @@ def forgot_password():
                 email,
                 salt=app.config['SECRET_KEY'],
             )
-            reset_url = f"{origin_prefix}{local_domain}/forgotPassword?token={token}"
+            reset_url = f"{email_link}/forgotPassword?token={token}"
 
             mail.send_reset_password_token(user['Username'], email, reset_url)
         except Exception as ex:
