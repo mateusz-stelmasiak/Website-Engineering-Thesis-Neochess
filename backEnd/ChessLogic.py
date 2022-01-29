@@ -92,7 +92,7 @@ def get_best_move(FEN):
     result = engine.play(board, limit)
     move_AN_notation = result.move
     moving_piece_type = board.piece_type_at(move_AN_notation.from_square)
-    board.push(result.move)
+    board.push(move_AN_notation)
 
     move_type = "n"
     if board.is_en_passant(move_AN_notation): move_type = "CP"

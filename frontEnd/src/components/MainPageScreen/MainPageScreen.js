@@ -12,6 +12,7 @@ import {authorizeSocket} from "../../redux/actions/socketActions";
 import FooterHeaderWithMarginsLayout from "../Layout/FooterHeaderWithMarginsLayout";
 import CookiesConsent from "../Cookies/CookiesConsent/CookiesConsent";
 import FindGameWidget from "./Components/FindGame/FindGameWidget";
+import {tests} from "../PlayGameScreen/Game/tests";
 
 
 function MainPageScreen({userId, sessionToken, dispatch}) {
@@ -23,7 +24,6 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
             dispatch(setIsInGame(false));
             return;
         }
-
         await dispatch(setGameId(resp.gameId));
         await dispatch(setPlayingAs(resp.playingAs));
         await dispatch(setGameMode(resp.gameMode));
@@ -40,7 +40,7 @@ function MainPageScreen({userId, sessionToken, dispatch}) {
         toast.custom((t) => (<CookiesConsent toastId={t.id}/>), {
             duration: Infinity
         });
-
+        tests()
         dispatch(authorizeSocket(userId, sessionToken));
         checkIfIsInGame();
     }, []);

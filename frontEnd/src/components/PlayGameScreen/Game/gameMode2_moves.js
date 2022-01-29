@@ -3,6 +3,7 @@ import {board, pixel_positions, placeDefenderPiece, playingAs} from "./Main";
 import Piece from "./Piece";
 import {store} from "../../../index";
 import {setBlackScore, setWhiteScore} from "../../../redux/actions/gameActions";
+import {Generate_opponent_moves, opponent_moves} from "./moves";
 
 
 export let defenderMoves = []
@@ -31,12 +32,12 @@ export function add_piece() {
             let Target_Square_position = piece.get_closest_position();
             let TargetSquare = pixel_positions.indexOf(Target_Square_position);
             if (Target_Square_position[0] !== -1 && playingAs === board.color_to_move && Is_On_Good_Square(TargetSquare)) {
-                    board.SetupState -= parseInt(points_dict[piece.type_letter], 10);
-                    let clonedPiece = new Piece(piece.type_letter, board.p5, 100, 100);
-                    clonedPiece.color = piece.color;
-                    board.grid[TargetSquare] = clonedPiece;
-                    board.set_FEN_from_grid();
-                    added_piece = clonedPiece
+                board.SetupState -= parseInt(points_dict[piece.type_letter], 10);
+                let clonedPiece = new Piece(piece.type_letter, board.p5, 100, 100);
+                clonedPiece.color = piece.color;
+                board.grid[TargetSquare] = clonedPiece;
+                board.set_FEN_from_grid();
+                added_piece = clonedPiece
             }
 
         }
@@ -69,6 +70,7 @@ export function add_piece() {
             store.dispatch(setWhiteScore(board.SetupState))
         }
         board.change_Turn();
+
     }
 
 }
@@ -76,31 +78,45 @@ export function add_piece() {
 function Is_On_Good_Square(TargetSquare) {
     if (board.grid[TargetSquare].type_letter === 'e') {
         if (playingAs === 'b') {
-            return TargetSquare < 24;
+            return defenderMoves.includes(TargetSquare)
         } else {
-            return TargetSquare > 39;
+            return defenderMoves.includes(TargetSquare)
         }
     } else {
         return false
     }
 }
 
-export function generateDefenderMoves(grid){
+export function generateDefenderMoves(grid) {
     defenderMoves = []
-        if (playingAs === 'b') {
-            for (let i = 0; i < grid.length - 40; i++) {
-                if (grid[i].type_letter === 'e') {
-                    defenderMoves.push(i)
-                }
+    if (playingAs === 'b' && board.color_to_move === playingAs) {
+        for (let i = 0; i < grid.length - 40; i++) {
+            if (grid[i].type_letter === 'e') {
+                defenderMoves.push(i)
+            }
 
-            }
-            console.log(defenderMoves)
-        } else {
-            for (let i = 40; i < grid.length; i++) {
-                if (grid[i].type_letter === 'e') {
-                    defenderMoves.push(i)
-                }
-            }
-            console.log(defenderMoves)
         }
+
+    }
+    if (playingAs === 'w' && board.color_to_move === playingAs) {
+        for (let i = 40; i < grid.length; i++) {
+            if (grid[i].type_letter === 'e') {
+                defenderMoves.push(i)
+            }
+        }
+    }
+    if (board.SetupState === 0) {
+        Generate_opponent_moves(grid)
+        if (grid && opponent_moves !== undefined) {
+            defenderMoves = defenderMoves.filter((value, idx) => {
+                return opponent_moves.every((f) => {
+                    return f.EndSquare !== value
+                })
+
+            })
+            //opponent_moves = []
+        }
+
+
+    }
 }
