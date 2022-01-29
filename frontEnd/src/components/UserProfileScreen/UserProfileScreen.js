@@ -61,7 +61,6 @@ function UserProfileScreen(props) {
         'justifyContent': 'space-between',
         'alignContent': 'space-between',
         'width': '70%',
-        'align-items':'center',
         'flexWrap': 'wrap',
         'rowGap':'2rem'
     }

@@ -11,28 +11,28 @@ import {
     shelf_size, gameMode2_Margin, textsize, gameMode, currentTurn, requestAIMove,
 } from "./Main";
 import Piece from "./Piece";
-import {count_squares_to_edge, Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
+import {countSquaresToEdge, generateMoves, generateOpponentMoves, makeOpponentMove, moves} from "./moves";
 import {store} from "../../../index";
 import {defenderMoves, generateDefenderMoves} from "./gameMode2_moves";
 import {setCurrentTurn} from "../../../redux/actions/gameActions";
 
-
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 export const default_FEN_Gamemode_2 = "8/8/8/8/8/8/8/8 w - - 0 1";
+
+let defender_points = ["0","1","3","3","5","9"]
+
 export default class Board {
 
     constructor(p5) {
-        count_squares_to_edge()
+        countSquaresToEdge()
         this.p5 = p5;
         this.grid = [];
         for (let i = 0; i < 64; i++) {
             this.grid.push(new Piece("e", this.p5));
         }
-
         this.gameMode2_grid = [];
+
         let i = 0;
-
-
         for (var key in pieces_dict) {
             i += 1;
             if (playingAs === 'b') {
@@ -44,8 +44,8 @@ export default class Board {
 
         }
         this.FEN = "";
-        this.load_FEN()
-        this.color_to_move = "";
+        this.loadFen()
+        this.colorToMove = "";
         this.lastPawnMoveOrCapture = 0;
         this.lastmove = [-1, -1];
         this.numOfMoves = 1;
@@ -53,11 +53,10 @@ export default class Board {
         this.enPassant = "-";
         this.SetupState = 0;
         this.phase = 0;
-        this.waveFunction = 0; //used for calculating wave animation timing
+        this.waveFunction = 0;
     }
 
-
-    get_pos(i, j) {
+    getPos(i, j) {
         let x;
         let y;
         if (playingAs === 'b') {
@@ -75,7 +74,7 @@ export default class Board {
         this.FEN = FEN;
     }
 
-    set_FEN_from_grid() {
+    setFenFromGrid() {
         let empty_spaces = 0;
         let temp_fen = "";
         for (let i = 0; i < board.grid.length; i++) {
@@ -99,57 +98,41 @@ export default class Board {
         }
         if (empty_spaces !== 0) {
             temp_fen += empty_spaces.toString();
-            empty_spaces = 0;
         }
-
-        //TODO
-        //sprawdzic czy król sie juz ruszył i wieza czy sie da roszade zrobic i wtedy dopisać ją do fena, tak samo który jest teraz ruch
-        //split 2 - roszady
-        //split 3 - en passant
-        temp_fen += " " + this.color_to_move + " " + this.FEN.split(' ')[2] + " " + this.enPassant + " " + this.lastPawnMoveOrCapture + " " + this.numOfMoves;
+        temp_fen += " " + this.colorToMove + " " + this.FEN.split(' ')[2] + " " + this.enPassant + " " + this.lastPawnMoveOrCapture + " " + this.numOfMoves;
         this.FEN = temp_fen;
-        this.load_FEN();
+        this.loadFen();
     }
 
-    set_FEN_by_move(StartingSquare, TargetSquare) {
-
-
+    setFenByMove(StartingSquare, TargetSquare) {
         let temp = board.grid[StartingSquare];
         board.grid[StartingSquare] = board.grid[TargetSquare];
         board.grid[TargetSquare] = temp;
         board.grid[TargetSquare].old_x = pixel_positions[TargetSquare][0];
         board.grid[TargetSquare].old_y = pixel_positions[TargetSquare][1];
-
-
         board.change_Turn();
-        //print_board2();
-        this.set_FEN_from_grid()
+        this.setFenFromGrid()
     }
 
     //does the same thing as set_FEN_by_move but also generates moves
-    set_FEN_by_rejected_move(StartingSquare, TargetSquare) {
-        //TODO highlight rejected position
-
-
+    setFenByRejectedMove(StartingSquare, TargetSquare) {
         let temp = board.grid[StartingSquare];
         board.grid[StartingSquare] = board.grid[TargetSquare];
         board.grid[TargetSquare] = temp;
         board.grid[TargetSquare].old_x = pixel_positions[TargetSquare][0];
         board.grid[TargetSquare].old_y = pixel_positions[TargetSquare][1];
-
         board.change_Turn();
-        Generate_opponent_moves(board.grid);
-        Generate_moves(board.grid, board.check, "after_opponent");
-        //print_board2();
-        this.set_FEN_from_grid()
+        generateOpponentMoves(board.grid);
+        generateMoves(board.grid, board.check, "after_opponent");
+        this.setFenFromGrid()
     }
 
-    load_FEN() {
+    loadFen() {
         let split_FEN = this.FEN.split(' ')
-
-        this.color_to_move = split_FEN[1];   //setting color to move from fen
+        this.colorToMove = split_FEN[1];   //setting color to move from fen
         let isCastlePossible = split_FEN[2];
         this.enPassant = split_FEN[3];
+
         for (let i = 0; i < 64; i++) {
             this.grid[i] = (new Piece("e", this.p5));
         }
@@ -166,7 +149,7 @@ export default class Board {
                 if (Number.isInteger(Number(e))) {
                     rank += Number(e);
                 } else {
-                    let temp = this.get_pos(rank, file);
+                    let temp = this.getPos(rank, file);
                     this.grid[file * 8 + rank].type = e;
                     this.grid[file * 8 + rank].type_letter = e;
                     e === e.toUpperCase() ? this.grid[file * 8 + rank].color = 'w' : this.grid[file * 8 + rank].color = 'b';
@@ -184,6 +167,7 @@ export default class Board {
                 }
             }
         }
+
         if (isCastlePossible && isCastlePossible.includes('K')) {
             this.grid[60].did_move = 0 //king                         //setting king and rook did_move to zero because if they can castle they for sure werent moved
             this.grid[63].did_move = 0 //rook
@@ -200,7 +184,8 @@ export default class Board {
             this.grid[4].did_move = 0
             this.grid[0].did_move = 0
         }
-        if(this.SetupState<0)Generate_moves(this.grid,this.check,"setup")
+
+        if (this.SetupState < 0) generateMoves(this.grid, this.check, "setup")
 
     }
 
@@ -220,7 +205,6 @@ export default class Board {
             this.p5.fill(squareColor);
             this.p5.rect(highlight[0], highlight[1], size - 10, size - 10);
             this.p5.pop();
-
         }
     }
 
@@ -251,8 +235,6 @@ export default class Board {
                 }
                 this.waveFunction = this.waveFunction + 0.01; // update time
             }
-
-
         }
     }
 
@@ -306,7 +288,7 @@ export default class Board {
                     piece.movePiece();
                     dragged_index = k;
                 } else {
-                    piece.draw_piece();
+                    piece.drawPiece();
                 }
                 i++;
                 if (i % 8 === 0) {
@@ -320,7 +302,7 @@ export default class Board {
             }
         }
         if (dragged_index !== -1) {
-            this.grid[dragged_index].draw_piece();
+            this.grid[dragged_index].drawPiece();
         }
     }
 
@@ -341,10 +323,17 @@ export default class Board {
                 this.p5.tint(200, 127);
                 this.p5.image(textures[texture], Checkboard_size + shelf_size / 2 - size * 0.5, gameMode2_Margin * size * rew / 2, size - scalar, size - scalar);
                 this.p5.pop()
-
             }
 
-
+            for(let z=0;z<defender_points.length;z++) {
+                this.p5.push();
+                this.p5.textFont(Font);
+                this.p5.textSize(textsize);
+                this.p5.fill(0, 0, 0);//storeVars.whiteScore.toString() + " | " + storeVars.blackScore.toString() <--- show both scores
+                this.p5.text(defender_points[z], Checkboard_size + shelf_size / 4 - textsize * 0.666, size *(z+2)*1.111-40); // -> scalar if both scores 1.63
+                this.p5.pop();
+                this.p5.push();
+            }
         }
         rew = 0;
     }
@@ -353,7 +342,6 @@ export default class Board {
         let dragged_index2 = -1;
         //making pieces for gamemode2 purposes they only appear above the image for setupstate
         if (this.SetupState > -1) {
-
             let storeVars = store.getState().game;
             // this.p5.fill(255,255,255)        white rectangle to show scores
             // this.p5.rect( Checkboard_size + shelf_size / 2 - textsize * 1.63-5, size - 40,60,50)
@@ -366,7 +354,6 @@ export default class Board {
             this.p5.text(scores, Checkboard_size + shelf_size / 2 - textsize * 0.666, size); // -> scalar if both scores 1.63
             this.p5.pop();
             this.p5.push();
-
             this.GameMode2_checkState()
             for (let z = 0; z < this.gameMode2_grid.length; z++) {
 
@@ -374,10 +361,10 @@ export default class Board {
                     this.gameMode2_grid[z].movePiece();
                     dragged_index2 = z;
                 } else {
-                    this.gameMode2_grid[z].draw_piece();
+                    this.gameMode2_grid[z].drawPiece();
                 }
                 if (dragged_index2 !== -1) {
-                    this.gameMode2_grid[dragged_index2].draw_piece();
+                    this.gameMode2_grid[dragged_index2].drawPiece();
                 }
             }
         } else if (this.SetupState < 0 && this.gameMode2_grid.length === 1) {
@@ -388,7 +375,7 @@ export default class Board {
     highlightDefenderMoves() {
         if (this.SetupState > -1) {
             for (let j = 0; j < this.gameMode2_grid.length; j++) {
-                if(this.gameMode2_grid[j].dragging) {
+                if (this.gameMode2_grid[j].dragging) {
                     for (let i = 0; i < defenderMoves.length; i++) {
                         let highlight = pixel_positions[defenderMoves[i]];
                         this.p5.push()
@@ -417,45 +404,43 @@ export default class Board {
         let gameMode = storeVars.gameMode;
 
         if (gameMode == 1 && (storeVars.blackScore == 0 && storeVars.whiteScore == 0)) {
-            this.color_to_move = 'w';
+            this.colorToMove = 'w';
         } else if (gameMode == 1 && storeVars.whiteScore < 0) {
-            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            this.colorToMove = this.colorToMove === 'b' ? 'w' : 'b';
         } else if (gameMode == 1 && storeVars.blackScore < 0) {
-            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            this.colorToMove = this.colorToMove === 'b' ? 'w' : 'b';
         } else if (gameMode == 1 && (storeVars.blackScore == 0)) {
-            this.color_to_move = 'w'
+            this.colorToMove = 'w'
         } else if (gameMode == 1 && (storeVars.whiteScore == 0)) {
-            this.color_to_move = 'b'
+            this.colorToMove = 'b'
         } else if (gameMode == 1) {
-            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            this.colorToMove = this.colorToMove === 'b' ? 'w' : 'b';
         }
 
         if (gameMode == 2 && this.SetupState >= 0) {
-            this.color_to_move = playingAs
+            this.colorToMove = playingAs
         } else if (gameMode == 2) {
             if (this.phase !== 0) {
-                this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+                this.colorToMove = this.colorToMove === 'b' ? 'w' : 'b';
             } else {
                 this.phase = 1;
-                this.color_to_move = 'w'
-                if (playingAs === 'b'){
+                this.colorToMove = 'w'
+                if (playingAs === 'b') {
                     requestAIMove();
                 }
             }
 
         }
         if (gameMode == 0) {
-            this.color_to_move = this.color_to_move === 'b' ? 'w' : 'b';
+            this.colorToMove = this.colorToMove === 'b' ? 'w' : 'b';
         }
 
-        if((gameMode == 2 || gameMode == 1 ) && this.SetupState>-1)
-        {
+        if ((gameMode == 2 || gameMode == 1) && this.SetupState > -1) {
             generateDefenderMoves(this.grid)
         }
 
         store.dispatch(setCurrentTurn(this.color_to_move));
     }
-
 
     GameMode2_checkState() {
 

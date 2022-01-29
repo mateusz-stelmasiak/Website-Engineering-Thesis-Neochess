@@ -9,8 +9,8 @@ import qrcode
 
 class Mailing:
     def __init__(self):
-        self.address = 'chessdefender2137@gmail.com'
-        self.password = '$erek!@3'
+        self.address = 'neochessgame@gmail.com'
+        self.password = 'Serek123!'
         self.qr_code = None
 
     def get_qr_code(self, otp_secret):

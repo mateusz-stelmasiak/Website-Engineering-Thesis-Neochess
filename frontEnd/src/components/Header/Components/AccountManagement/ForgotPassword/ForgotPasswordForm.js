@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import {connect} from "react-redux";
 import "./ForgotPasswordForm.css";
 import {useHistory} from "react-router-dom";
-import {sendResetPassword} from "../../../../serverCommunication/LogRegService";
+import {sendResetPassword} from "../../../../../serverCommunication/LogRegService";
 
 
 function ForgotPasswordForm({dispatch}) {
