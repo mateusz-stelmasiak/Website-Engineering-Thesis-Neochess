@@ -1,5 +1,7 @@
 import {board, gameMode, pixel_positions, playingAs, pos_to_stocknot_dict, sendMoveToServer} from "./Main";
 import {simulate_moves_for_ally} from "./SimulateMoves";
+import {store} from "../../../index";
+import {setCurrentTurn} from "../../../redux/actions/gameActions";
 
 
 export var opponent_moves = [];

@@ -142,7 +142,6 @@ function PlayGameScreen({
         }
 
         await store.dispatch(emit(makeMoveEvent));
-        await store.dispatch(flipCurrentTurn());
         storeState = store.getState();
         store.dispatch(setWhiteScore(storeState.game.whiteScore));
         store.dispatch(setBlackScore(storeState.game.blackScore))
@@ -168,7 +167,6 @@ function PlayGameScreen({
         }
 
         await store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
     }
 
     let requestAIMove = async () =>{

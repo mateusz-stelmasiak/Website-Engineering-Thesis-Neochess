@@ -14,6 +14,7 @@ import Piece from "./Piece";
 import {count_squares_to_edge, Generate_moves, Generate_opponent_moves, make_opponents_move, moves} from "./moves";
 import {store} from "../../../index";
 import {defenderMoves, generateDefenderMoves} from "./gameMode2_moves";
+import {setCurrentTurn} from "../../../redux/actions/gameActions";
 
 
 export const default_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
@@ -412,7 +413,6 @@ export default class Board {
     }
 
     change_Turn() {
-
         let storeVars = store.getState().game;
         let gameMode = storeVars.gameMode;
 
@@ -452,6 +452,8 @@ export default class Board {
         {
             generateDefenderMoves(this.grid)
         }
+
+        store.dispatch(setCurrentTurn(this.color_to_move));
     }
 
 

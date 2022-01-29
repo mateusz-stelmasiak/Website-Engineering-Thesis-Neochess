@@ -47,10 +47,6 @@ export const setOpponentStatus = (socketStatus) => ({
     payload: socketStatus,
 })
 
-export const flipCurrentTurn = () => ({
-    type: FLIP_CURRENT_TURN,
-})
-
 export const setCurrentTurn = (turn) => ({
     type: SET_CURRENT_TURN,
     payload: turn,
