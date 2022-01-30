@@ -152,19 +152,51 @@ class DefenderState:
             self.phase = 1
 
 
+3  ##########
+# POSITIONS#
+###########
+max_piece_cost = 9 #max defender points that can be spent on a single piece
+
+
+class Position:
+
+    def __init__(self, FEN, max_score=defender_starting_score):
+        self.FEN = FEN
+
+        if max_score == None:
+            self.calcuate_max_score()
+        else:
+            self.max_score = max_score
+
+    def calcuate_max_score(self):
+        free_squares = 0
+
+        board_part = self.FEN.split()[0]
+        for char in board_part:
+            if char.isalpha():
+                continue
+            free_squares += int(char)
+
+        self.max_score = free_squares * max_piece_cost
+
+
 # Positions? (vs computer)
 positions_FENS = ["8/8/8/8/2P5/1PPP4/R1P5/KR6 b - - 0 1", "1bkb4/1rbr4/8/8/8/8/8/8 w - - 0 1",
                   "8/8/8/8/8/2B5/1B1B4/1RKR4 b - - 0 1", "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1",
                   "8/8/8/8/8/PP6/QPP5/KQPP4 b - - 0 1","1kr3r1/ppp5/8/6p1/6pp/8/8/8 w - - 0 1",
                   "8/8/8/1Q6/3P4/4P3/1R3PPP/1R3BK1 b - - 0 1","2r1r1k1/2r1r1b1/5pbp/6p1/8/8/8/8 w - - 0 1"
                   ]
+
+positions = []
+for pos_FEN in positions_FENS:
+    positions.append(Position(pos_FEN))
+
 positions_desc = "Start from given position and outplay a computer"
 
 game_modes = [
     GameMode(0, "Classic", default_desc, 600, default_FEN, 'chess'),  # classic mode, time in S
     GameMode(1, "Defender", defender_desc, 600, defender_FEN, 'chess'),  # defender mode, time in S
-    GameMode(2, "Positions", positions_desc, 600, positions_FENS, 'chess-pawn', game_mode_multiplayer=False)
-    # defender mode, time in S
+    GameMode(2, "Positions", positions_desc, 600, positions, 'chess-pawn', game_mode_multiplayer=False)
 ]
 
 

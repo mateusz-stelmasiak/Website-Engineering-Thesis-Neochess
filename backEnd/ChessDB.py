@@ -35,6 +35,7 @@ class ChessDB:
                              GameMode int not null DEFAULT 0,
                              FEN varchar(84) not null DEFAULT "");''')
 
+
         mycursor.execute('''create table if not exists Users
                             (userID integer primary key AUTO_INCREMENT,
                             Username varchar(64) unique not null, 
@@ -52,6 +53,13 @@ class ChessDB:
                             ELODeviation int not null DEFAULT ''' + str(RatingSystem.starting_ELO_deviation) + ''',
                             ELOVolatility FLOAT not null DEFAULT ''' + str(
             RatingSystem.starting_ELO_volatility) + ''' );''')
+
+        mycursor.execute('''create table if not exists ScoreBoard
+                              (ScoreID Integer primary key AUTO_INCREMENT,
+                              userID Integer not null,
+                              Score int not null DEFAULT 30,
+                              FEN varchar(84) not null DEFAULT "",
+                              Foreign key (userID) references Users(userID) on delete cascade);''')
 
         mycursor.execute('''create table if not exists TwoFaRecoveryCodes
                             (CodeID Integer primary key AUTO_INCREMENT,
@@ -181,7 +189,7 @@ class ChessDB:
                     "VALUES (%s, %s,%s)")
 
         date = self.get_curr_date_time()
-        data_game = (date, game_mode_id,FEN)
+        data_game = (date, game_mode_id, FEN)
         mycursor.execute(sql_game, data_game)
         game_id = mycursor.lastrowid
 
@@ -308,7 +316,7 @@ class ChessDB:
         self.mydb.commit()
         mycursor.close()
 
-    def get_last_game_FEN(self,user_id):
+    def get_last_game_FEN(self, user_id):
         mycursor = self.mydb.cursor(buffered=True, dictionary=True)
 
         sql_find = ("""SELECT Games.FEN FROM Games, Participants
@@ -316,7 +324,7 @@ class ChessDB:
                              ORDER BY Games.GameID DESC
                              LIMIT 1""")
 
-        data_find = (user_id, )
+        data_find = (user_id,)
         mycursor.execute(sql_find, data_find)
         last_game_FEN = mycursor.fetchone()
         mycursor.close()

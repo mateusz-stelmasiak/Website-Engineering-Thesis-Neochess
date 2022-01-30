@@ -438,7 +438,7 @@ export default class Board {
         if ((gameMode == 2 || gameMode == 1) && this.SetupState > -1) {
             generateDefenderMoves(this.grid)
         }
-
+  
         store.dispatch(setCurrentTurn(this.colorToMove));
     }
 
