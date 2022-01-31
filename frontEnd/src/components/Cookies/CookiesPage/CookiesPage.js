@@ -16,6 +16,13 @@ export let cookies =
                 consent_string: 'default',
                 list: [
                     new Cookie(
+                      'refreshToken',
+                      null,
+                      "Logging in - contains user's refresh token.",
+                      'First party',
+                        'Session'
+                    ),
+                    new Cookie(
                         'rc::a',
                         'https://cookiedatabase.org/cookie/google-recaptcha/rca/',
                         'Google reCaptcha- distinguishing between humans and bots.',
