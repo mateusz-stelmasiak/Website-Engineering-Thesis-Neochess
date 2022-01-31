@@ -164,7 +164,7 @@ function UserEditForm(props) {
 
         if (errors.length !== 0) {
             setIsLoadingShown(false);
-            const errorList = errors.map(error => <li key={error}>{error}</li>);
+            const errorList = errors.map((error, index) => <li key={index}>{error}</li>);
             setErrorMessage(errorList);
             setTimeout(() => {
                 setErrorMessage("")

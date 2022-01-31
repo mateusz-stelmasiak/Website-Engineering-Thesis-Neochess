@@ -162,14 +162,15 @@ function RegisterForm({dispatch}) {
 
     async function enable2FA() {
         if (is2FaEnabled) {
-            setIs2FaEnabled(false)
+            setIs2FaEnabled(false);
+            setShow2FaPopup(false);
         } else {
-            setIs2FaEnabled(true)
+            setIs2FaEnabled(true);
             setRecoveryCodes(generateRecoveryCodes());
-            setShowRecoveryCodes(true)
+            setShowRecoveryCodes(true);
             setQrCode((await get2FaCode(email))['qr_code']);
-            setShow2FaPopup(true)
-            return
+            setShow2FaPopup(true);
+            return;
         }
 
         validateData();
@@ -178,9 +179,6 @@ function RegisterForm({dispatch}) {
             if (checkBoxRef) checkBoxRef.current.checked = false
             return
         }
-
-        setIs2FaEnabled(true)
-        setShow2FaPopup(true)
 
         let res = await get2FaCode(email)['qr_code'];
         if (!res) return
