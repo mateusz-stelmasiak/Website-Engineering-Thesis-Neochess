@@ -600,6 +600,8 @@ def confirm_email(token):
             else:
                 db.activate_user_account(email)
                 return redirect(f"{email_link}/")
+
+        return redirect(f"{email_link}/")
     except (SignatureExpired, BadTimeSignature, BadSignature):
         return redirect(f"{email_link}/invalidToken?token={token}")
     except Exception as ex:
@@ -628,11 +630,17 @@ def reset():
         )
 
         db = ChessDB.ChessDB()
-        db.update_password(password, email)
 
-        return generate_response(request, {
-            "response": "OK"
-        }, 200)
+        if db.get_user_by_email(email) is not None:
+            db.update_password(password, email)
+            return generate_response(request, {
+                "response": "OK"
+            }, 200)
+        else:
+            return generate_response(request, {
+                "error": "Token invalid",
+                "token": token
+            }, 400)
     except SignatureExpired:
         return generate_response(request, {
             "error": "Token expired",
