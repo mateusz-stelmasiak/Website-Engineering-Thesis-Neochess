@@ -11,8 +11,7 @@ function Footer({dispatch}){
                 <a href="https://www.put.poznan.pl/">Politechnika Poznańska - praca dyplomowa</a>
             </div>
             <div className="hyperlinksContainer">
-                <Link to={'/about'}> About </Link>
-                <Link to={'/cookies'}> Cookies </Link>
+                <Link to={'/cookies'}> Cookie policy </Link>
                 <a onClick={()=>dispatch(setPreferencesOpen(true))}>Cookie Preferences</a>
             </div>
         </footer>

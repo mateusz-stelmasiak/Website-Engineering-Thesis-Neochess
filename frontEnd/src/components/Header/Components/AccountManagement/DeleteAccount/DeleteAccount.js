@@ -29,9 +29,8 @@ function DeleteAccount(props) {
     const eye = <FontAwesomeIcon icon={faEye}/>;
 
     async function onDeleteClicked(event) {
-        event.preventDefault()
-
         setShowConfirmInfo(false);
+        event.preventDefault()
 
         if (password !== "") {
             const response = await deleteUserAccount(password, twoFaCode, props.is2FaEnabled)

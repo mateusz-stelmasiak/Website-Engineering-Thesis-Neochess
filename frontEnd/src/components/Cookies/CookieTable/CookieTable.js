@@ -25,10 +25,10 @@ export default function CookieTable({cookies}) {
         <Table className='CookieTable'>
             <Thead>
                 <Tr>
-                    <Th>Pliki cookie</Th>
-                    <Th>Zastosowanie</Th>
-                    <Th>Stosowane pliki cookie</Th>
-                    <Th>Okres przechowywania</Th>
+                    <Th>Cookie</Th>
+                    <Th>Use</Th>
+                    <Th>Cookie type</Th>
+                    <Th>Expiration</Th>
                 </Tr>
             </Thead>
             <Tbody>
