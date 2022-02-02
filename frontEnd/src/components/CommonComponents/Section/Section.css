@@ -1,0 +1,25 @@
+:root {
+    --section-bg-color: #191919;
+}
+
+.Section {
+    -webkit-box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0px 0px 15px 5px rgba(0, 0, 0, 0.15);
+    background-color: var(--section-bg-color);
+    position: relative;
+    width: 90%;
+    margin: 5rem auto;
+}
+
+.Section .content {
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    width: 90%;
+    margin: 0 auto;
+    padding: 8rem 0rem 8rem 0rem;
+
+
+}

@@ -1,12 +1,9 @@
-import { useEffect, useState} from "react";
-import GameContainer from "./Components/GameContainer"
-import Chat from "./Components/Chat"
+import React, {useEffect, useState} from "react";
 import P5Wrapper from "react-p5-wrapper"
 import sketch, {board} from "./Game/Main";
 import {getGameInfo, getGameIsInGame} from "../../serverCommunication/DataFetcher";
-import PlayersInfo from "./Components/PlayersInfo";
 import "./PlayGameScreen.css";
-import GameButtons from "./Components/GameButtons";
+import GameButtons from "./Components/GameButton/GameButtons";
 import {store} from "../../index";
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../redux/reducers/rootReducer";
@@ -22,16 +19,20 @@ import {
     setBlackTime,
     setWhiteTime,
     setLoadingGameInfo,
-    setWhiteScore, setBlackScore, setDrawProposedColor
+    setWhiteScore, setBlackScore, setDrawProposedColor, setCurrentPhase
 } from "../../redux/actions/gameActions";
 import {setIsInGame} from "../../redux/actions/userActions";
 import {useHistory} from "react-router-dom"
 import {authorizeSocket, emit} from "../../redux/actions/socketActions";
-import GameTimersWidget from "./Components/GameTimersWidget";
-import TurnIndicator from "./Components/TurnIndicator";
 import FooterHeaderLayout from "../Layout/FooterHeaderLayout";
 import {SocketStatus} from "../../serverCommunication/WebSocket";
-import GameResult from "./Components/GameResult";
+import GameResult from "./Components/GameResult/GameResult";
+import PlayersInfo from "./Components/PlayersInfo/PlayersInfo";
+import GameContainer from "./Components/GameContainer/GameContainer";
+import GameTimersWidget from "./Components/GameTimersWidget/GameTimersWidget";
+import TurnIndicator from "./Components/TurnIndicator/TurnIndicator";
+import Chat from "./Components/Chat/Chat";
+import {toast} from "react-hot-toast";
 
 
 function PlayGameScreen({
@@ -48,9 +49,10 @@ function PlayGameScreen({
                             whiteScore,
                             blackScore,
                             loadingGameInfo,
-                        })
-{
-    let [gameResult, setGameResult] = useState("Draw");
+                            currentPhase,
+                        }) {
+    let [gameResult, setGameResult] = useState('DRAW');
+    let [eloChange, setEloChange] = useState(0);
     let [gameEnded, setGameEnded] = useState(false);
 
 
@@ -60,15 +62,17 @@ function PlayGameScreen({
 
 
     useEffect(() => {
+        toast.dismiss();
         dispatch(authorizeSocket(userId, sessionToken));
         fetchGameData();
 
         socket.on("game_ended", data => {
             if (data === undefined) return;
-            setGameEnded(true);
             setGameResult(data.result);
+            setEloChange(data.eloChange)
             dispatch(setIsInGame(false));
             dispatch(setGameId(""));
+            setGameEnded(true);
         });
 
     }, [])
@@ -98,9 +102,10 @@ function PlayGameScreen({
             //get game info for game setup
             let response = await getGameInfo(gameId, sessionToken);
             if (response === undefined) return
-
+            console.log(response)
             await dispatch(setGameMode(response.gameMode));
             await dispatch(setCurrentFEN(response.FEN));
+            await dispatch(setCurrentPhase(response.currentPhase));
             await dispatch(setCurrentTurn(response.currentTurn));
             await dispatch(setBlackTime(response.blackTime));
             await dispatch(setWhiteTime(response.whiteTime));
@@ -116,7 +121,7 @@ function PlayGameScreen({
             }
 
             //if defender
-            if (response.gameMode === "1") {
+            if (response.gameMode == "1" || response.gameMode == "2") {
                 await dispatch(setWhiteScore(response.whiteScore));
                 await dispatch(setBlackScore(response.blackScore));
             }
@@ -126,17 +131,20 @@ function PlayGameScreen({
     }
 
     let placeDefenderPiece = async (FEN, spentPoints) => {
-        const storeState = store.getState();
+        let storeState = store.getState();
         let playerId = storeState.user.userId;
         let gameroomId = storeState.game.gameId;
+
 
         let makeMoveEvent = {
             event: 'place_defender_piece',
             msg: JSON.stringify({gameroomId, playerId, FEN, spentPoints})
         }
 
-        store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
+        await store.dispatch(emit(makeMoveEvent));
+        storeState = store.getState();
+        store.dispatch(setWhiteScore(storeState.game.whiteScore));
+        store.dispatch(setBlackScore(storeState.game.blackScore))
     }
 
     let sendMove = async (move, FEN) => {
@@ -146,54 +154,73 @@ function PlayGameScreen({
         let socketStatus = storeState.socket.status;
 
         //if socket is not connected, don't allow the move to be made locally
-        if (socketStatus!==SocketStatus.authorized){
-            store.dispatch(authorizeSocket(playerId,storeState.user.sessionToken))
-            board.set_FEN_by_rejected_move(move.startingSquare,move.targetSquare)
+        if (socketStatus !== SocketStatus.authorized) {
+            store.dispatch(authorizeSocket(playerId, storeState.user.sessionToken))
+            board.setFenByRejectedMove(move.startingSquare, move.targetSquare)
             return;
         }
+
 
         let makeMoveEvent = {
             event: 'make_move',
             msg: JSON.stringify({move, gameroomId, playerId, FEN})
         }
 
-        store.dispatch(emit(makeMoveEvent));
-        store.dispatch(flipCurrentTurn());
+        await store.dispatch(emit(makeMoveEvent));
+    }
+
+    let requestAIMove = async () =>{
+        const storeState = store.getState();
+        let playerId = storeState.user.userId;
+        let gameroomId = storeState.game.gameId;
+        let socketStatus = storeState.socket.status;
+
+        //if socket is not connected, don't allow the move to be made locally
+        if (socketStatus !== SocketStatus.authorized) return;
+
+        let requestAIMove = {
+            event: 'request_AI_move',
+            msg: JSON.stringify({gameroomId, playerId})
+        }
+
+        await store.dispatch(emit(requestAIMove));
     }
 
     return (
         <FooterHeaderLayout>
-
             <div className="PlayGameScreenContainer">
                 <div
-                    className={gameMode === '0' ? "PlayGameScreen" : "PlayGameScreen chessDefenderGameScreen"}
+                    className={Number(gameMode) === 1||2 ? "PlayGameScreen chessDefenderGameScreen" : "PlayGameScreen"}
                     id="PLAY_GAME_SCREEN"
                 >
 
                     {gameEnded &&
-                    <GameResult gameStatus={gameResult}/>
+                    <GameResult
+                        gameResult={gameResult}
+                        eloChange={eloChange}
+                    />
                     }
-
                     <PlayersInfo/>
 
-
                     {!loadingGameInfo &&
-                        <>
-                            <Chat/>
-                            <GameContainer>
-                                <P5Wrapper
-                                    sketch={sketch}
-                                    sendMoveToServer={sendMove}
-                                    placeDefenderPiece={placeDefenderPiece}
-                                    playingAs={playingAs}
-                                    startingFEN={currentFEN}
-                                    currentTurn={currentTurn}
-                                    gameMode={gameMode}
-                                    whiteScore={whiteScore}
-                                    blackScore={blackScore}
-                                />
-                            </GameContainer>
-                        </>
+                    <>
+                        <Chat/>
+                        <GameContainer>
+                            <P5Wrapper
+                                sketch={sketch}
+                                sendMoveToServer={sendMove}
+                                requestAIMove={requestAIMove}
+                                placeDefenderPiece={placeDefenderPiece}
+                                playingAs={playingAs}
+                                startingFEN={currentFEN}
+                                currentTurn={currentTurn}
+                                gameMode={gameMode}
+                                whiteScore={whiteScore}
+                                blackScore={blackScore}
+                                currentPhase={currentPhase}
+                            />
+                        </GameContainer>
+                    </>
 
                     }
 
@@ -207,8 +234,6 @@ function PlayGameScreen({
             </div>
         </FooterHeaderLayout>
     );
-
-
 }
 
 export default connect(mapAllStateToProps)(PlayGameScreen);

@@ -1,5 +1,5 @@
 import {pieces_dict, pixel_positions, scalar, textures, size} from "./Main";
-import {Distance_between_points, get_pixel_position_from_pixel_positon_array} from "./moves";
+import {distanceBetweenPoints, getPixelPositionFromPixelPositionArray} from "./moves";
 
 export default class Piece {
 
@@ -24,8 +24,6 @@ export default class Piece {
         this.p5 = p5;
         this.did_move = 0;
         this.color = "none";
-
-        // console.log(Object.keys(pieces_dict).find(key => pieces_dict[key] === type))
         this.type_letter = type;
         type = type.toLowerCase();
         this.type = Object.keys(pieces_dict).find(key => pieces_dict[key] === type);
@@ -36,13 +34,13 @@ export default class Piece {
         this.possible_moves = [];
         this.old_x = this.x;
         this.old_y = this.y;
-        this.grid_pos = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array([this.x, this.y]));
+        this.grid_pos = pixel_positions.indexOf(getPixelPositionFromPixelPositionArray([this.x, this.y]));
         // this.myDiv = createDiv(<div>xd</div>);
     }
 
     get_grid_pos() {
         let pos = [this.x, this.y];
-        this.grid_pos = pixel_positions.indexOf(get_pixel_position_from_pixel_positon_array(pos));
+        this.grid_pos = pixel_positions.indexOf(getPixelPositionFromPixelPositionArray(pos));
         return this.grid_pos;
     }
 
@@ -61,11 +59,11 @@ export default class Piece {
     }
 
 
-    get_closest_position() {
+    getClosestPosition() {
         let min = size;
         let position = [-1, -1];
         for (let i = 0; i < pixel_positions.length; i++) {
-            let dist = Distance_between_points(this.p5.mouseX, this.p5.mouseY, pixel_positions[i][0] + size / 2, pixel_positions[i][1] + size / 2);
+            let dist = distanceBetweenPoints(this.p5.mouseX, this.p5.mouseY, pixel_positions[i][0] + size / 2, pixel_positions[i][1] + size / 2);
             if (dist < min) {
                 min = dist;
                 position = pixel_positions[i]
@@ -75,21 +73,21 @@ export default class Piece {
     }
 
     snap() {
-        let position = this.get_closest_position();
+        let position = this.getClosestPosition();
         this.x = position[0];
         this.y = position[1];
         this.old_x = this.x;
         this.old_y = this.y;
     }
 
-    snap_back() {
+    snapBack() {
         this.x = this.old_x
         this.y = this.old_y
         this.old_x = this.x;
         this.old_y = this.y;
     }
 
-    draw_piece() {
+    drawPiece() {
         this.p5.push();
         // this.myDiv.style('font-size', '20px');
         let trueType = this.type_letter;
@@ -113,7 +111,7 @@ export default class Piece {
         return false;
     }
 
-    get_taken() {
+    getTaken() {
         this.did_move = 0;
         this.color = "none";
         this.type = 'e'
@@ -123,7 +121,5 @@ export default class Piece {
         this.possible_moves = [];
         this.old_x = this.x;
         this.old_y = this.y;
-
     }
-
 }

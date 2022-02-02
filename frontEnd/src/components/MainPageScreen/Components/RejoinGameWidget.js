@@ -1,9 +1,10 @@
 import "./RejoinGameWidget.css"
 import {connect} from "react-redux";
-import {authorizeSocket, emit} from "../../../redux/actions/socketActions";
+import {emit} from "../../../redux/actions/socketActions";
 import {useHistory} from "react-router-dom";
 import {toast} from "react-hot-toast";
 import {setIsInGame} from "../../../redux/actions/userActions";
+import React from "react";
 
 function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
 
@@ -34,7 +35,6 @@ function RejoinGameWidget({opponentUsername,gameId,userId,dispatch,toastId}) {
                     <button id="rejoin" onClick={routeToGame}>REJOIN</button>
                     <button id="surrender" onClick={surrenderGame}>SURRENDER</button>
                 </div>
-
             </div>
     );
 }

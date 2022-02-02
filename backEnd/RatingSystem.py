@@ -1,9 +1,9 @@
 import math
 
 #ELO variables
-starting_ELO=1000
-starting_ELO_deviation=350
-starting_ELO_volatility=0.006
+starting_ELO=1000.0
+starting_ELO_deviation=350.0
+starting_ELO_volatility=0.06
 
 def calculate_elo(winner, loser, draw):
     r_winner = pow(10, winner / 400)

@@ -1,7 +1,7 @@
 *.pyc
-
 /support/docker-files/*
 .idea/
+p5_backup/
 backEnd/.idea/backEnd.iml
 backEnd/.idea/inspectionProfiles/profiles_settings.xml
 backEnd/.idea/misc.xml
@@ -10,3 +10,7 @@ backEnd/.idea/vcs.xml
 backEnd/venv/
 .idea/inspectionProfiles/Project_Default.xml
 backEnd/.idea/inspectionProfiles/Project_Default.xml
+
+mailTemplate.html
+mailTemplate.html
+frontEnd/src/assets/LOGO_NEO.psd

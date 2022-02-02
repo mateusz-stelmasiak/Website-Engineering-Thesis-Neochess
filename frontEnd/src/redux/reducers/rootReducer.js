@@ -38,6 +38,7 @@ export const mapAllStateToProps = (state) => {
         loadingGameInfo: state.game.loadingGameInfo,
         whiteScore:state.game.whiteScore,
         blackScore:state.game.blackScore,
-        drawProposedColor: state.game.drawProposedColor
+        drawProposedColor: state.game.drawProposedColor,
+        currentPhase:state.game.currentPhase
     };
 };

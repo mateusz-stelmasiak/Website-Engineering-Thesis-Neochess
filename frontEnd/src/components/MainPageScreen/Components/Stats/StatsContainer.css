@@ -25,7 +25,7 @@
 .StatsContainer .StatsContainer-header{
     display: flex;
     flex-direction: column;
-    width: min(50rem,100%);
+    width: 100%;
     align-items: center;
 }
 

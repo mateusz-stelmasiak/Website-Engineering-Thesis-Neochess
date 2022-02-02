@@ -1,20 +1,20 @@
 import Board, {default_FEN, default_FEN_Gamemode_2} from "./board";
 import {
-    check_if_check,
-    count_squares_to_edge, Generate_opponent_moves,
-    Generate_moves,
-    make_a_move, generate_pos_to_stocknot_dict
+    checkIfCheck,
+    countSquaresToEdge, generateOpponentMoves,
+    generateMoves,
+    makeMove, generatePosToStocknotDict,
 } from "./moves";
 import CSquare from "./CSquare";
 import myFont from '../../../assets/fonts/Montserrat/Montserrat-Regular.ttf'
-import {add_piece} from "./gameMode2_moves";
+import {addPiece, generateDefenderMoves} from "./gameMode2_moves";
 
 export var Font;
 export var pos_to_stocknot_dict = [];
 export const max_canvas_size = 720;
 export var canvas_width = 720;
 export var canvas_height = canvas_width;
-export var shelf_size = canvas_width / 3;
+export var shelf_size = canvas_width / 6;
 export var game_mode_defender_width = canvas_width + shelf_size;
 export var Checkboard_size = canvas_height
 export var size = Checkboard_size / 8
@@ -28,7 +28,7 @@ export const cols = Math.floor(Checkboard_size / size);
 export var board;
 export var canvas;
 export var gameMode2_Margin = 1.1
-export var textsize = size / 1.5;
+export var textsize = size / 2.5;
 
 function importAll(r) {
     let images = {};
@@ -48,6 +48,8 @@ export let placeDefenderPiece;
 export let whiteScore;
 export let blackScore;
 export let currentTurn;
+export let currentPhaseFromServer;
+export let requestAIMove;
 
 
 export default function sketch(p5) {
@@ -62,20 +64,26 @@ export default function sketch(p5) {
         if (props.sendMoveToServer) {
             sendMoveToServer = props.sendMoveToServer;
         }
+        if (props.requestAIMove) {
+            requestAIMove = props.requestAIMove;
+        }
         if (props.startingFEN) {
             startingFEN = props.startingFEN
         }
         if (props.placeDefenderPiece) {
             placeDefenderPiece = props.placeDefenderPiece;
         }
-        if (props.whiteScore!==undefined) {
+        if (props.whiteScore !== undefined) {
             whiteScore = props.whiteScore;
         }
-        if (props.blackScore!==undefined) {
+        if (props.blackScore !== undefined) {
             blackScore = props.blackScore;
         }
         if (props.currentTurn) {
             currentTurn = props.currentTurn;
+        }
+        if (props.currentPhase) {
+            currentPhaseFromServer = props.currentPhase
         }
     }
 
@@ -84,8 +92,8 @@ export default function sketch(p5) {
         Font = p5.loadFont(myFont);
         for (let key in pieces_dict) {
             let value = pieces_dict[key];
-            textures[value.toUpperCase()] = p5.loadImage(images['w' + value + ".png"]['default']);
-            textures[value] = p5.loadImage(images[value + ".png"]['default']);
+            textures[value.toUpperCase()] = p5.loadImage(images['w' + value + ".png"]);
+            textures[value] = p5.loadImage(images[value + ".png"]);
         }
     }
 
@@ -98,7 +106,7 @@ export default function sketch(p5) {
         }
 
 
-        if (gameMode === '1' && board.SetupState > -1) {
+        if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
             for (let i = 0; i < board.gameMode2_grid.length; i++) {
                 let piece = board.gameMode2_grid[i];
                 if (piece.isIntersecting()) {
@@ -109,14 +117,15 @@ export default function sketch(p5) {
 
     }
     p5.mouseReleased = function () {
-        if (gameMode === '1' && board.SetupState > -1) {
-            add_piece();
+        if ((gameMode == '1' || gameMode == '2') && board.SetupState > -1) {
+            generateDefenderMoves(board.grid);
+            addPiece();
         }
-        make_a_move();
+        makeMove();
         if (board.SetupState === -1) {
-            Generate_opponent_moves(board.grid);
-            check_if_check();
-            Generate_moves(board.grid, board.check, "released");
+            generateOpponentMoves(board.grid);
+            checkIfCheck();
+            generateMoves(board.grid, board.check, "released");
         }
     }
 
@@ -139,11 +148,18 @@ export default function sketch(p5) {
 
     p5.setup = function () {
         board = new Board(p5);
-        generate_pos_to_stocknot_dict();
+        generatePosToStocknotDict();
+        console.log("SETTING UP")
 
-        if (gameMode === "1") {
+        if (gameMode === "1" || gameMode == "2" !== undefined) {
             canvas_width = game_mode_defender_width;
         }
+
+
+        if (gameMode == "2" && currentPhaseFromServer !== undefined) {
+            board.phase = currentPhaseFromServer;
+        }
+
         canvas = p5.createCanvas(canvas_width, canvas_height, p5.WEBGL);
         if (gameMode === '0') {
             if (startingFEN !== undefined) {
@@ -159,31 +175,30 @@ export default function sketch(p5) {
                 board.FEN = default_FEN_Gamemode_2;
             }
 
-            if(blackScore!==undefined && whiteScore!==undefined){
-                playingAs==='w' ? board.SetupState=whiteScore : board.SetupState=blackScore;
-            }
-            else{
-                board.SetupState=50;
+            if (blackScore !== undefined && whiteScore !== undefined) {
+                playingAs === 'w' ? board.SetupState = whiteScore : board.SetupState = blackScore;
+            } else {
+                board.SetupState = 50;
             }
         }
-        if(currentTurn !==undefined){
-            board.color_to_move=currentTurn;
-            console.log(currentTurn);
-        }else{
-            console.log("nie dostaem");
-            board.color_to_move="w";
-        }
-        board.load_FEN();
+
+        board.loadFen();
+
         calculatePixelPositions();
-        count_squares_to_edge();
-        Generate_moves(board.grid, board.check, "setup");
+        countSquaresToEdge();
+
+        if (gameMode === '0' || board.SetupState < 0) {
+            generateMoves(board.grid, board.check, "setup");
+        } else {
+            generateDefenderMoves(board.grid)
+        }
         canvas.style('width', '100%');
         canvas.style('height', '100%');
         readjustCanvas(); //weird but fixes canvas always setting up as game defender DO NOT TOUCH
     };
 
     function readjustCanvas() {
-        shelf_size = canvas_width / 3;
+        shelf_size = canvas_width / 6;
         //full screen mode
         let resizeTo = p5.windowWidth;
         //for screen widths bigger then max size, set to max size
@@ -191,8 +206,8 @@ export default function sketch(p5) {
 
 
         canvas_width = resizeTo;
-        if (gameMode === "1") {
-            canvas_width = canvas_width + 50 + canvas_width / 3;
+        if (gameMode == "1" || gameMode == "2") {
+            canvas_width = canvas_width + shelf_size;
         }
 
         canvas_height = resizeTo;
@@ -207,17 +222,17 @@ export default function sketch(p5) {
         board.gameMode2_grid.forEach((piece) => {
                 i += 1
                 piece.scaled_size = size - scalar;
-                piece.x = Checkboard_size + shelf_size / 2 - size * 0.666
+                piece.x = Checkboard_size + shelf_size / 2 - size * 0.500
                 piece.y = gameMode2_Margin * size * i
-                piece.old_x = Checkboard_size + shelf_size / 2 - size * 0.666
+                piece.old_x = Checkboard_size + shelf_size / 2 - size * 0.500
                 piece.old_y = gameMode2_Margin * size * i
             }
         )
-        textsize = size / 1.5
+        textsize = size / 2.5
 
         canvas.resize(canvas_width, canvas_height);
         calculatePixelPositions();
-        board.load_FEN();
+        board.loadFen();
         canvas.style('width', '100%');
         canvas.style('height', '100%');
     }
@@ -227,7 +242,7 @@ export default function sketch(p5) {
     }
 
     p5.draw = function () {
-        p5.background(255);
+        p5.background("#343434");
         p5.translate(-canvas_width / 2, -canvas_height / 2);
 
         for (let i = 0; i < Checkboard.length; i++) {
@@ -236,6 +251,4 @@ export default function sketch(p5) {
         board.draw_board();
 
     };
-
-
 };

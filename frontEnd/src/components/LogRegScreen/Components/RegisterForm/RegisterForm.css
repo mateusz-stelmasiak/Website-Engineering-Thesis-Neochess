@@ -1,0 +1,94 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.twoFaImg {
+    height: 200px !important;
+    margin-top: 25px !important;
+    margin-bottom: 25px !important;
+}
+
+.registeringProgress {
+    margin-right: 10px !important;
+    margin-top: 25px !important;
+}
+
+.registerLoadingContainer {
+    margin-top: 5px !important;
+    display: inline-flex;
+}
+
+.codesContainer {
+    margin: 25px;
+    columns: 4 auto;
+}
+
+@media (max-width: 800px) {
+    .codesContainer {
+        columns: 2 auto;
+    }
+}
+
+.twoFaContainer{
+    position: fixed;
+    z-index: 2000;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: rgba(43,43,43,0.9);
+    transition: 0.5s;
+    padding: 2rem 2%;
+
+    color: var(--text-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 3rem;
+}
+
+.twoFaContainer .SectionTitle{
+    width: min(50rem,90%);
+    text-transform: uppercase;
+}
+
+.twoFaContainer .twoFaInputs{
+    display: flex;
+    flex-direction: column;
+    row-gap: 1rem;
+    width: min(30rem,100%);
+    align-items: center;
+    justify-content: center;
+}
+
+.twoFaContainer .twoFaField-wrapper{
+    width: min(25rem,100%);
+    padding: 0.7rem 1rem;
+    background-color: var(--textfield-bg-color);
+    border-radius: 10rem;
+
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.twoFaContainer .twoFaField-wrapper .form-control {
+    all: unset;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    width: 90%;
+    color: var(--text-color);
+    text-align: left;
+}
+
+

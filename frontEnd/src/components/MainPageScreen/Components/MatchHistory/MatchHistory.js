@@ -4,13 +4,13 @@ import "../../../Layout/Section/SectionTitle";
 import SectionTitle from "../../../Layout/Section/SectionTitle";
 import MatchHistoryItem, {MatchResult, MatchDate, MatchItemInfo, PlayerInfo} from "./MatchHistoryItem"
 import "./MatchHistoryItem";
-import VariableColor from "../../../CommonComponents/VariableColor";
 import {getMatchHistory} from "../../../../serverCommunication/DataFetcher"
 import {connect} from "react-redux";
 import {mapAllStateToProps} from "../../../../redux/reducers/rootReducer";
-import Dots from "../../../CommonComponents/Dots";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCaretLeft,faCaretRight} from "@fortawesome/free-solid-svg-icons";
+import {faCaretLeft, faCaretRight} from "@fortawesome/free-solid-svg-icons";
+import VariableColor from "../../../CommonComponents/VariableColor/VariableColor";
+import Dots from "../../../CommonComponents/Dots/Dots";
 
 function MatchHistory(props) {
     const [isLoading, setLoading] = useState(true);
@@ -24,17 +24,17 @@ function MatchHistory(props) {
 
     useEffect(() => {
         // tryCache();
-        fetchPlayerData(page,perPage);
+        fetchPlayerData(page, perPage);
     }, [])
 
     let flipPage = async (direction) => {
 
 
-        let newPage=(page + direction) % maxPage;
-        if(newPage <0) newPage=maxPage-1;
+        let newPage = (page + direction) % maxPage;
+        if (newPage < 0) newPage = maxPage - 1;
 
         await setPage(newPage);
-        fetchPlayerData(newPage,perPage);
+        fetchPlayerData(newPage, perPage);
         scrollToSection('HISTORY')
     }
 
@@ -55,21 +55,21 @@ function MatchHistory(props) {
     }
 
 
-    let tryCache = ()=>{
+    let tryCache = () => {
         //try to read gameHistory from cache
         let cachedMatches = sessionStorage.getItem('matchHistory');
-        if (!cachedMatches){ return}
+        if (!cachedMatches) {
+            return
+        }
 
         //convert to array
         cachedMatches = JSON.parse(cachedMatches);
         let result = [];
-        for(let i in cachedMatches)
+        for (let i in cachedMatches)
             result.push([i, cachedMatches [i]]);
 
-        console.log(result);
-
         let keyGenerator = -1;
-        let matchHistoryArray =[];
+        let matchHistoryArray = [];
 
         matchHistoryArray = result.map(
             item => {
@@ -79,7 +79,8 @@ function MatchHistory(props) {
                 let p1Info = new PlayerInfo(item.p1Username, item.p1PlayedAs, item.p1ELO);
                 let p2Info = new PlayerInfo(item.p2Username, item.p2PlayedAs, item.p2ELO);
                 let date = new MatchDate(item.hour, item.dayMonthYear);
-                let matchItemInfo = new MatchItemInfo(result, formatedMoves, p1Info, p2Info, date);
+                let gameMode = item.gameMode;
+                let matchItemInfo = new MatchItemInfo(result, formatedMoves, p1Info, p2Info, date,gameMode);
                 return <MatchHistoryItem key={keyGenerator} matchItemInfo={matchItemInfo}/>;
             })
 
@@ -88,7 +89,7 @@ function MatchHistory(props) {
         setLoading(false);
     }
 
-    let fetchPlayerData = async (page,perPage) => {
+    let fetchPlayerData = async (page, perPage) => {
         setMatchHistory([]);
         setLoading(true);
         const resp = await getMatchHistory(props.userId, props.sessionToken, page, perPage);
@@ -107,15 +108,15 @@ function MatchHistory(props) {
             return;
         }
 
-        sessionStorage.setItem('matchHistory',JSON.stringify(resp));
+        sessionStorage.setItem('matchHistory', JSON.stringify(resp));
 
         //set max page
-        let maxPage= respArr.shift().maxPage;
+        let maxPage = respArr.shift().maxPage;
         setMaxPage(maxPage);
 
 
         let keyGenerator = -1;
-        let matchHistoryArray =[];
+        let matchHistoryArray = [];
 
         matchHistoryArray = respArr.map(
             item => {
@@ -144,10 +145,8 @@ function MatchHistory(props) {
 
     return (
         <section className="MatchHistory" id={'HISTORY'}>
-
             <div className="MatchHistory--header">
                 <SectionTitle>MATCH HISTORY</SectionTitle>
-
                 <div className="MatchHistory-colors">
                     <VariableColor
                         color={MatchResult.win.color}
@@ -161,24 +160,20 @@ function MatchHistory(props) {
                 </div>
             </div>
 
-
-
             {isLoading && <MatchHistoryPlaceholder/>}
             <div className="MatchHistory-container">
                 {matchHistory}
             </div>
 
             <div className="MatchHistory-pages">
-                <button id='prev' onClick={()=>flipPage(-1)}>{iconLeft}</button>
+                <button id='prev' onClick={() => flipPage(-1)}>{iconLeft}</button>
 
-                <span>{page+1}/{maxPage}</span>
+                <span>{page + 1}/{maxPage}</span>
 
-                <button id='next' onClick={()=>flipPage(1)}>{iconRight}</button>
+                <button id='next' onClick={() => flipPage(1)}>{iconRight}</button>
             </div>
         </section>
     );
-
-
 }
 
 class MatchHistoryPlaceholder extends Component {

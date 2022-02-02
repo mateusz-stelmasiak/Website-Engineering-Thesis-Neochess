@@ -3,12 +3,13 @@ import "./MatchHistoryItem.css"
 import MatchHistoryItemResponsive from "./MatchHistoryItemResponsive";
 
 export class MatchItemInfo {
-    constructor(matchResult, nofMoves, player1Info, player2Info, matchDate) {
+    constructor(matchResult, nofMoves, player1Info, player2Info, matchDate,gameMode) {
         this.matchResult = matchResult;
         this.nofMoves = nofMoves;
         this.player1Info = player1Info;
         this.player2Info = player2Info;
         this.matchDate = matchDate;
+        this.gameMode=gameMode;
     }
 }
 
@@ -63,8 +64,6 @@ function MatchHistoryItem(props) {
 
 
     let matchResultStyle = {'backgroundColor': matchResult.color}
-
-    console.log(matchResult.color)
 
     return (
         <>
