@@ -37,53 +37,49 @@ function CookiesPreferences({ dispatch, prefOpen, consented }) {
                     <div className='CookiePreferences-overlay' onClick={closeCookiePref} />
                     <div className='CookiePreferences'>
                         {crossIcon}
-                        <h1>Preferencje dotyczące przechowywania danych</h1>
+                        <h1>COOKIE PREFERENCES</h1>
                         <p>
-                            Kiedy odwiedzasz witryny, mogą one przechowywać lub pobierać dane w Twojej przeglądarce. Takie
-                            przechowywanie danych jest często niezbędne, by zapewnić dostęp do podstawowych funkcjonalności
-                            witryny. Przechowywanie to może być też wykorzystywane na potrzeby marketingu, analiz i
-                            personalizacji witryny (na przykład do przechowywania informacji o Twoich preferencjach).
-                            Prywatność
-                            jest dla nas ważna, masz zatem możliwość wyłączenia niektórych opcji przechowywania, które nie
-                            są
-                            niezbędne do zapewnienia podstawowych funkcjonalności witryny. Blokowanie kategorii może wpłynąć
-                            na
-                            Twoje wrażenia dotyczące korzystania z witryny.
-                            <br /><br /><Link to={'/pliki-cookie'}>Polityka Cookie</Link>
+                            This website uses cookies to optimize website functionality, analyze website performance, and
+                            provide personalized experience and advertisement to you. Some cookies are necessary and
+                            essential to make the website operate and function correctly. Those cookies cannot be disabled.
+                            This Cookie Preference will help you to manage your preference of analytic/performance cookies
+                            and advertising cookies.
+                            <br /><br />
+                            <Link to={'/cookies'}>Cookie policy</Link>
                         </p>
 
                         <div className='CookiePrefContainer'>
                             <div className='cookietype-and-switch'>
 
-                                <h2>Podstawowe</h2>
+                                <h2>Necessary</h2>
                                 <Switch
                                     checked={true}
                                     disabled={true}
                                 />
                             </div>
                             <p>
-                                {cookies.podstawowe.desc}
+                                {cookies.necessary.desc}
                             </p>
 
                             <ShowOnClick
-                                toShow={<CookieTable cookies={cookies.podstawowe.list} />}
-                                text={'Pokaż ciasteczka'}
+                                toShow={<CookieTable cookies={cookies.necessary.list} />}
+                                text={'Show cookies'}
                             />
                             <div className='cookietype-and-switch'>
 
-                                <h2>Analizy</h2>
+                                <h2>Performance</h2>
                                 <Switch
                                     checked={analysisConsent}
                                     onChange={handleChange}
                                 />
                             </div>
                             <p>
-                                {cookies.analizy.desc}
+                                {cookies.performance.desc}
                             </p>
 
                             <ShowOnClick
-                                toShow={<CookieTable cookies={cookies.analizy.list} />}
-                                text={'Pokaż ciasteczka'}
+                                toShow={<CookieTable cookies={cookies.performance.list} />}
+                                text={'Show cookies'}
                             />
                         </div>
 

@@ -48,22 +48,26 @@ function LoginForm({dispatch}) {
 
         const response = await login(username, password, "")
 
-        if (response['error'] === undefined) {
-            setIsAccountActivated(response['accountActivated'])
+        if (response['twoFa'] && twoFaCode !== "" || !isTwoFaUsed) {
+            if (response['error'] === undefined) {
+                setIsAccountActivated(response['accountActivated'])
 
-            if (response['accountActivated']) {
-                setIsTwoFaUsed(response['twoFa'])
+                if (response['accountActivated']) {
+                    setIsTwoFaUsed(response['twoFa'])
 
-                if (response['twoFa']) {
-                    if (twoFaCode !== "" && await CheckTwoFaCode()) {
-                        await ForwardAfterLogin(await login(username, password, twoFaCode));
+                    if (response['twoFa']) {
+                        if (twoFaCode !== "" && await CheckTwoFaCode()) {
+                            await ForwardAfterLogin(await login(username, password, twoFaCode));
+                        }
+                    } else {
+                        await ForwardAfterLogin(response);
                     }
-                } else {
-                    await ForwardAfterLogin(response);
                 }
+            } else {
+                setErrorMessage(response['error'])
             }
         } else {
-            setErrorMessage(response['error'])
+            setErrorMessage("Two authentication code cannot be empty")
         }
     }
 
