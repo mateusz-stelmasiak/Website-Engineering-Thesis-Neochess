@@ -10,6 +10,7 @@ backEnd/.idea/vcs.xml
 backEnd/venv/
 .idea/inspectionProfiles/Project_Default.xml
 backEnd/.idea/inspectionProfiles/Project_Default.xml
+.idea/
 
 mailTemplate.html
 mailTemplate.html
