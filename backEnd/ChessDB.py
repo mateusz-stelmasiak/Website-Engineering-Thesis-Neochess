@@ -2,6 +2,7 @@ import base64
 import time
 import mysql.connector
 import pyotp
+import os
 
 import RatingSystem
 import random
@@ -16,7 +17,8 @@ class ChessDB:
     def __init__(self):
         for _ in range (10):
             try:
-                self.mydb = mysql.connector.connect(host="localhost", user="neochess_431429",
+                self.mydb = mysql.connector.connect(host=os.environ.get("DATABASE_LOCATION"),
+                                                    user="neochess_431429",
                                                     password="FmHnqBd2lsnC",
                                                     database="neo-chess-database")     
                 print("Connected to database")

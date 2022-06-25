@@ -7,6 +7,7 @@ from hashlib import sha256
 
 import ChessDB
 import random
+import os
 import hashlib
 from flask_cors import CORS
 import RatingSystem
@@ -20,7 +21,7 @@ dns_domain = 'neochess.ddns.net'
 local_port = str(3000)
 local_domain = 'localhost:' + local_port
 origin_prefix = "http://"
-email_link = f"{origin_prefix}{local_domain}"
+email_link = f"{origin_prefix}{os.environ.get('API_URL')}"
 allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domain, '127.0.0.1',
                    '127.0.0.1:' + local_port, 'localhost']
 
