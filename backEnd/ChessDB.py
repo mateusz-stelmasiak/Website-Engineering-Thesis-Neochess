@@ -6,12 +6,14 @@ import os
 
 import RatingSystem
 import random
+from dotenv import load_dotenv
 
 from hashlib import sha256
 
 # to account for time difference due to timezones (in hh:mm:ss)
 server_time_difference = '02:00:00'
 
+load_dotenv()
 
 class ChessDB:
     def __init__(self):

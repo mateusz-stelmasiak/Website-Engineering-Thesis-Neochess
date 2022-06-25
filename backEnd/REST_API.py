@@ -14,6 +14,7 @@ import RatingSystem
 from ServerState import *
 import pyotp
 import base64
+from dotenv import load_dotenv
 from Mailing import Mailing
 
 domain = '217.182.75.59'
@@ -29,6 +30,8 @@ allowed_domains = [domain, dns_domain, f"{dns_domain}:{local_port}", local_domai
 allowed_origins = [origin_prefix + dom for dom in allowed_domains]
 debug_mode = True
 mail = Mailing()
+
+load_dotenv()
 
 # FLASK CONFIG
 app = Flask(__name__)
