@@ -12,6 +12,4 @@ backEnd/venv/
 backEnd/.idea/inspectionProfiles/Project_Default.xml
 .idea/
 
-mailTemplate.html
-mailTemplate.html
-frontEnd/src/assets/LOGO_NEO.psd
+/production/docker-files

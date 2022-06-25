@@ -17,35 +17,30 @@ services:
     volumes:
       - ./docker-files/db:/var/lib/mysql
     networks:
-      neoNet:
-        ipv4_address: 192.168.0.2
+      - neoNet
 
   backend:
     container_name: NeoChessBackend
     build: 
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile.production
       context: "../backEnd"
     ports:
       - 5000:5000
     depends_on:
       - db
     networks:
-      neoNet:
-        ipv4_address: 192.168.0.3
+      - neoNet
 
   frontend:
     container_name: NeoChessFrontend
     stdin_open: true
     build: 
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile.production
       context: ../frontEnd
     ports:
-      - 3000:3000
+      - 80:80
     depends_on:
       - backend
-    networks:
-      neoNet:
-        ipv4_address: 192.168.0.4
       
 volumes:
   my-db:
@@ -54,5 +49,3 @@ networks:
   neoNet:
     ipam:
       driver: default
-      config:
-        - subnet: 192.168.0.0/28
