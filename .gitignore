@@ -13,3 +13,4 @@ backEnd/.idea/inspectionProfiles/Project_Default.xml
 .idea/
 
 /production/docker-files
+/frontEnd/node_modules
