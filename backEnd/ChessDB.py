@@ -17,7 +17,7 @@ class ChessDB:
     def __init__(self):
         for _ in range (10):
             try:
-                self.mydb = mysql.connector.connect(host=os.environ.get("DATABASE_LOCATION"),
+                self.mydb = mysql.connector.connect(host=os.getenv("DATABASE_LOCATION"),
                                                     user="neochess_431429",
                                                     password="FmHnqBd2lsnC",
                                                     database="neo-chess-database")     
