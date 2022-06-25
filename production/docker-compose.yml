@@ -10,10 +10,6 @@ services:
       MYSQL_USER: 'neochess_431429'
       MYSQL_PASSWORD: 'FmHnqBd2lsnC'
       MYSQL_ROOT_PASSWORD: '0OW5y35zxPIO6nAypcY'
-    ports:
-      - '3306:3306'
-    expose:
-      - '3306'
     volumes:
       - ./docker-files/db:/var/lib/mysql
     networks:
