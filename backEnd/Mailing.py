@@ -9,7 +9,7 @@ import qrcode
 
 class Mailing:
     def __init__(self):
-        self.address = 'neochessgame@gmail.com'
+        self.address = 'neochess@wp.pl'
         self.password = 'Serek123!'
         self.qr_code = None
 
@@ -25,7 +25,7 @@ class Mailing:
     def __send_email(self, receiver_mail, msg):
         context = ssl.create_default_context()
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+        with smtplib.SMTP_SSL("smtp.wp.pl", 465, context=context) as server:
             server.login(self.address, self.password)
             server.sendmail(self.address, receiver_mail, msg.as_string())
 

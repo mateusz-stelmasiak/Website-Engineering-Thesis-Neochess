@@ -35,7 +35,7 @@ app.config['SECRET_KEY'] = 'secretkey'
 app.config['SECURITY_PASSWORD_SALT'] = 'a3D2xz1k0G'
 app.config['DEBUG'] = True
 app.config['CORS_HEADERS'] = 'Content-Type'
-app.config['CAPTCHA_KEY'] = '6LcX50QeAAAAAEhNXGnsslVs9FCGBKEg203o7jzG'
+app.config['CAPTCHA_KEY'] = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
 
 account_serializer = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
@@ -320,6 +320,8 @@ def check_2_fa():
         if debug_mode:
             ("DB ERROR " + str(ex))
 
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "error": "Database error"
         }, 503)
@@ -376,6 +378,8 @@ def register():
         except Exception as ex:
             if debug_mode:
                 ("DB ERROR " + str(ex))
+
+            print(f"database error, {ex}")
 
             return generate_response(request, {
                 "error": "Database error"
@@ -448,6 +452,8 @@ def delete_user():
         return resp
 
     except Exception as ex:
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
@@ -479,6 +485,8 @@ def get_user_details():
         user = db.get_user_by_id(user_id)
         last_FEN = db.get_last_game_FEN(user_id)
     except Exception as ex:
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
@@ -543,6 +551,8 @@ def update_user():
         }, 200)
 
     except Exception as ex:
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
@@ -652,6 +662,8 @@ def reset():
             "token": token
         }, 400)
     except Exception as ex:
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "error": f"Database error: {ex}"
         }, 503)
@@ -671,6 +683,8 @@ def forgot_password():
         db = ChessDB.ChessDB()
         user = db.get_user_by_email(email)
     except Exception as ex:
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "response": f"Database error: {ex}"
         }, 503)
@@ -861,6 +875,8 @@ def get_elo_change_in_last_game():
         if debug_mode:
             ("DB ERROR " + str(ex))
 
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "error": "Database error"
         }, 503)
@@ -936,6 +952,8 @@ def get_player_stats():
         if debug_mode:
             ("DB ERROR " + str(ex))
 
+        print(f"database error, {ex}")
+
         return generate_response(request, {
             "error": "Database error"
         }, 503)
@@ -1010,6 +1028,8 @@ def get_history():
     except Exception as ex:
         if debug_mode:
             ("DB ERROR " + str(ex))
+
+        print(f"database error, {ex}")
 
         return generate_response(request, {
             "error": "Database error"
