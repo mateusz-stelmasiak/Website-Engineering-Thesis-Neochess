@@ -23,7 +23,7 @@ class Mailing:
         return self.qr_code if self.qr_code is not None else None
 
     def __send_email(self, receiver_mail, msg):
-        context = ssl.create_default_context()
+        context = ssl._create_unverified_context()
 
         with smtplib.SMTP_SSL("smtp.wp.pl", 465, context=context) as server:
             server.login(self.address, self.password)

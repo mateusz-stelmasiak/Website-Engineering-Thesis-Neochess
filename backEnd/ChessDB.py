@@ -1,4 +1,5 @@
 import base64
+import time
 import mysql.connector
 import pyotp
 
@@ -13,9 +14,16 @@ server_time_difference = '02:00:00'
 
 class ChessDB:
     def __init__(self):
-        self.mydb = mysql.connector.connect(host="127.0.0.1", user="neochess_431429",
-                                            password="FmHnqBd2lsnC",
-                                            database="neo-chess-database")
+        for _ in range (10):
+            try:
+                self.mydb = mysql.connector.connect(host="NeoChessDatabase", user="neochess_431429",
+                                                    password="FmHnqBd2lsnC",
+                                                    database="neo-chess-database")     
+                print("Connected to database")
+                break 
+            except Exception as ex:
+                print(f"Exception ocurred while connecting to database: {ex}")
+                time.sleep(10)
 
         # self.mydb = mysql.connector.connect(host="serwer1305496.home.pl", user="13748919_neochess",
         #                                     password="YhuuFd6Z",

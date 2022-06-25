@@ -1,8 +1,9 @@
 version: '3.7'
+
 services:
   db:
     image: mysql:latest
-    container_name: neo-chess
+    container_name: NeoChessDatabase
     restart: always
     environment:
       MYSQL_DATABASE: 'neo-chess-database'
@@ -15,7 +16,43 @@ services:
       - '3306'
     volumes:
       - ./docker-files/db:/var/lib/mysql
+    networks:
+      neoNet:
+        ipv4_address: 192.168.0.2
+
+  backend:
+    container_name: NeoChessBackend
+    build: 
+      dockerfile: Dockerfile
+      context: "../backEnd"
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    networks:
+      neoNet:
+        ipv4_address: 192.168.0.3
+
+  frontend:
+    container_name: NeoChessFrontend
+    stdin_open: true
+    build: 
+      dockerfile: Dockerfile
+      context: ../frontEnd
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    networks:
+      neoNet:
+        ipv4_address: 192.168.0.4
       
 volumes:
   my-db:
-  
+
+networks:
+  neoNet:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/28
