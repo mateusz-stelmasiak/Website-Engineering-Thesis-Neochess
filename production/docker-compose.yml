@@ -17,7 +17,8 @@ services:
 
   backend:
     container_name: NeoChessBackend
-    build: 
+    restart: always
+    build:
       dockerfile: Dockerfile.production
       context: "../backEnd"
     ports:
@@ -29,17 +30,19 @@ services:
 
   frontend:
     container_name: NeoChessFrontend
+    restart: always
     stdin_open: true
-    build: 
+    build:
       dockerfile: Dockerfile.production
       context: ../frontEnd
     ports:
       - 80:80
     depends_on:
       - backend
-      
+
 volumes:
   my-db:
+
 
 networks:
   neoNet:
