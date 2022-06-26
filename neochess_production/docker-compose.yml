@@ -3,6 +3,7 @@ version: '3.7'
 services:
   db:
     image: mysql:latest
+    restart: always
     container_name: NeoChessDatabase
     environment:
       MYSQL_DATABASE: 'neo-chess-database'
@@ -16,6 +17,7 @@ services:
 
   backend:
     container_name: NeoChessBackend
+    restart: always
     build:
       dockerfile: Dockerfile.production
       context: "../backEnd"
@@ -28,6 +30,7 @@ services:
 
   frontend:
     container_name: NeoChessFrontend
+    restart: always
     stdin_open: true
     build:
       dockerfile: Dockerfile.production
