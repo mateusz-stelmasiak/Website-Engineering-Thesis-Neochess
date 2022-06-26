@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   db:
-    image: mysql:latest
+    image: mysql:8.0.29
     container_name: NeoChessDatabase
     environment:
       MYSQL_DATABASE: 'neo-chess-database'
