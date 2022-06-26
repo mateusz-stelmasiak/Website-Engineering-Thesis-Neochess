@@ -1,5 +1,4 @@
 *.pyc
-/support/docker-files/*
 .idea/
 p5_backup/
 backEnd/.idea/backEnd.iml
@@ -12,5 +11,8 @@ backEnd/venv/
 backEnd/.idea/inspectionProfiles/Project_Default.xml
 .idea/
 
-/production/docker-files
+/neochess_production/docker-files
+/neochess_support/docker-files
+
+
 /frontEnd/node_modules
