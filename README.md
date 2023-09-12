@@ -1,6 +1,8 @@
 # NEO CHESS (a chess-inspired game)
 **SUBJECT: Creating a game based on rules of chess that uses Artificial Intelligence - Web Application**
 
+https://github.com/mateusz-stelmasiak/Website-Engineering-Thesis-Neochess/assets/46268673/1637dba1-a66e-4647-9218-097b317c42fe
+
 An internet application allowing users to partake in games based on the rules of chess. The aforementioned application was created as a group engineering thesis project. The software allows gameplay either between two players or between a player and artificial intelligence. During the game, players can communicate with each other via text chat. A logged in user can view their statistics, history of played games, edit their account, etc. In order to use all the functionalities of the application, a user must create and confirm an account.
 The work discusses the goals and motivation of the team, and describes the theoretical foundations necessary to understand the rules of the games. The theoretical plan of the application, technologies and tools used were presented. The implementation of individual functionalities is described in detail and the tests that have been performed are presented. The last chapter of the work is devoted to a summary of encountered problems and prospects for further development of the application.
 
