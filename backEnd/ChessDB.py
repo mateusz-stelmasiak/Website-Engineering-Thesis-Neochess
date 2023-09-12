@@ -21,7 +21,7 @@ class ChessDB:
             try:
                 self.mydb = mysql.connector.connect(host=os.getenv("DATABASE_LOCATION"),
                                                     user="neochess_431429",
-                                                    password="FmHnqBd2lsnC",
+                                                    password="*******",
                                                     database="neo-chess-database")     
                 print("Connected to database")
                 break 
